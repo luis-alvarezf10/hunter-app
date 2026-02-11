@@ -3,17 +3,17 @@ import { SiInstagram, SiTiktok, SiWhatsapp } from "react-icons/si";
 const SocialMedias = {
   instagram: {
     name: "Instagram",
-    url: "https://instagram.com",
+    url: "https://www.instagram.com/diazandresoficial?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
     icon: <SiInstagram />
   },
-  twitter: {
+  titktok: {
     name: "Tiktok",
     url: "",
     icon: <SiTiktok />
   },
-  facebook: {
-    name: "Facebook",
-    url: "https://facebook.com",
+  whatsapp: {
+    name: "WhatsApp",
+    url: "",
     icon: <SiWhatsapp />
   }
 }
