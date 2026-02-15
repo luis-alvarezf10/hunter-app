@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hunter Login",
-  description: "Gestión de cartera sofisticada para empresas de alto crecimiento",
+  title: "Go Hunter",
+  description: "Gestión inmobiliaria todas las estadísticas en la palma de tu mano",
 };
 
 export default function RootLayout({

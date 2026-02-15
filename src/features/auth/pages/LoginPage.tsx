@@ -42,7 +42,7 @@ export function LoginPage() {
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center bg-[#efefef] dark:bg-[#1a1a1a] px-6 py-12 relative">
         <div className="w-full max-w-md flex flex-col gap-3">
           {/* Logo Mobile */}
-          <div className="md:hidden h-40 ">
+          <div className="lg:hidden h-40 ">
             {/* Logo para dark mode */}
             <img 
               src="/complete-logo.png" 
