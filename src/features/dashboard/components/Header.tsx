@@ -17,8 +17,6 @@ export function Header({ userName, userRole }: HeaderProps) {
           {getPageTitle()}
         </h2>
       </div>
-
-
       <div className="flex items-center gap-3">
         <div className="h-8 w-[1px] bg-gray-300 dark:bg-gray-600"></div>
         <div className="flex items-center gap-5 cursor-pointer pl-2">
