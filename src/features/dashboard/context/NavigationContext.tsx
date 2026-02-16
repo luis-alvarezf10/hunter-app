@@ -1,0 +1,50 @@
+'use client';
+
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+interface NavigationContextType {
+  activeItem: string;
+  setActiveItem: (item: string) => void;
+  getPageTitle: () => string;
+}
+
+const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+
+const pageTitles: Record<string, string> = {
+  // Advisor pages
+  home: 'Inicio',
+  schedule: 'Agenda',
+  reports: 'Reportes',
+  sales: 'Ventas',
+  clients: 'Clientes',
+  // Manager pages
+  panel: 'Panel de Control',
+  stats: 'Estadísticas',
+  advisors: 'Asesores',
+  properties: 'Propiedades en Venta',
+  // General pages
+  settings: 'Configuración',
+  logout: 'Cerrar Sesión',
+};
+
+export function NavigationProvider({ children }: { children: ReactNode }) {
+  const [activeItem, setActiveItem] = useState('home');
+
+  const getPageTitle = () => {
+    return pageTitles[activeItem] || 'Dashboard';
+  };
+
+  return (
+    <NavigationContext.Provider value={{ activeItem, setActiveItem, getPageTitle }}>
+      {children}
+    </NavigationContext.Provider>
+  );
+}
+
+export function useNavigation() {
+  const context = useContext(NavigationContext);
+  if (context === undefined) {
+    throw new Error('useNavigation must be used within a NavigationProvider');
+  }
+  return context;
+}

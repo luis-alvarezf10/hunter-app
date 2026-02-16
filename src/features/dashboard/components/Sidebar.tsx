@@ -3,13 +3,14 @@ import { HiOutlineHome, HiOutlineChartBar, HiOutlineUserGroup, HiOutlineChartPie
 
 import { LogoImage } from '@/shared/components/images/LogoImage';
 import { useState } from 'react';
+import { useNavigation } from '../context/NavigationContext';
 
 interface SidebarProps {
   userRole: 'advisor' | 'manager';
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
-  const [activeItem, setActiveItem] = useState('home');
+  const { activeItem, setActiveItem } = useNavigation();
   const [isOpen, setIsOpen] = useState(false);
   
   const generalMenuItems = [
@@ -59,7 +60,7 @@ export function Sidebar({ userRole }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={`
-          w-64 bg-[#efefef] dark:bg-[#1a1a1a] flex flex-col shrink-0 h-full border-r border-gray-300 dark:border-gray-600
+          w-64 bg-white dark:bg-[#1a1a1a] flex flex-col shrink-0 h-full border-r border-gray-300 dark:border-gray-600
           fixed lg:relative z-40
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}

@@ -11,6 +11,7 @@ import {
   AppointmentsList,
   SalesTable,
 } from '../components';
+import { NavigationProvider } from '../context/NavigationContext';
 import { LoadingPage } from '@/shared/pages/LoadingPage';
 
 interface Stakeholder {
@@ -85,25 +86,27 @@ export function DashboardPage() {
     : stakeholder.name;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar userRole={stakeholder.role as 'advisor' | 'manager'} />
+    <NavigationProvider>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar userRole={stakeholder.role as 'advisor' | 'manager'} />
 
-      <main className="flex-1 flex flex-col h-full overflow-y-auto">
-        <Header userName={fullName} userRole={roleLabel} />
+        <main className="flex-1 flex flex-col h-full overflow-y-auto">
+          <Header userName={fullName} userRole={roleLabel} />
 
-        <div className="p-8 space-y-8">
-          <StatCards />
+          <div className="p-8 space-y-8">
+            <StatCards />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <SalesChart />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <SalesChart />
+              </div>
+              <AppointmentsList />
             </div>
-            <AppointmentsList />
-          </div>
 
-          <SalesTable />
-        </div>
-      </main>
-    </div>
+            <SalesTable />
+          </div>
+        </main>
+      </div>
+    </NavigationProvider>
   );
 }
