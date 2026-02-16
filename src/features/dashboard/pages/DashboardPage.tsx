@@ -13,6 +13,7 @@ import {
 } from '../components';
 import { NavigationProvider } from '../context/NavigationContext';
 import { LoadingPage } from '@/shared/pages/LoadingPage';
+import { HiOutlineTrendingUp } from 'react-icons/hi';
 
 interface Stakeholder {
   id: string;
@@ -72,7 +73,7 @@ export function DashboardPage() {
 
   if (loading) {
     return (
-      <LoadingPage/>
+      <LoadingPage />
     );
   }
 
@@ -81,19 +82,32 @@ export function DashboardPage() {
   }
 
   const roleLabel = stakeholder.role === 'manager' ? 'Gerente' : 'Asesor';
-  const fullName = stakeholder.lastname 
-    ? `${stakeholder.name} ${stakeholder.lastname}` 
+  const fullName = stakeholder.lastname
+    ? `${stakeholder.name} ${stakeholder.lastname}`
     : stakeholder.name;
+
+  const nickName = stakeholder.nickname ? stakeholder.nickname : '';
 
   return (
     <NavigationProvider>
       <div className="flex h-screen overflow-hidden">
         <Sidebar userRole={stakeholder.role as 'advisor' | 'manager'} />
 
-        <main className="flex-1 flex flex-col h-full overflow-y-auto">
-          <Header userName={fullName} userRole={roleLabel} />
+        <main className="flex-1 flex flex-col h-full overflow-y-auto bg-[#ededed] dark:bg-[#131313]">
+          <Header
+            userName={fullName}
+            userRole={roleLabel}
+            color={stakeholder.ui_color}
+          />
+          <div className="p-8 space-y-8 ">
+            <div className="text-gray-800 dark:text-white flex gap-3">
+              <div className="w-3 rounded-xl" style={{ background: stakeholder.ui_color }}></div>
+              <div>
+                <h3 className=" text-2xl md:text-3xl">Bienvenido de nuevo! 👋,</h3>
+                <h4 className="text-xl font-bold">{nickName}</h4>
+              </div>
+            </div>
 
-          <div className="p-8 space-y-8">
             <StatCards />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

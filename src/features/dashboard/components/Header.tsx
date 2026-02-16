@@ -5,13 +5,14 @@ import { useNavigation } from '../context/NavigationContext';
 interface HeaderProps {
   userName: string;
   userRole: string;
+  color: string
 }
 
-export function Header({ userName, userRole }: HeaderProps) {
+export function Header({ userName, userRole, color }: HeaderProps) {
   const { getPageTitle } = useNavigation();
 
   return (
-    <header className="bg-white dark:bg-[#1a1a1a] text-black dark:text-white border-gray-300 dark:border-gray-600 border-b px-8 py-4 flex items-center lg:justify-between justify-end gap-5 sticky top-0 z-10">
+    <header className="bg-white dark:bg-[#1a1a1a] text-black dark:text-white border-gray-300 dark:border-gray-600 border-b px-8 py-4 flex items-center lg:justify-between justify-end gap-5 sticky top-0 z-20">
       <div className="flex items-center ">
         <h2 className="text-xl font-bold tracking-tight">
           {getPageTitle()}
@@ -28,7 +29,10 @@ export function Header({ userName, userRole }: HeaderProps) {
               {userRole}
             </p>
           </div>
-          <div className="size-9 rounded-full bg-[#6b1e2e] flex items-center justify-center text-white text-sm font-bold">
+          <div 
+            className="size-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+            style={{ backgroundColor: color }}
+          >
             {userName.charAt(0)}
           </div>
         </div>

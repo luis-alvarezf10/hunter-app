@@ -90,10 +90,8 @@ export function Sidebar({ userRole }: SidebarProps) {
             </div>
           ))}
           </div>
-
           {/* Separador */}
           <div className="border-t border-gray-300 dark:border-gray-600 my-4"></div>
-
           <div className="space-y-1">
             {generalMenuItems.map((item) => (
               <div
