@@ -9,7 +9,7 @@ export function SalesChart() {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+    <div className="bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-600 text-black dark:text-white rounded-xl border border-gray-200 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h3 className="text-lg font-bold text-[#1c2b36]">

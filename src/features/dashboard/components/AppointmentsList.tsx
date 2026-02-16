@@ -24,7 +24,7 @@ export function AppointmentsList() {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col">
+    <div className="bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-600 text-black dark:text-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-[#1c2b36]">Próximas Citas</h3>
         <button className="text-[#6b1e2e] text-sm font-bold hover:underline">

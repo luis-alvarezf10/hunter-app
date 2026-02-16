@@ -47,7 +47,7 @@ export function StatCards() {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+          className="bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-600 text-black dark:text-white p-6 rounded-xl  shadow-sm hover:shadow-md transition-shadow"
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-semibold text-gray-500">

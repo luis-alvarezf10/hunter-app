@@ -101,7 +101,7 @@ export function DashboardPage() {
           />
           <div className="p-8 space-y-8 ">
             <div className="text-gray-800 dark:text-white flex gap-3">
-              <div className="w-3 rounded-xl" style={{ background: stakeholder.ui_color }}></div>
+              <div className="w-2 rounded-xl" style={{ background: stakeholder.ui_color }}></div>
               <div>
                 <h3 className=" text-2xl md:text-3xl">Bienvenido de nuevo! 👋,</h3>
                 <h4 className="text-xl font-bold">{nickName}</h4>
@@ -117,7 +117,7 @@ export function DashboardPage() {
               <AppointmentsList />
             </div>
 
-            <SalesTable />
+            {/* <SalesTable /> */}
           </div>
         </main>
       </div>
