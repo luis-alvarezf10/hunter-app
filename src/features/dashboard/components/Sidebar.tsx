@@ -4,6 +4,10 @@ import { HiOutlineHome, HiOutlineChartBar, HiOutlineUserGroup, HiOutlineChartPie
 import { LogoImage } from '@/shared/components/images/LogoImage';
 import { useState } from 'react';
 import { useNavigation } from '../context/NavigationContext';
+import { ConfirmDialog } from '@/shared/components/dialogs';
+import { createClient } from '@/core/config';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/core/config';
 
 interface SidebarProps {
   userRole: 'advisor' | 'manager';
@@ -12,6 +16,23 @@ interface SidebarProps {
 export function Sidebar({ userRole }: SidebarProps) {
   const { activeItem, setActiveItem } = useNavigation();
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push(ROUTES.AUTH.LOGIN);
+  };
+
+  const handleMenuClick = (itemId: string) => {
+    if (itemId === 'logout') {
+      setShowLogoutDialog(true);
+    } else {
+      setActiveItem(itemId);
+      setIsOpen(false);
+    }
+  };
   
   const generalMenuItems = [
     { id: 'settings', label: 'Configuración', icon: <HiOutlineCog className="text-xl" /> },
@@ -91,15 +112,15 @@ export function Sidebar({ userRole }: SidebarProps) {
           ))}
           </div>
           {/* Separador */}
-          <div className="border-t border-gray-300 dark:border-gray-600 my-4"></div>
-          <div className="space-y-1">
+          {/* <div className="border-t border-gray-300 dark:border-gray-600 my-4"></div> */}
+        </nav>
+
+        <div className="p-4 border-t border-white/10 flex flex-col gap-4">
+         <div className="space-y-1">
             {generalMenuItems.map((item) => (
               <div
                 key={item.id}
-                onClick={() => {
-                  setActiveItem(item.id);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleMenuClick(item.id)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-gray-400/10 ${
                   activeItem === item.id
                     ? 'text-white font-semibold bg-gray-400/10'
@@ -112,15 +133,20 @@ export function Sidebar({ userRole }: SidebarProps) {
               </div>
             ))}
           </div>
-        </nav>
-
-        <div className="p-4 border-t border-white/10 flex flex-col gap-4">
-          <button className="w-full flex items-center justify-center gap-2 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-black/20">
-            <span className="material-symbols-outlined text-sm">download</span>
-            <span>Exportar Reporte</span>
-          </button>
         </div>
       </aside>
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showLogoutDialog}
+        onClose={() => setShowLogoutDialog(false)}
+        onConfirm={handleLogout}
+        title="¿Cerrar sesión?"
+        message="¿Estás seguro que deseas cerrar sesión?"
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+        confirmColor="bg-[#6b1e2e] hover:bg-[#6b1e2e]/90"
+      />
     </>
   );
 }
