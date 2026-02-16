@@ -1,12 +1,26 @@
 'use client';
 
+import { createClient } from '@/core/config';
+
 export function SocialLogin() {
-  const handleGoogleLogin = () => {
-    console.log('Google login');
+  const supabase = createClient();
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
   };
 
-  const handleFacebookLogin = () => {
-    console.log('Facebook login');
+  const handleFacebookLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
   };
 
   return (

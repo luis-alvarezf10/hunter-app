@@ -1,6 +1,7 @@
 import { SocialMediaButtons } from '@/shared/components/buttons/SocialMediaButtons';
 import { LoginForm, SocialLogin, PortfolioStats } from '../components';
 import { Footer } from '@/shared/components';
+import { LogoImage } from '@/shared/components/images/LogoImage';
 
 export function LoginPage() {
   return (
@@ -11,17 +12,7 @@ export function LoginPage() {
           <div className="mb-12 relative flex flex-col gap-3">
             <div className="h-35">
               {/* Logo para dark mode */}
-              <img 
-                src="/complete-logo.png" 
-                alt="hunter" 
-                className="w-auto h-70 object-contain absolute -translate-y-1/5 left-1/2 -translate-x-1/2 dark:block hidden"
-              />
-              {/* Logo para light mode */}
-              <img 
-                src="/complete-logo-black.png" 
-                alt="hunter" 
-                className="w-auto h-70 object-contain absolute -translate-y-1/5 left-1/2 -translate-x-1/2 dark:hidden block"
-              />
+              <LogoImage className="h-70 absolute -translate-y-1/5 left-1/2 -translate-x-1/2"/>
             </div>
             <h2 className="text-white text-3xl font-bold leading-tigh">
               Aplicación de Gerencia inmobiliaria
@@ -43,18 +34,7 @@ export function LoginPage() {
         <div className="w-full max-w-md flex flex-col gap-3">
           {/* Logo Mobile */}
           <div className="lg:hidden h-40 ">
-            {/* Logo para dark mode */}
-            <img 
-              src="/complete-logo.png" 
-              alt="hunter" 
-              className="w-auto h-70 object-contain absolute -translate-y-1/5 left-1/2 -translate-x-1/2 dark:block hidden"
-            />
-            {/* Logo para light mode */}
-            <img 
-              src="/complete-logo-black.png" 
-              alt="hunter" 
-              className="w-auto h-70 object-contain absolute -translate-y-1/5 left-1/2 -translate-x-1/2 dark:hidden block"
-            />
+            <LogoImage className="h-70 absolute -translate-y-1/5 left-1/2 -translate-x-1/2 "/>
           </div>
           {/* Encabezado */}
           <div className="text-center md:text-left">

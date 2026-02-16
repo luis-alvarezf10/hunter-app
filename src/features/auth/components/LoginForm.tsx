@@ -1,16 +1,50 @@
 'use client';
 
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/core/config';
+import { ROUTES } from '@/core/config';
 
 export function LoginForm() {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Aquí irá la lógica de autenticación
-    console.log('Login submitted');
+    setLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      router.push(ROUTES.DASHBOARD.HOME);
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
+      {error && (
+        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
       <div>
         <label 
           className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" 
@@ -25,6 +59,7 @@ export function LoginForm() {
           placeholder="nombre@empresa.com"
           type="email"
           required
+          disabled={loading}
         />
       </div>
 
@@ -47,6 +82,7 @@ export function LoginForm() {
           placeholder="••••••••"
           type="password"
           required
+          disabled={loading}
         />
       </div>
 
@@ -56,6 +92,7 @@ export function LoginForm() {
           id="remember"
           name="remember"
           type="checkbox"
+          disabled={loading}
         />
         <label className="ml-2 text-sm text-slate-600 dark:text-slate-400" htmlFor="remember">
           Mantener sesión iniciada
@@ -63,10 +100,11 @@ export function LoginForm() {
       </div>
 
       <button
-        className="w-full h-12 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#6b1e2e]/20"
+        className="w-full h-12 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-[#6b1e2e]/20 disabled:opacity-50 disabled:cursor-not-allowed"
         type="submit"
+        disabled={loading}
       >
-        <span>Iniciar Sesión</span>
+        <span>{loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}</span>
       </button>
     </form>
   );
