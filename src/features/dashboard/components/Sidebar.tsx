@@ -53,7 +53,6 @@ export function Sidebar({ userRole }: SidebarProps) {
     { id: 'stats', label: 'Estadísticas', icon: <HiOutlineChartPie className="text-xl" /> },
     { id: 'advisors', label: 'Asesores', icon: <HiOutlineUserGroup className="text-xl" /> },
     { id: 'properties', label: 'Propiedades en Venta', icon: <HiOutlineChartBar className="text-xl" /> },
-    { id: 'settings', label: 'Configuración', icon: <HiOutlineCog className="text-xl" /> },
   ];
 
   const menuItems = userRole === 'manager' ? managerItems : advisorItems;
