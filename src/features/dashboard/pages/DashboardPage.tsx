@@ -2,125 +2,70 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/core/config';
-import { useRouter } from 'next/navigation';
 import {
-  Sidebar,
-  Header,
   StatCards,
   SalesChart,
   AppointmentsList,
   SalesTable,
 } from '../components';
-import { NavigationProvider } from '../context/NavigationContext';
-import { LoadingPage } from '@/shared/pages/LoadingPage';
 import { HiOutlineTrendingUp } from 'react-icons/hi';
 
-interface Stakeholder {
-  id: string;
-  national_id: string | null;
-  name: string;
-  lastname: string | null;
-  nickname: string | null;
-  id_company: string | null;
-  ui_color: string;
-  role: string;
-  created_at: string;
-  image_profile: string | null;
-}
-
 export function DashboardPage() {
-  const [stakeholder, setStakeholder] = useState<Stakeholder | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [nickname, setNickname] = useState('');
+  const [uiColor, setUiColor] = useState('#6b1e2e');
   const supabase = createClient();
 
   useEffect(() => {
     async function loadUserData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-        if (!user) {
-          router.push('/auth/login');
-          return;
-        }
-
-        // Verificar que el usuario existe en stakeholders
-        const { data: stakeholderData, error } = await supabase
+        const { data: stakeholderData } = await supabase
           .from('stakeholders')
-          .select('*')
+          .select('nickname, name, ui_color')
           .eq('id', user.id)
           .single();
 
-        if (error || !stakeholderData) {
-          // Usuario no autorizado
-          console.error('Stakeholder not found:', error);
-          await supabase.auth.signOut();
-          router.push('/auth/login');
-          return;
+        if (stakeholderData) {
+          setNickname(stakeholderData.nickname || stakeholderData.name || '');
+          setUiColor(stakeholderData.ui_color || '#6b1e2e');
         }
-
-        setStakeholder(stakeholderData);
       } catch (error) {
         console.error('Error loading user data:', error);
-        router.push('/auth/login');
-      } finally {
-        setLoading(false);
       }
     }
 
     loadUserData();
-  }, [router, supabase]);
-
-  if (loading) {
-    return (
-      <LoadingPage />
-    );
-  }
-
-  if (!stakeholder) {
-    return null;
-  }
-
-  const roleLabel = stakeholder.role === 'manager' ? 'Gerente' : 'Asesor';
-  const fullName = stakeholder.lastname
-    ? `${stakeholder.name} ${stakeholder.lastname}`
-    : stakeholder.name;
-
-  const nickName = stakeholder.nickname ? stakeholder.nickname : '';
+  }, [supabase]);
 
   return (
-    <NavigationProvider>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar userRole={stakeholder.role as 'advisor' | 'manager'} />
-
-        <main className="flex-1 flex flex-col h-full overflow-y-auto bg-[#ededed] dark:bg-[#131313]">
-          <Header
-            userName={fullName}
-            userRole={roleLabel}
-            color={stakeholder.ui_color}
-          />
-          <div className="p-8 space-y-8 ">
-            <div className="text-gray-800 dark:text-white flex gap-3">
-              <div className="w-2 rounded-xl" style={{ background: stakeholder.ui_color }}></div>
-              <div>
-                <h3 className=" text-2xl md:text-3xl">Bienvenido de nuevo! 👋,</h3>
-                <h4 className="text-xl font-bold">{nickName}</h4>
-              </div>
-            </div>
-
-            <StatCards />
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <SalesChart />
-              </div>
-              <AppointmentsList />
-            </div>
-
-            {/* <SalesTable /> */}
+    <div className="p-8 space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+        <div 
+          className="p-4 rounded-lg text-white relative overflow-hidden" 
+          style={{background: uiColor}}
+        >
+          <HiOutlineTrendingUp className="absolute text-white/10 text-8xl top-1/3 right-0"/>
+          <div className="grid md:flex gap-2 items-end relative z-10">
+            <h3 className="text-xl md:text-2xl">Bienvenido de nuevo! 👋,</h3>
+            <h4 className="text-xl">{nickname}</h4>
           </div>
-        </main>
+          <p className="relative z-10">Aquí está un resumen de tu actividad</p>
+        </div>
+        <div></div>
       </div>
-    </NavigationProvider>
+
+      <StatCards />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <SalesChart />
+        </div>
+        <AppointmentsList />
+      </div>
+
+      <SalesTable />
+    </div>
   );
 }

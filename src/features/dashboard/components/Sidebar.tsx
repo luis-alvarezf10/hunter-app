@@ -1,5 +1,5 @@
 'use client';
-import { HiOutlineHome, HiOutlineChartBar, HiOutlineUserGroup, HiOutlineChartPie, HiOutlineClock, HiOutlineCog, HiOutlineLogout } from "react-icons/hi";
+import { HiOutlineHome, HiOutlineChartBar, HiOutlineUserGroup, HiOutlineChartPie, HiOutlineClock, HiOutlineCog, HiOutlineLogout, HiOutlineCollection } from "react-icons/hi";
 
 import { LogoImage } from '@/shared/components/images/LogoImage';
 import { useState } from 'react';
@@ -25,12 +25,15 @@ export function Sidebar({ userRole }: SidebarProps) {
     router.push(ROUTES.AUTH.LOGIN);
   };
 
-  const handleMenuClick = (itemId: string) => {
+  const handleMenuClick = (itemId: string, route?: string) => {
     if (itemId === 'logout') {
       setShowLogoutDialog(true);
     } else {
       setActiveItem(itemId);
       setIsOpen(false);
+      if (route) {
+        router.push(route);
+      }
     }
   };
   
@@ -40,7 +43,8 @@ export function Sidebar({ userRole }: SidebarProps) {
   ];
 
   const advisorItems = [
-    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" /> },
+    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
+    { id: 'properties', label: 'Propiedades', icon: <HiOutlineCollection className="text-xl" />, route: '/properties' },
     { id: 'schedule', label: 'Agenda', icon: <HiOutlineClock className="text-xl" /> },
     { id: 'reports', label: 'Reportes', icon: <HiOutlineChartPie className="text-xl" /> },
     { id: 'sales', label: 'Ventas', icon: <HiOutlineChartBar className="text-xl" /> },
@@ -92,13 +96,10 @@ export function Sidebar({ userRole }: SidebarProps) {
 
         <nav className="flex-1 px-4 py-4 space-y-1">
           <div className="space-y-1">
-          {menuItems.map((item) => (
+          {menuItems.map((item: any) => (
             <div
               key={item.id}
-              onClick={() => {
-                setActiveItem(item.id);
-                setIsOpen(false); // Cerrar menú en mobile al seleccionar
-              }}
+              onClick={() => handleMenuClick(item.id, item.route)}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-gray-400/10 ${
                 activeItem === item.id
                   ? 'text-black dark:text-white font-semibold bg-gray-400/10'

@@ -17,11 +17,11 @@ const pageTitles: Record<string, string> = {
   reports: 'Reportes',
   sales: 'Ventas',
   clients: 'Clientes',
+  properties: 'Propiedades',
   // Manager pages
   panel: 'Panel de Control',
   stats: 'Estadísticas',
   advisors: 'Asesores',
-  properties: 'Propiedades en Venta',
   // General pages
   settings: 'Configuración',
   logout: 'Cerrar Sesión',
