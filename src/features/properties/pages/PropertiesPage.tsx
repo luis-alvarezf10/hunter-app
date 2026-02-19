@@ -129,7 +129,7 @@ export function PropertiesPage() {
 
       {/* Estadísticas y Gráficas */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <PropertyStats stats={stats} />
+        <PropertyStats />
         <PropertyCharts />
       </div>
 
