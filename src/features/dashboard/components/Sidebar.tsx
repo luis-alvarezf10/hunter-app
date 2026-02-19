@@ -52,7 +52,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   ];
 
   const managerItems = [
-    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" /> },
+    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
     { id: 'panel', label: 'Panel de control', icon: <HiOutlineChartBar className="text-xl" /> },
     { id: 'stats', label: 'Estadísticas', icon: <HiOutlineChartPie className="text-xl" /> },
     { id: 'advisors', label: 'Asesores', icon: <HiOutlineUserGroup className="text-xl" /> },
@@ -90,13 +90,13 @@ export function Sidebar({ userRole }: SidebarProps) {
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        <div className="h-20">
-          <LogoImage className="h-30 absolute left-15"/>
+        <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
+          <LogoImage className="h-40"/>
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1">
           <div className="space-y-1">
-          {menuItems.map((item: any) => (
+          {menuItems.map((item) => (
             <div
               key={item.id}
               onClick={() => handleMenuClick(item.id, item.route)}
