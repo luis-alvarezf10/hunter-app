@@ -18,7 +18,17 @@ interface Property {
     name: string;
     value: string;
   } | null;
-  details_properties: Array<{
+  details_properties: {
+    bedrooms: number | null;
+    bathrooms: number | null;
+    area_sqm: number | null;
+    price: number | null;
+    period: string | null;
+    is_furnished: boolean | null;
+    half_bath: number | null;
+    lot_size: number | null;
+    parking_spots: number | null;
+  } | Array<{
     bedrooms: number | null;
     bathrooms: number | null;
     area_sqm: number | null;
@@ -200,7 +210,11 @@ export function PropertiesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProperties.map((property) => {
-            const details = property.details_properties?.[0];
+            // Manejar details_properties como objeto o array
+            const details = Array.isArray(property.details_properties) 
+              ? property.details_properties[0] 
+              : property.details_properties;
+            
             return (
               <div
                 key={property.id}
@@ -265,30 +279,53 @@ export function PropertiesPage() {
                     )}
                   </div>
 
-                  {/* Features */}
-                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3">
-                    {details?.bedrooms && (
-                      <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-lg">bed</span>
-                        <span>{details.bedrooms}</span>
+                  {/* Características destacadas */}
+                  <div className="grid grid-cols-3 gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                    {details?.bedrooms != null && details.bedrooms > 0 ? (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">bed</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{details.bedrooms}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Hab.</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
+                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">bed</span>
+                        <span className="text-sm font-bold text-gray-400">-</span>
+                        <span className="text-xs text-gray-400">Hab.</span>
                       </div>
                     )}
-                    {details?.bathrooms && (
-                      <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-lg">bathtub</span>
-                        <span>{details.bathrooms}</span>
+                    
+                    {details?.bathrooms != null && details.bathrooms > 0 ? (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">bathtub</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{details.bathrooms}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Baños</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
+                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">bathtub</span>
+                        <span className="text-sm font-bold text-gray-400">-</span>
+                        <span className="text-xs text-gray-400">Baños</span>
                       </div>
                     )}
-                    {details?.area_sqm && (
-                      <div className="flex items-center gap-1">
-                        <span className="material-symbols-outlined text-lg">square_foot</span>
-                        <span>{details.area_sqm}m²</span>
+                    
+                    {details?.area_sqm != null && details.area_sqm > 0 ? (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">square_foot</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{details.area_sqm}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">m²</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
+                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">square_foot</span>
+                        <span className="text-sm font-bold text-gray-400">-</span>
+                        <span className="text-xs text-gray-400">m²</span>
                       </div>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2">
                     <button 
                       onClick={() => {
                         setSelectedProperty(property);
@@ -327,14 +364,10 @@ export function PropertiesPage() {
       
       {/* Modal de Detalles */}
       {showDetailsDialog && selectedProperty && (() => {
-        // Manejar tanto si details_properties es array o objeto
-        const detailsArray = Array.isArray(selectedProperty.details_properties) 
-          ? selectedProperty.details_properties 
-          : [selectedProperty.details_properties];
-        const details = detailsArray?.[0];
-        
-        console.log('Selected property:', selectedProperty);
-        console.log('Details:', details);
+        // Manejar details_properties como objeto o array
+        const details = Array.isArray(selectedProperty.details_properties) 
+          ? selectedProperty.details_properties[0] 
+          : selectedProperty.details_properties;
         
         return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
