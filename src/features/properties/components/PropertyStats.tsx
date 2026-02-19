@@ -7,6 +7,7 @@ interface Stats {
   available: number;
   reserved: number;
   sold: number;
+  rented: number;
 }
 
 export function PropertyStats() {
@@ -14,6 +15,7 @@ export function PropertyStats() {
     available: 0,
     reserved: 0,
     sold: 0,
+    rented: 0,
   });
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -29,7 +31,8 @@ export function PropertyStats() {
           setStats({
             available: properties.filter(p => p.status === 'available').length,
             reserved: properties.filter(p => p.status === 'reserved').length,
-            sold: properties.filter(p => p.status === 'sold').length,
+            sold: properties.filter(p => p.status === 'saled').length,
+            rented: properties.filter(p => p.status === 'rented').length,
           });
         }
       } catch (error) {
@@ -63,6 +66,13 @@ export function PropertyStats() {
       color: 'bg-purple-500', 
       icon: 'sell',
       gradient: 'from-purple-400 to-purple-600',
+    },
+    { 
+      label: 'Alquiladas', 
+      value: stats.rented, 
+      color: 'bg-cyan-500', 
+      icon: 'key',
+      gradient: 'from-cyan-400 to-cyan-600',
     },
   ];
 
@@ -111,7 +121,10 @@ export function PropertyStats() {
                   {item.value}
                 </span>
                 <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                  {maxValue > 0 ? Math.round((item.value / (stats.available + stats.reserved + stats.sold)) * 100) : 0}%
+                  {(() => {
+                    const total = Number(stats.available) + Number(stats.reserved) + Number(stats.sold) + Number(stats.rented);
+                    return total > 0 ? Math.round((item.value / total) * 100) : 0;
+                  })()}%
                 </span>
               </div>
             </div>
@@ -138,7 +151,7 @@ export function PropertyStats() {
             Total de Propiedades
           </span>
           <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            {stats.available + stats.reserved + stats.sold}
+            {Number(stats.available) + Number(stats.reserved) + Number(stats.sold) + Number(stats.rented)}
           </span>
         </div>
       </div>

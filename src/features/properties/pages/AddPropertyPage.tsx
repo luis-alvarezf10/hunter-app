@@ -14,6 +14,7 @@ export function AddPropertyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [propertyTypes, setPropertyTypes] = useState<Array<{ value: string; id: string }>>([]);
+  const [offerTypes, setOfferTypes] = useState<Array<{ name: string; value: string; id: string }>>([]);
   const [clients, setClients] = useState<Array<{ id: string; name: string; last_name: string }>>([]);
   const [showClientDialog, setShowClientDialog] = useState(false);
   const [searchNationalId, setSearchNationalId] = useState('');
@@ -39,6 +40,7 @@ export function AddPropertyPage() {
     longitude: '',
     status: 'available',
     type: '',
+    type_offer: '',
     id_owner: '',
     
     // Detalles de la propiedad
@@ -49,11 +51,19 @@ export function AddPropertyPage() {
     lot_size: '',
     parking_spots: '',
     price: '',
+    is_furnished: false,
+    period: 'monthly',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const compressImage = (file: File): Promise<File> => {
@@ -229,6 +239,21 @@ export function AddPropertyPage() {
         setPropertyTypes(typesData);
       }
 
+      // Cargar tipos de ofertas
+      const { data: offersData, error: offersError } = await supabase
+        .from('type_offers')
+        .select('name, value, id')
+        .order('name');
+      
+      if (offersError) {
+        console.error('Error cargando tipos de ofertas:', offersError);
+      }
+      
+      if (offersData) {
+        console.log('Tipos de ofertas cargados:', offersData);
+        setOfferTypes(offersData);
+      }
+
       // Cargar clientes
       const { data: clientsData } = await supabase
         .from('clients')
@@ -252,7 +277,9 @@ export function AddPropertyPage() {
               half_bath,
               lot_size,
               parking_spots,
-              price
+              price,
+              is_furnished,
+              period
             )
           `)
           .eq('id', propertyId)
@@ -265,15 +292,16 @@ export function AddPropertyPage() {
         }
 
         if (property) {
-          const details = property.details_properties[0];
+          const details = property.details_properties;
           setFormData({
             title: property.title || '',
             description: property.description || '',
             address: property.address || '',
             latitude: property.latitude?.toString() || '',
-            longitude: property.length?.toString() || '',
+            longitude: property.longitude?.toString() || '',
             status: property.status || 'available',
             type: property.id_type || '',
+            type_offer: property.id_type_offer || '',
             id_owner: property.id_owner || '',
             area_sqm: details?.area_sqm?.toString() || '',
             bedrooms: details?.bedrooms?.toString() || '',
@@ -282,6 +310,8 @@ export function AddPropertyPage() {
             lot_size: details?.lot_size?.toString() || '',
             parking_spots: details?.parking_spots?.toString() || '',
             price: details?.price?.toString() || '',
+            is_furnished: details?.is_furnished || false,
+            period: details?.period || 'monthly',
           });
 
           if (property.image) {
@@ -367,7 +397,7 @@ export function AddPropertyPage() {
         description: formData.description,
         address: formData.address,
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        length: formData.longitude ? parseFloat(formData.longitude) : null,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         status: formData.status,
         image: imageUrl,
         id_advisor: user.id,
@@ -376,6 +406,11 @@ export function AddPropertyPage() {
       // Solo agregar id_type si tiene valor
       if (formData.type) {
         propertyData.id_type = formData.type;
+      }
+
+      // Solo agregar id_type_offer si tiene valor
+      if (formData.type_offer) {
+        propertyData.id_type_offer = formData.type_offer;
       }
 
       // Solo agregar id_owner si tiene valor
@@ -397,21 +432,45 @@ export function AddPropertyPage() {
         if (propertyError) throw propertyError;
         property = data;
 
-        // Actualizar detalles
-        const { error: detailsError } = await supabase
-          .from('details_properties')
-          .update({
-            area_sqm: formData.area_sqm ? parseFloat(formData.area_sqm) : null,
-            bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-            bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
-            half_bath: formData.half_bath ? parseInt(formData.half_bath) : null,
-            lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
-            parking_spots: formData.parking_spots ? parseInt(formData.parking_spots) : null,
-            price: formData.price ? parseFloat(formData.price) : null,
-          })
-          .eq('id_property', propertyId);
+        // Actualizar o insertar detalles
+        const detailsData = {
+          area_sqm: formData.area_sqm ? parseFloat(formData.area_sqm) : null,
+          bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
+          bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
+          half_bath: formData.half_bath ? parseInt(formData.half_bath) : null,
+          lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
+          parking_spots: formData.parking_spots ? parseInt(formData.parking_spots) : null,
+          price: formData.price ? parseFloat(formData.price) : null,
+          is_furnished: formData.is_furnished,
+          period: formData.period,
+        };
 
-        if (detailsError) throw detailsError;
+        // Verificar si ya existen detalles
+        const { data: existingDetails } = await supabase
+          .from('details_properties')
+          .select('id_property')
+          .eq('id_property', propertyId)
+          .single();
+
+        if (existingDetails) {
+          // Actualizar detalles existentes
+          const { error: detailsError } = await supabase
+            .from('details_properties')
+            .update(detailsData)
+            .eq('id_property', propertyId);
+
+          if (detailsError) throw detailsError;
+        } else {
+          // Insertar nuevos detalles
+          const { error: detailsError } = await supabase
+            .from('details_properties')
+            .insert({
+              id_property: propertyId,
+              ...detailsData,
+            });
+
+          if (detailsError) throw detailsError;
+        }
       } else {
         // Insertar nueva propiedad
         const { data, error: propertyError } = await supabase
@@ -435,6 +494,8 @@ export function AddPropertyPage() {
             lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
             parking_spots: formData.parking_spots ? parseInt(formData.parking_spots) : null,
             price: formData.price ? parseFloat(formData.price) : null,
+            is_furnished: formData.is_furnished,
+            period: formData.period,
           });
 
         if (detailsError) throw detailsError;
@@ -563,6 +624,26 @@ export function AddPropertyPage() {
                 placeholder="Ej: Urbanización Los Pinos, Calle 5, Casa 10"
               />
             </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Tipo de Oferta
+              </label>
+              <select
+                name="type_offer"
+                value={formData.type_offer}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6b1e2e]/50 focus:border-[#6b1e2e] outline-none"
+              >
+                <option value="">Seleccionar tipo de oferta</option>
+                {offerTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Tipo de Propiedad
@@ -581,6 +662,7 @@ export function AddPropertyPage() {
                 ))}
               </select>
             </div>
+            
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Cliente/Propietario
@@ -678,6 +760,43 @@ export function AddPropertyPage() {
                 placeholder="250000"
               />
             </div>
+
+            {/* Solo mostrar período si es alquiler */}
+            {offerTypes.find(t => t.id === formData.type_offer)?.value === 'Rent' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Período de Pago
+                </label>
+                <select
+                  name="period"
+                  value={formData.period}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6b1e2e]/50 focus:border-[#6b1e2e] outline-none"
+                >
+                  <option value="daily">Diario</option>
+                  <option value="weekly">Semanal</option>
+                  <option value="monthly">Mensual</option>
+                  <option value="yearly">Anual</option>
+                </select>
+              </div>
+            )}
+
+            {/* Solo mostrar amueblada si es alquiler */}
+            {offerTypes.find(t => t.id === formData.type_offer)?.value === 'Rent' && (
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="is_furnished"
+                  name="is_furnished"
+                  checked={formData.is_furnished}
+                  onChange={handleChange}
+                  className="w-5 h-5 text-[#6b1e2e] bg-white dark:bg-[#1a1a1a] border-gray-300 dark:border-gray-700 rounded focus:ring-[#6b1e2e] focus:ring-2"
+                />
+                <label htmlFor="is_furnished" className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Propiedad Amueblada
+                </label>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">

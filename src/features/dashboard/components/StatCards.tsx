@@ -8,6 +8,7 @@ interface Stats {
   available: number;
   reserved: number;
   sold: number;
+  rented: number;
   totalValue: number;
 }
 
@@ -17,6 +18,7 @@ export function StatCards() {
     available: 0,
     reserved: 0,
     sold: 0,
+    rented: 0,
     totalValue: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ export function StatCards() {
   useEffect(() => {
     async function loadStats() {
       try {
-        // Obtener todas las propiedades
+        // Obtener todas las propiedades con precio desde details
         const { data: properties } = await supabase
           .from('properties')
           .select(`
@@ -37,7 +39,8 @@ export function StatCards() {
         if (properties) {
           const available = properties.filter(p => p.status === 'available').length;
           const reserved = properties.filter(p => p.status === 'reserved').length;
-          const sold = properties.filter(p => p.status === 'sold').length;
+          const sold = properties.filter(p => p.status === 'saled').length;
+          const rented = properties.filter(p => p.status === 'rented').length;
           
           // Calcular valor total de propiedades disponibles
           const totalValue = properties
@@ -52,6 +55,7 @@ export function StatCards() {
             available,
             reserved,
             sold,
+            rented,
             totalValue,
           });
         }
@@ -107,10 +111,18 @@ export function StatCards() {
       iconBg: 'bg-purple-500/10',
       iconColor: 'text-purple-600 dark:text-purple-400',
     },
+    {
+      label: 'Alquiladas',
+      value: loading ? '...' : stats.rented.toString(),
+      icon: 'key',
+      gradient: 'from-cyan-500 to-cyan-600',
+      iconBg: 'bg-cyan-500/10',
+      iconColor: 'text-cyan-600 dark:text-cyan-400',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       {statCards.map((stat, index) => (
         <div
           key={index}
@@ -141,7 +153,7 @@ export function StatCards() {
       ))}
       
       {/* Valor Total Card - Destacado */}
-      <div className="md:col-span-2 lg:col-span-4 relative bg-gradient-to-br from-[#6b1e2e] to-[#8b2e3e] rounded-xl p-6 overflow-hidden shadow-lg">
+      <div className="md:col-span-2 lg:col-span-5 relative bg-gradient-to-br from-[#6b1e2e] to-[#8b2e3e] rounded-xl p-6 overflow-hidden shadow-lg">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
         
