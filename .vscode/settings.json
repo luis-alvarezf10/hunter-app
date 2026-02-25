@@ -13,5 +13,6 @@
     "*.tsx": "${capture}.test.tsx, ${capture}.spec.tsx",
     "index.ts": "*.ts",
     "index.tsx": "*.tsx"
-  }
+  },
+  "typescript.autoClosingTags": false
 }
