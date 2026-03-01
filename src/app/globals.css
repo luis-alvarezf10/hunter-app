@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -15,13 +14,12 @@
   --color-primary: var(--primary);
   --color-wine-red: var(--wine-red);
   --color-petroleum-blue: var(--petroleum-blue);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1a1a1a;
+    --background: #0d0d0d;
     --foreground: #ededed;
   }
 }
@@ -29,7 +27,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-poppins), sans-serif;
 }
 
 .architectural-bg {

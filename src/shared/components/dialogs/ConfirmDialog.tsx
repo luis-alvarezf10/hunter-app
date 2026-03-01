@@ -1,5 +1,8 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,9 +24,15 @@ export function ConfirmDialog({
   cancelText = 'Cancelar',
   confirmColor = 'bg-red-600 hover:bg-red-700',
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const dialogContent = (
     <>
       <style jsx>{`
         @keyframes fadeIn {
@@ -126,4 +135,6 @@ export function ConfirmDialog({
       </div>
     </>
   );
+
+  return createPortal(dialogContent, document.body);
 }

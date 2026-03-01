@@ -10,12 +10,11 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/core/config';
 
 interface SidebarProps {
-  userRole: 'advisor' | 'manager';
+  userRole: 'realtor' | 'manager';
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
-  const { activeItem, setActiveItem } = useNavigation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { activeItem, setActiveItem, isSidebarOpen, setIsSidebarOpen } = useNavigation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -30,19 +29,19 @@ export function Sidebar({ userRole }: SidebarProps) {
       setShowLogoutDialog(true);
     } else {
       setActiveItem(itemId);
-      setIsOpen(false);
+      setIsSidebarOpen(false);
       if (route) {
         router.push(route);
       }
     }
   };
-  
+
   const generalMenuItems = [
     { id: 'settings', label: 'Configuración', icon: <HiOutlineCog className="text-xl" /> },
     { id: 'logout', label: 'Cerrar Sesión', icon: <HiOutlineLogout className="text-xl" /> }
   ];
 
-  const advisorItems = [
+  const realtorItems = [
     { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
     { id: 'properties', label: 'Propiedades', icon: <HiOutlineCollection className="text-xl" />, route: '/properties' },
     { id: 'schedule', label: 'Agenda', icon: <HiOutlineClock className="text-xl" />, route: '/schedule' },
@@ -59,79 +58,82 @@ export function Sidebar({ userRole }: SidebarProps) {
     { id: 'properties', label: 'Propiedades en Venta', icon: <HiOutlineChartBar className="text-xl" /> },
   ];
 
-  const menuItems = userRole === 'manager' ? managerItems : advisorItems;
+  const menuItems = userRole === 'manager' ? managerItems : realtorItems;
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 size-10 flex items-center justify-center bg-[#efefef] dark:bg-[#1a1a1a] text-black dark:text-white rounded-lg border border-gray-300 dark:border-gray-600"
-      >
-        <span className="material-symbols-outlined">
-          {isOpen ? 'close' : 'menu'}
-        </span>
-      </button>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-        />
-      )}
-
       {/* Sidebar */}
-      <aside
-        className={`
-          w-64 bg-white dark:bg-[#1a1a1a] flex flex-col shrink-0 h-full border-r border-gray-300 dark:border-gray-600
-          fixed lg:relative z-40
-          transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
-      >
-        <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
+      <aside className="w-64 bg-[#1a1a1a] flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto">
+        {/* <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40"/>
+        </div> */}
+
+        <div className="h-25 flex flex-col items-center justify-center gap-3">
+          <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
+          <p className="text-sm text-gray-400">App {userRole}</p>
         </div>
 
-        <nav className="flex-1 px-4 py-4 space-y-1">
+        {/* --- SECCIÓN DE MENÚ PRINCIPAL --- */}
+        <nav className="flex-1 py-4 space-y-1">
           <div className="space-y-1">
-          {menuItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => handleMenuClick(item.id, item.route)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-gray-400/10 ${
-                activeItem === item.id
-                  ? 'text-black dark:text-white font-semibold bg-gray-400/10'
-                  : 'text-gray-800 dark:text-gray-400 hover:text-white'
-              }`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </div>
-          ))}
+            {menuItems.map((item) => {
+              const isActive = activeItem === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => handleMenuClick(item.id, item.route)}
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  {/* Indicador Lateral */}
+                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-[#c52e1a] translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
+                    }`} />
+
+                  {/* Contenedor Principal */}
+                  <div className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
+                      ? 'bg-gradient-to-b dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-[#c52e1a] border-t-white/30'
+                      : 'dark:bg-[#1a1a1a] bg-[#efefef] border-transparent'
+                    }`}>
+                    <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
+                    <div className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? '' : ' bg-[#333333]/50 ' }`}>{item.icon}</div>
+                    <span className={`z-10 transition-all duration-300 ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {/* Separador */}
-          {/* <div className="border-t border-gray-300 dark:border-gray-600 my-4"></div> */}
         </nav>
 
-        <div className="p-4 border-t border-white/10 flex flex-col gap-4">
-         <div className="space-y-1">
-            {generalMenuItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleMenuClick(item.id)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors hover:bg-gray-400/10 ${
-                  activeItem === item.id
-                    ? 'text-white font-semibold bg-gray-400/10'
-                    : item.id == "logout" ? 'text-red-800 dark:text-white dark:bg-red-800/30 hover:text-white' : 
-                    'text-gray-800 dark:text-gray-400 hover:text-white'
-                }`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </div>
-            ))}
+        {/* --- SECCIÓN DE MENÚ GENERAL (AJUSTADA) --- */}
+        <div className="py-4 border-t border-white/10 flex flex-col gap-4">
+          <div className="space-y-1">
+            {generalMenuItems.map((item) => {
+              const isActive = activeItem === item.id;
+              const isLogout = item.id === "logout";
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => handleMenuClick(item.id)}
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-white' : isLogout ? 'text-red-500' : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  {/* Indicador Lateral replicado */}
+                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-[#c52e1a] translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
+                    }`} />
+
+                  {/* Contenedor Principal replicado para mantener simetría */}
+                  <div className={`relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
+                      ? 'bg-gradient-to-b dark:from-[#333333] dark:via-[#333333]/10 border-transparent border-t-white/30 border-l-[#c52e1a]'
+                      : isLogout ? 'dark:bg-red-800/10 hover:bg-red-800/20 border-transparent' : ' border-transparent'
+                    }`}>
+                      <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
+                    <div className="group-hover:scale-110 duration-300 p-1 z-10">{item.icon}</div>
+                    <span className={`z-10 transition-all duration-300 ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </aside>

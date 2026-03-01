@@ -6,6 +6,8 @@ interface NavigationContextType {
   activeItem: string;
   setActiveItem: (item: string) => void;
   getPageTitle: () => string;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (isOpen: boolean) => void;
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
@@ -29,13 +31,14 @@ const pageTitles: Record<string, string> = {
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
   const [activeItem, setActiveItem] = useState('home');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const getPageTitle = () => {
     return pageTitles[activeItem] || 'Dashboard';
   };
 
   return (
-    <NavigationContext.Provider value={{ activeItem, setActiveItem, getPageTitle }}>
+    <NavigationContext.Provider value={{ activeItem, setActiveItem, getPageTitle, isSidebarOpen, setIsSidebarOpen }}>
       {children}
     </NavigationContext.Provider>
   );
