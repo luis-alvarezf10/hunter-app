@@ -12,7 +12,7 @@ export function Header({ userName, userRole, color }: HeaderProps) {
   const { getPageTitle } = useNavigation();
 
   return (
-    <header className="sticky top-0 z-20 flex items-center lg:justify-between justify-end gap-5 px-8 py-4 h-[72px] transition-all duration-300 bg-gradient-to-b from-[#1a1a1a]/70 via-[#1a1a1a]/30 to-transparent backdrop-blur-md backdrop-saturate-150">
+    <header className="w-full h-full flex items-center lg:justify-between justify-end gap-5 px-8 py-4 transition-all duration-300 bg-[#1a1a1a]/80 backdrop-blur-md backdrop-saturate-150 border-b border-white/5 rounded-2xl border border-white/10 shadow-2xl">
       {/* Nota: He bajado la opacidad a /70 y añadido backdrop-blur-md 
         para lograr el efecto de cristal estilo Apple. 
       */}
@@ -23,12 +23,10 @@ export function Header({ userName, userRole, color }: HeaderProps) {
         </h2>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Separador visual sutil */}
-        <div className="h-8 w-[1px] bg-gray-300 dark:bg-gray-600/50"></div>
-        
+  
         <div className="flex items-center gap-4 pl-2 group cursor-pointer">
-          <div className="text-right hidden md:block">
+          <div className="h-8 w-[1px] bg-gray-300 dark:bg-gray-600"></div>
+          <div className=" text-right hidden md:block">
             <p className="font-bold text-black dark:text-white leading-none transition-colors group-hover:text-[#c52e1a]">
               {userName}
             </p>
@@ -48,7 +46,6 @@ export function Header({ userName, userRole, color }: HeaderProps) {
             {userName.charAt(0).toUpperCase()}
           </div>
         </div>
-      </div>
     </header>
   );
 }

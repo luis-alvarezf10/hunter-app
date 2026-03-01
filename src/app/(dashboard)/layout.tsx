@@ -41,7 +41,7 @@ function DashboardLayoutContent({
     <div className="relative h-screen overflow-hidden">
       {/* Sidebar flotante superpuesto */}
       <div 
-        className={`p-4 fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${
+        className={`p-2 fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -50,7 +50,7 @@ function DashboardLayoutContent({
 
       {/* Mobile Menu Button - Hamburger animado */}
       <button
-        className="lg:hidden fixed top-4 left-4 w-10 h-10 flex flex-col items-center justify-center gap-1.5 z-[60] bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-300/50 dark:border-gray-600/50 transition-colors hover:bg-white/90 dark:hover:bg-black/90 shadow-lg"
+        className="lg:hidden fixed top-5 left-5 w-12 h-12 flex flex-col items-center justify-center gap-1.5 z-[60]  rounded-lg transition-colors hover:bg-white/30 dark:hover:bg-black/30 shadow-lg cursor-pointer"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label="Toggle menu"
       >
@@ -80,12 +80,12 @@ function DashboardLayoutContent({
       )}
 
       {/* Fondo con gradiente difuminado - solo en inicio */}
-      {isHomePage && (
+      {/* {isHomePage && (
         <>
           <div className="fixed inset-0 bg-gradient-to-b from-[#770f09] via-[#9e1e11]/60 via-[#c52e1a]/30 to-[#0d0d0d] blur-3xl" />
           <div className="fixed inset-0 bg-gradient-to-b from-[#c52e1a]/40 via-[#9e1e11]/20 to-transparent blur-2xl" />
         </>
-      )}
+      )} */}
       
       {/* Main Content */}
       <main className={`relative w-full h-full flex flex-col ${
@@ -93,17 +93,17 @@ function DashboardLayoutContent({
           ? 'bg-white/50 dark:bg-black/50 backdrop-blur-sm' 
           : 'bg-[#0d0d0d]'
       }`}>
+        {/* Header fijo - sin tapar scrollbar */}
+        <div className="fixed top-2 left-2 lg:left-[300px] z-30 h-[72px]" style={{ right: '45px' }}>
+          <Header
+            userName={fullName}
+            userRole={roleLabel}
+            color={stakeholder.ui_color}
+          />
+        </div>
+        
         {/* Contenido con scroll */}
-        <div className="flex-1 overflow-y-auto lg:ml-[272px]">
-          {/* Header fijo dentro del contenedor con scroll */}
-          <div className="sticky top-0 z-30 h-[72px]">
-            <Header
-              userName={fullName}
-              userRole={roleLabel}
-              color={stakeholder.ui_color}
-            />
-          </div>
-          
+        <div className="flex-1 overflow-y-auto pt-[76px] lg:ml-[272px]">
           <PageTransition>
             {children}
           </PageTransition>

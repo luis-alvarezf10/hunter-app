@@ -63,7 +63,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   return (
     <>
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1a1a1a]/80 backdrop-blur-xl flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
+      <aside className="w-64 bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
         {/* <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40"/>
         </div> */}
@@ -92,7 +92,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                   {/* Contenedor Principal */}
                   <div className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
                       ? 'bg-gradient-to-b dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-[#c52e1a] border-t-white/30'
-                      : 'dark:bg-[#1a1a1a] bg-[#efefef] border-transparent'
+                      : 'border-transparent'
                     }`}>
                     <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
                     <div className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? '' : ' bg-[#333333]/50 ' }`}>{item.icon}</div>
