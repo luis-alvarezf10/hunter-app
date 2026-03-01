@@ -63,7 +63,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   return (
     <>
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1a1a1a] flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto">
+      <aside className="w-64 bg-[#1a1a1a]/80 backdrop-blur-xl flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
         {/* <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40"/>
         </div> */}

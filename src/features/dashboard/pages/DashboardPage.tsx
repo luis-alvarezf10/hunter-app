@@ -43,7 +43,7 @@ export function DashboardPage() {
     <div className="p-8 space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
         <div 
-          className="p-4 rounded-lg text-white relative overflow-hidden" 
+          className="p-4 rounded-lg text-white relative overflow-hidden shadow-xl" 
           style={{background: uiColor}}
         >
           <HiOutlineTrendingUp className="absolute text-white/10 text-8xl top-1/3 right-0"/>

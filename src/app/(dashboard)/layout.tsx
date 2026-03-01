@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/core/config';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Sidebar, Header } from '@/features/dashboard/components';
 import { NavigationProvider, useNavigation } from '@/features/dashboard/context/NavigationContext';
 import { LoadingPage } from '@/shared/pages/LoadingPage';
+import { PageTransition } from '@/shared/components/transitions';
 
 interface Stakeholder {
   id: string;
@@ -28,16 +29,28 @@ function DashboardLayoutContent({
   stakeholder: Stakeholder;
 }) {
   const { isSidebarOpen, setIsSidebarOpen } = useNavigation();
+  const pathname = usePathname();
+  const isHomePage = pathname === '/dashboard';
+  
   const roleLabel = stakeholder.role === 'manager' ? 'Gerente' : 'Asesor';
   const fullName = stakeholder.lastname
     ? `${stakeholder.name} ${stakeholder.lastname}`
     : stakeholder.name;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="relative h-screen overflow-hidden">
+      {/* Sidebar flotante superpuesto */}
+      <div 
+        className={`p-4 fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
+        <Sidebar userRole={stakeholder.role as 'realtor' | 'manager'} />
+      </div>
+
       {/* Mobile Menu Button - Hamburger animado */}
       <button
-        className="lg:hidden fixed top-4 left-4 w-10 h-10 flex flex-col items-center justify-center gap-1.5 z-[60] bg-[#efefef] dark:bg-[#1a1a1a] rounded-lg  transition-colors hover:bg-gray-200 dark:hover:bg-[#2a2a2a]"
+        className="lg:hidden fixed top-4 left-4 w-10 h-10 flex flex-col items-center justify-center gap-1.5 z-[60] bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-lg border border-gray-300/50 dark:border-gray-600/50 transition-colors hover:bg-white/90 dark:hover:bg-black/90 shadow-lg"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label="Toggle menu"
       >
@@ -62,27 +75,39 @@ function DashboardLayoutContent({
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
         />
       )}
 
-      {/* Sidebar Container con efecto flotante */}
-      <div 
-        className={`p-2 lg:bg-[#0d0d0d] fixed lg:relative h-full z-40 transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
-      >
-        <Sidebar userRole={stakeholder.role as 'realtor' | 'manager'} />
-      </div>
-
+      {/* Fondo con gradiente difuminado - solo en inicio */}
+      {isHomePage && (
+        <>
+          <div className="fixed inset-0 bg-gradient-to-b from-[#770f09] via-[#9e1e11]/60 via-[#c52e1a]/30 to-[#0d0d0d] blur-3xl" />
+          <div className="fixed inset-0 bg-gradient-to-b from-[#c52e1a]/40 via-[#9e1e11]/20 to-transparent blur-2xl" />
+        </>
+      )}
+      
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-y-auto bg-[#efefef] dark:bg-[#1a1a1a]">
-        <Header
-          userName={fullName}
-          userRole={roleLabel}
-          color={stakeholder.ui_color}
-        />
-        {children}
+      <main className={`relative w-full h-full flex flex-col ${
+        isHomePage 
+          ? 'bg-white/50 dark:bg-black/50 backdrop-blur-sm' 
+          : 'bg-[#0d0d0d]'
+      }`}>
+        {/* Contenido con scroll */}
+        <div className="flex-1 overflow-y-auto lg:ml-[272px]">
+          {/* Header fijo dentro del contenedor con scroll */}
+          <div className="sticky top-0 z-30 h-[72px]">
+            <Header
+              userName={fullName}
+              userRole={roleLabel}
+              color={stakeholder.ui_color}
+            />
+          </div>
+          
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </div>
       </main>
     </div>
   );
