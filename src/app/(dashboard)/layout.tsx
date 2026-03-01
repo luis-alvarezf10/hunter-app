@@ -94,7 +94,7 @@ function DashboardLayoutContent({
           : 'bg-[#0d0d0d]'
       }`}>
         {/* Header fijo - sin tapar scrollbar */}
-        <div className="fixed top-2 left-2 lg:left-[300px] z-30 h-[72px]" style={{ right: '45px' }}>
+        <div className="fixed top-2 left-2 lg:left-[300px] right-2 lg:right-[45px] z-30 h-[72px]" >
           <Header
             userName={fullName}
             userRole={roleLabel}
