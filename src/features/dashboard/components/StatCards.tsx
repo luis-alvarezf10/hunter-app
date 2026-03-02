@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/core/config';
+import { HiOutlineBadgeCheck, HiOutlineChat, HiOutlineCollection, HiOutlineUserAdd } from "react-icons/hi";
 
 interface Stats {
   totalProperties: number;
@@ -41,7 +42,7 @@ export function StatCards() {
           const reserved = properties.filter(p => p.status === 'reserved').length;
           const sold = properties.filter(p => p.status === 'saled').length;
           const rented = properties.filter(p => p.status === 'rented').length;
-          
+
           // Calcular valor total de propiedades disponibles
           const totalValue = properties
             .filter(p => p.status === 'available')
@@ -81,101 +82,122 @@ export function StatCards() {
   const statCards = [
     {
       label: 'Total Propiedades',
-      value: loading ? '...' : stats.totalProperties.toString(),
-      icon: 'home',
+      description: 'Nuevas asesorando',
+      value: '4',
+      icon: <HiOutlineCollection />,
       gradient: 'from-blue-500 to-blue-600',
+      trend: '+2',
       iconBg: 'bg-blue-500/10',
       iconColor: 'text-blue-600 dark:text-blue-400',
+      color: '#3b82f6', // blue-500
     },
     {
-      label: 'Disponibles',
-      value: loading ? '...' : stats.available.toString(),
-      icon: 'check_circle',
-      gradient: 'from-emerald-500 to-emerald-600',
-      iconBg: 'bg-emerald-500/10',
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-    },
-    {
-      label: 'Reservadas',
-      value: loading ? '...' : stats.reserved.toString(),
-      icon: 'schedule',
+      label: 'Citas Realizadas',
+      description: 'Encuentro con clientes',
+      value: '10',
+      icon: <HiOutlineChat />,
       gradient: 'from-amber-500 to-amber-600',
+      trend: '+5',
       iconBg: 'bg-amber-500/10',
       iconColor: 'text-amber-600 dark:text-amber-400',
+      color: '#f59e0b', // emerald-500
     },
     {
-      label: 'Vendidas',
-      value: loading ? '...' : stats.sold.toString(),
-      icon: 'sell',
+      label: 'Ofertas Cerradas',
+      description: 'Ofertas en proceso',
+      value: '5',
+      icon: <HiOutlineBadgeCheck />,
+      gradient: 'from-emeral-500 to-emerald-600',
+      trend: '+3',
+      iconBg: 'bg-emerald-500/10',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      color: '#10b981',
+      // amber-500
+    },
+    {
+      label: 'Prospectos Nuevos',
+      description: 'Clientes interesados',
+      value: '3',
+      icon: <HiOutlineUserAdd />,
       gradient: 'from-purple-500 to-purple-600',
+      trend: '-1',
       iconBg: 'bg-purple-500/10',
       iconColor: 'text-purple-600 dark:text-purple-400',
-    },
-    {
-      label: 'Alquiladas',
-      value: loading ? '...' : stats.rented.toString(),
-      icon: 'key',
-      gradient: 'from-cyan-500 to-cyan-600',
-      iconBg: 'bg-cyan-500/10',
-      iconColor: 'text-cyan-600 dark:text-cyan-400',
+      color: '#a855f7', // purple-500
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="md:col-span-2 lg:col-span-5 relative bg-gradient-to-br from-[#c52e1a]/90 via-[#c52e1a]/40 to-transparent rounded-2xl p-6 overflow-hidden border border-transparent border-t-white/30 shadow-2xl backdrop-blur-sm">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
+
+        <div className="relative z-10 flex items-center justify-center md:justify-start">
+          <div className="md:text-start text-center">
+            <p className="text-white text-sm font-medium mb-2">
+              Puntos acumulados
+            </p>
+            <p className="text-4xl font-bold text-white">
+              {loading ? 'Cargando...' : stats.totalValue}
+            </p>
+            <p className="text-white/60 text-sm mt-2">
+              Datos Estadísticos de tus ventas
+            </p>
+          </div>
+        </div>
+      </div>
       {statCards.map((stat, index) => (
         <div
           key={index}
-          className="group relative bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl p-6 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+          className="group relative bg-white dark:bg-[#1a1a1a] hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] rounded-2xl p-5 md:p-3 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-default border border-transparent border-t-white/30 flex flex-col gap-2"
         >
           {/* Gradient background on hover */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-          
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                {stat.label}
+          <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 `}></div>
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[3px] transition-transform duration-500 ease-in-out origin-center scale-x-0 group-hover:scale-x-100 z-20"
+            style={{
+              backgroundColor: stat.color,
+              boxShadow: `0 -4px 12px ${stat.color}80`
+            }}
+          />
+
+          <div className="flex items-center justify-between relative z-10">
+            <div
+              className={`${stat.iconBg} w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 border-b-2 border-transparent group-hover:scale-110 group-hover:border-[var(--card-color)]`}
+              style={{ '--card-color': stat.color } as React.CSSProperties}
+            >
+              <span className={`material-symbols-outlined text-2xl ${stat.iconColor}`}>
+                {stat.icon}
               </span>
-              <div className={`p-3 ${stat.iconBg} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
-                <span className={`material-symbols-outlined text-2xl ${stat.iconColor}`}>
-                  {stat.icon}
-                </span>
-              </div>
             </div>
-            
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">
+            <div className={`text-sm font-semibold px-5 py-1/2 rounded-full transition-colors duration-300 ${stat.trend.startsWith('+')
+              ? 'bg-[#74f67b] text-[#1a1a1a]'
+              : stat.trend.startsWith('-')
+                ? 'bg-[#f54942]'
+                : 'bg-gray-500/10 text-gray-500'
+              }`}>
+              {stat.trend}
+            </div>
+          </div>
+          <div className="flex flex-col items-baseline gap-2">
+            <span className="text-sm md:text-xs">
+              {stat.label}
+            </span>
+            <div className="flex items-end gap-5">
+              <span className="text-3xl font-semibold text-gray-900 dark:text-white">
                 {stat.value}
+              </span>
+              <span className="text-sm md:text-xs text-gray-400">
+                {stat.description}
               </span>
             </div>
           </div>
         </div>
       ))}
-      
+
       {/* Valor Total Card - Destacado */}
-      <div className="md:col-span-2 lg:col-span-5 relative bg-gradient-to-br from-[#6b1e2e] to-[#8b2e3e] rounded-xl p-6 overflow-hidden shadow-lg">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
-        
-        <div className="relative z-10 flex items-center justify-between">
-          <div>
-            <p className="text-white/80 text-sm font-semibold mb-2">
-              Valor Total en Inventario
-            </p>
-            <p className="text-4xl font-bold text-white">
-              {loading ? 'Cargando...' : formatCurrency(stats.totalValue)}
-            </p>
-            <p className="text-white/60 text-sm mt-2">
-              Propiedades disponibles para la venta
-            </p>
-          </div>
-          <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
-            <span className="material-symbols-outlined text-5xl text-white">
-              account_balance
-            </span>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 }

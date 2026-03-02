@@ -41,21 +41,7 @@ export function DashboardPage() {
 
   return (
     <div className="p-8 space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-        <div 
-          className="p-4 rounded-lg text-white relative overflow-hidden shadow-xl" 
-          style={{background: uiColor}}
-        >
-          <HiOutlineTrendingUp className="absolute text-white/10 text-8xl top-1/3 right-0"/>
-          <div className="grid md:flex gap-2 items-end relative z-10">
-            <h3 className="text-xl md:text-2xl">Bienvenido de nuevo! 👋,</h3>
-            <h4 className="text-xl">{nickname}</h4>
-          </div>
-          <p className="relative z-10">Aquí está un resumen de tu actividad</p>
-        </div>
-        <div></div>
-      </div>
-
+      <h3 className="text-lg lg:text-2xl font-medium">Hola, {nickname} bienvenido de nuevo! 👋</h3>
       <StatCards />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
