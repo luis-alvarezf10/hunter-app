@@ -88,11 +88,7 @@ function DashboardLayoutContent({
       )} */}
       
       {/* Main Content */}
-      <main className={`relative w-full h-full flex flex-col ${
-        isHomePage 
-          ? 'bg-white/50 dark:bg-black/50 backdrop-blur-sm' 
-          : 'bg-[#0d0d0d]'
-      }`}>
+      <main className="relative w-full h-full flex flex-col">
         {/* Header fijo - sin tapar scrollbar */}
         <div className="fixed top-2 left-4 lg:left-[300px] right-4 lg:right-[45px] z-30 h-[72px]" >
           <Header

@@ -2,7 +2,7 @@
 
 :root {
   --background: #efefef;
-  --foreground: #1a1a1a;
+  --foreground: #0d0d0d;
   --primary: #cc2d19;
   --secondary: #ec3c22;
   --wine-red: #8b0f08;
@@ -36,7 +36,6 @@ body {
 
 /* Prevenir el movimiento del header en móvil */
 html, body {
-  position: fixed;
   overflow: hidden;
   width: 100%;
   height: 100%;

@@ -45,7 +45,7 @@ export default function RootLayout({
                 // Aplicar color a la barra de estado inmediatamente
                 const meta = document.createElement('meta');
                 meta.name = "theme-color";
-                meta.content = isDark ? "#060606" : "#ffffff";
+                meta.content = isDark ? "#0d0d0d" : "#ffffff";
                 document.head.appendChild(meta);
               })();
             `,
