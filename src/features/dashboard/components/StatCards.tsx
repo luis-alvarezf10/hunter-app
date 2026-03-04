@@ -165,7 +165,7 @@ export function StatCards() {
 
           <div className="flex items-center justify-between relative z-10">
             <div
-              className={`${stat.iconBg} w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 border-b-1 border-transparent group-hover:scale-110 group-hover:border-b-[var(--card-color)] group-hover:dark:border-t-1 border-t-white/10`}
+              className={`${stat.iconBg} w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-300 border-b-1 dark:border-t-1 border-transparent group-hover:scale-110 group-hover:border-b-[var(--card-color)] group-hover:dark:border-t-white/10`}
               style={{ '--card-color': stat.color } as React.CSSProperties}
             >
               <span className={`material-symbols-outlined text-2xl text-white dark:${stat.iconColor}`}>
