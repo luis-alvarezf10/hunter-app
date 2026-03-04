@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { HiOutlineExclamation } from "react-icons/hi";
+import { ActionButton } from '../buttons/ActionButton';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -93,18 +95,19 @@ export function ConfirmDialog({
         />
 
         {/* Dialog */}
-        <div className="dialog-animate relative bg-white dark:bg-[#1a1a1a] rounded-xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
+        <div className="group dialog-animate relative bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
+        <div className={`absolute inset-0 bg-gradient-to-br  
+          from-gray-200 to-gray-300/20 
+          opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
           {/* Icon with bounce animation */}
           <div className="flex items-center justify-center mb-4">
-            <div className="icon-animate size-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-              <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">
-                warning
-              </span>
+            <div className="transition-all duration-300 icon-animate size-15 rounded-2xl bg-red-500 dark:bg-red-500/10 flex items-center justify-center rounded-2xl transition-all duration-300 border-b-1 border-t-1 border-transparent group-hover:scale-110 group-hover:dark:border-b-red-500 group-hover:dark:border-t-white/10">
+              <HiOutlineExclamation className="text-white dark:text-red-600 text-3xl" />
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-center text-gray-900 dark:text-white mb-2">
             {title}
           </h3>
 
@@ -113,23 +116,27 @@ export function ConfirmDialog({
             {message}
           </p>
 
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
+
+
+          <div className="flex flex-col-reverse md:flex-row gap-3">
+            <ActionButton
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95"
+              variant="secondary"
+              className="flex-1"
             >
               {cancelText}
-            </button>
-            <button
+            </ActionButton>
+
+            <ActionButton
               onClick={() => {
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-white font-semibold transition-all duration-200 hover:scale-105 active:scale-95 ${confirmColor}`}
+              variant="danger"
+              className={`flex-1 ${confirmColor}`}
             >
               {confirmText}
-            </button>
+            </ActionButton>
           </div>
         </div>
       </div>

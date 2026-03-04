@@ -63,14 +63,14 @@ export function Sidebar({ userRole }: SidebarProps) {
   return (
     <>
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
+      <aside className="w-64 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
         {/* <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40"/>
         </div> */}
 
         <div className="h-25 flex flex-col items-center justify-center gap-3">
           <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
-          <p className="text-sm text-gray-400">App {userRole}</p>
+          <p className="text-sm text-gray-400">{userRole} App</p>
         </div>
 
         {/* --- SECCIÓN DE MENÚ PRINCIPAL --- */}
@@ -82,20 +82,20 @@ export function Sidebar({ userRole }: SidebarProps) {
                 <div
                   key={item.id}
                   onClick={() => handleMenuClick(item.id, item.route)}
-                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-white' : 'text-gray-400 hover:text-white'
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-primary dark:text-white' : 'text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
                     }`}
                 >
                   {/* Indicador Lateral */}
-                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-[#c52e1a] translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
+                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-primary translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
                     }`} />
 
                   {/* Contenedor Principal */}
-                  <div className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
-                      ? 'bg-gradient-to-b dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-[#c52e1a] border-t-white/30'
+                  <div className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border-l-1 border-t-1 ${isActive
+                      ? 'bg-gradient-to-b from-white dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-secondary border-t-white/30'
                       : 'border-transparent'
                     }`}>
                     <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
-                    <div className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? '' : ' bg-[#333333]/50 ' }`}>{item.icon}</div>
+                    <div className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? '' : 'bg-white/50 dark:bg-[#333333]/50 ' }`}>{item.icon}</div>
                     <span className={`z-10 transition-all duration-300 ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                 <div
                   key={item.id}
                   onClick={() => handleMenuClick(item.id)}
-                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-white' : isLogout ? 'text-red-500' : 'text-gray-400 hover:text-white'
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-primary dark:text-white' : isLogout ? 'text-red-500' : 'text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
                     }`}
                 >
                   {/* Indicador Lateral replicado */}
@@ -125,7 +125,7 @@ export function Sidebar({ userRole }: SidebarProps) {
                   {/* Contenedor Principal replicado para mantener simetría */}
                   <div className={`relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
                       ? 'bg-gradient-to-b dark:from-[#333333] dark:via-[#333333]/10 border-transparent border-t-white/30 border-l-[#c52e1a]'
-                      : isLogout ? 'dark:bg-red-800/10 hover:bg-red-800/20 border-transparent' : ' border-transparent'
+                      : isLogout ? 'bg-red-600/20 dark:bg-red-800/10 hover:bg-red-800/20 border-transparent' : ' border-transparent'
                     }`}>
                       <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
                     <div className="group-hover:scale-110 duration-300 p-1 z-10">{item.icon}</div>
@@ -144,10 +144,9 @@ export function Sidebar({ userRole }: SidebarProps) {
         onClose={() => setShowLogoutDialog(false)}
         onConfirm={handleLogout}
         title="¿Cerrar sesión?"
-        message="¿Estás seguro que deseas cerrar sesión?"
-        confirmText="Cerrar sesión"
-        cancelText="Cancelar"
-        confirmColor="bg-[#6b1e2e] hover:bg-[#6b1e2e]/90"
+        message="Tendrás que introducir tus credenciales la próxima vez que quieras acceder."
+        confirmText="Si, Cerrar sesión"
+        cancelText="No, Cancelar"
       />
     </>
   );
