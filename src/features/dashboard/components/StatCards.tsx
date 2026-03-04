@@ -139,7 +139,7 @@ export function StatCards() {
               Puntos acumulados
             </p>
             <p className="text-4xl font-bold text-white">
-              {loading ? 'Cargando...' : stats.totalValue}
+              {loading ? '...' : stats.totalValue}
             </p>
             <p className="text-white/60 text-sm mt-2">
               Datos Estadísticos de tus ventas
