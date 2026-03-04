@@ -142,12 +142,12 @@ export function StatCards() {
               {loading ? '...' : stats.totalValue}
             </p>
             <p className="text-white/60 text-sm mt-2">
-              Datos Estadísticas de tus ventas
+              Datos Estadísticos de tus ventas
             </p>
           </div>
         </div>
       </div>
-      <div className="md:col-span-2 lg:col-span-5"><h3 className="text-gray-700 dark:text-white">Tus Estadísticos este mes:</h3></div>
+      <div className="md:col-span-2 lg:col-span-5"><h3 className="text-gray-700 dark:text-white">Tus Estadísticas este mes:</h3></div>
       {statCards.map((stat, index) => (
         <div
           key={index}
