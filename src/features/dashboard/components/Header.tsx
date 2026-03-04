@@ -12,7 +12,7 @@ export function Header({ userName, userRole, color }: HeaderProps) {
   const { getPageTitle } = useNavigation();
 
   return (
-    <header className="w-full h-full flex items-center justify-end lg:justify-between gap-5 px-8 py-4 transition-all duration-300 bg-[#1a1a1a]/80 backdrop-blur-md backdrop-saturate-150 border-b border-white/5 rounded-2xl border border-white/10 shadow-2xl">
+    <header className="w-full h-full flex items-center justify-end lg:justify-between gap-5 px-8 py-4 transition-all duration-300 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md backdrop-saturate-150 rounded-2xl border border-gray-300/50 dark:border-white/10 shadow-2xl">
       {/* Título de la página - solo visible en desktop */}
       <div className="lg:flex items-center">
         <h2 className="text-xl font-bold tracking-tight text-black dark:text-white">
