@@ -142,7 +142,7 @@ export function StatCards() {
               {loading ? '...' : stats.totalValue}
             </p>
             <p className="text-white/60 text-sm mt-2">
-              Datos Estadísticos de tus ventas
+              Datos Estadísticas de tus ventas
             </p>
           </div>
         </div>
