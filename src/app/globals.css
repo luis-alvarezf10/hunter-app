@@ -3,8 +3,9 @@
 :root {
   --background: #efefef;
   --foreground: #1a1a1a;
-  --primary: #b06372;
-  --wine-red: #6b1e2e;
+  --primary: #cc2d19;
+  --secondary: #ec3c22;
+  --wine-red: #8b0f08;
   --petroleum-blue: #1c2b36;
 }
 
@@ -12,6 +13,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-secondary:var(--secondary);
   --color-wine-red: var(--wine-red);
   --color-petroleum-blue: var(--petroleum-blue);
   --font-sans: var(--font-poppins);
