@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/core/config';
+import { Card } from '@/shared/components/cards/card';
 
 interface TypeData {
   label: string;
@@ -123,17 +124,17 @@ export function PropertyCharts() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <Card>
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
           <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-full w-48 mx-auto"></div>
         </div>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow duration-300">
+    <Card>
       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center">
         Propiedades por Tipo
       </h3>
@@ -175,6 +176,6 @@ export function PropertyCharts() {
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

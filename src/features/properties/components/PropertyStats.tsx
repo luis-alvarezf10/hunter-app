@@ -105,7 +105,7 @@ export function PropertyStats() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <Card>
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           <div className="space-y-4">
@@ -117,7 +117,7 @@ export function PropertyStats() {
             ))}
           </div>
         </div>
-      </div>
+      </Card>
     );
   }
 

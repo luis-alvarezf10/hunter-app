@@ -133,17 +133,6 @@ export function PropertiesPage() {
     loadProperties();
   }, [supabase]);
 
-  // Estadísticas calculadas
-  const stats = {
-    residences: properties.length,
-    lands: 0,
-    commercial: 0,
-    available: properties.filter((p) => p.status === "available").length,
-    reserved: properties.filter((p) => p.status === "reserved").length,
-    sold: properties.filter((p) => p.status === "saled").length,
-    rented: properties.filter((p) => p.status === "rented").length,
-  };
-
   const filteredProperties = properties.filter(
     (property) =>
       property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
