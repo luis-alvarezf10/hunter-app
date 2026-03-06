@@ -1,8 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
+import { HiOutlineFolderAdd, HiOutlinePlusCircle } from "react-icons/hi";
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -12,6 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const ActionButton = ({
   className = "",
   variant = 'primary',
+  iconVariant,
   size = 'md',
   isLoading = false,
   leftIcon,
@@ -22,15 +25,24 @@ export const ActionButton = ({
 }: ButtonProps) => {
   
   // 1. Estilos base
-  const baseStyles = "inline-flex items-center justify-center rounded-2xl font-semibold transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
+  const baseStyles = "flex gap-4 inline-flex items-center justify-center rounded-2xl font-semibold transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
 
   // 2. Diccionario de variantes (Clases de Tailwind)
   const variants = {
-    primary: "bg-red-500 text-white hover:bg-primary shadow-md",
+    primary: "bg-gradient-to-r from-secondary to-wine-red text-white hover:bg-primary shadow-md",
     secondary: "bg-gray-500/10",
     outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600",
+  };
+
+  const iconVariants = { 
+    add: <HiOutlinePlusCircle className="w-5 h-5" />,
+    edit: <HiOutlineFolderAdd className="w-5 h-5" />,
+    delete: <HiOutlineFolderAdd className="w-5 h-5" />,
+    view: <HiOutlineFolderAdd className="w-5 h-5" />,
+    save: <HiOutlineFolderAdd className="w-5 h-5" />,
+    cancel: <HiOutlineFolderAdd className="w-5 h-5" />,
   };
 
   // 3. Diccionario de tamaños
@@ -63,6 +75,12 @@ export const ActionButton = ({
         </svg>
       )}
       
+      {/* Icono izquierdo */}
+      {iconVariant && !isLoading && (
+        <span className="mr-2">
+          {iconVariants[iconVariant]}
+        </span>
+      )}
       {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
       {children}
       {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}

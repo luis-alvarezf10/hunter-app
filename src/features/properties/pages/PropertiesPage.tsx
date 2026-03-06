@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { HiOutlineHome, HiOutlineLocationMarker, HiOutlineCurrencyDollar, HiOutlineSearch } from 'react-icons/hi';
 import { PropertyStats, PropertyCharts } from '../components';
 import { createClient } from '@/core/config';
+import { TitleView } from '@/shared/components/text/TitleView';
+import { ActionButton } from '@/shared/components/buttons/ActionButton';
 
 interface Property {
   id: string;
@@ -167,20 +169,12 @@ export function PropertiesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Mis Propiedades
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Gestiona y visualiza todas las propiedades disponibles
-          </p>
+          <TitleView title="Mis Propiedades" subtitle="Administra tus propiedades, visualiza estadísticas y más" />
         </div>
-        <button 
-          onClick={() => router.push('/properties/add')}
-          className="px-4 py-2.5 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
-        >
-          <span className="material-symbols-outlined text-sm">add</span>
-          Nueva Propiedad
-        </button>
+
+        <ActionButton onClick={() => router.push('/properties/add')} variant="primary" iconVariant="add" size="md">
+          Nueva propiedad
+        </ActionButton>
       </div>
 
       {/* Estadísticas y Gráficas */}
