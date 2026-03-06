@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/core/config';
 import { Card } from '@/shared/components/cards/card';
+import { TitleCard } from '@/shared/components/text/TitleCard';
 
 interface TypeData {
   label: string;
@@ -14,168 +15,182 @@ interface TypeData {
 export function PropertyCharts() {
   const [typeData, setTypeData] = useState<TypeData[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadData() {
       try {
-        // Obtener tipos de propiedades con sus colores
-        const { data: types } = await supabase
-          .from('type_properties')
-          .select('id, value, color');
+        const { data: types } = await supabase.from('type_properties').select('id, value, color');
+        const { data: propCounts } = await supabase.from('properties').select('id_type');
 
-        // Obtener todas las propiedades
-        const { data: properties } = await supabase
-          .from('properties')
-          .select('id_type');
+        if (types && propCounts) {
+          const total = propCounts.length;
+          const counts = propCounts.reduce((acc: any, curr) => {
+            acc[curr.id_type] = (acc[curr.id_type] || 0) + 1;
+            return acc;
+          }, {});
 
-        if (types && properties) {
-          const total = properties.length;
-          
-          const chartData = types.map(type => {
-            const count = properties.filter(p => p.id_type === type.id).length;
-            return {
+          const chartData = types
+            .map(type => ({
               label: type.value,
-              value: count,
+              value: counts[type.id] || 0,
               color: type.color || '#6b7280',
-              percentage: total > 0 ? Math.round((count / total) * 100) : 0,
-            };
-          }).filter(item => item.value > 0); // Solo mostrar tipos con propiedades
+              percentage: total > 0 ? (counts[type.id] / total) * 100 : 0,
+            }))
+            .filter(item => item.value > 0)
+            .sort((a, b) => b.value - a.value);
 
           setTypeData(chartData);
         }
       } catch (error) {
-        console.error('Error loading chart data:', error);
+        console.error('Error loading data:', error);
       } finally {
         setLoading(false);
       }
     }
-
     loadData();
   }, [supabase]);
 
-  // Función para crear el path del segmento de la torta
-  const createPieSlice = (startAngle: number, endAngle: number) => {
-    const radius = 80;
-    const centerX = 100;
-    const centerY = 100;
-
-    const startX = centerX + radius * Math.cos((startAngle * Math.PI) / 180);
-    const startY = centerY + radius * Math.sin((startAngle * Math.PI) / 180);
-    const endX = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
-    const endY = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
-
-    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
-
-    return `M ${centerX} ${centerY} L ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY} Z`;
-  };
-
   const renderPieChart = (data: TypeData[]) => {
-    if (data.length === 0) return null;
-    
-    let currentAngle = -90; // Empezar desde arriba
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+    let currentOffset = 0;
+    const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
     return (
-      <svg viewBox="0 0 200 200" className="w-full max-w-[220px] mx-auto drop-shadow-lg">
-        {data.map((item, index) => {
-          const sliceAngle = (item.percentage / 100) * 360;
-          const path = createPieSlice(currentAngle, currentAngle + sliceAngle);
-          currentAngle += sliceAngle;
+      <div className="relative flex-shrink-0 flex items-center justify-center">
+        <svg viewBox="0 0 200 200" className="w-full max-w-[240px] overflow-visible transform -rotate-90">
+          {data.map((item, index) => {
+            const strokeLength = (item.percentage / 100) * circumference;
+            const gap = data.length > 1 ? 4 : 0; 
+            const dashArray = `${Math.max(0, strokeLength - gap)} ${circumference}`;
+            const dashOffset = -currentOffset;
+            
+            currentOffset += strokeLength;
+            const isHovered = activeIndex === index;
+            const isAnyHovered = activeIndex !== null;
 
-          return (
-            <g key={index}>
-              <path
-                d={path}
-                fill={item.color}
-                className="hover:opacity-80 transition-all duration-300 cursor-pointer hover:scale-105"
+            // DETERMINAMOS EL COLOR: Si hay alguien en hover y no soy yo, me pongo gris
+            const strokeColor = isAnyHovered && !isHovered 
+              ? '#e2e8f0' // Gris suave (puedes usar '#334155' para un gris oscuro en dark mode)
+              : item.color;
+
+            return (
+              <circle
+                key={index}
+                cx="100"
+                cy="100"
+                r={radius}
+                fill="transparent"
+                stroke={strokeColor}
+                strokeWidth={isHovered ? "24" : "18"}
+                strokeDasharray={dashArray}
+                strokeDashoffset={dashOffset}
+                strokeLinecap="round"
+                className="transition-all duration-500 cursor-pointer"
                 style={{ 
-                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))',
-                  transformOrigin: '100px 100px',
+                  filter: isHovered ? `drop-shadow(0 0 12px ${item.color}66)` : 'none',
+                  // Eliminamos la opacidad para que el cambio de color a gris sea el protagonista
+                  opacity: 1 
                 }}
-              >
-                <title>{`${item.label}: ${item.value} (${item.percentage}%)`}</title>
-              </path>
-            </g>
-          );
-        })}
-        {/* Círculo blanco en el centro para efecto donut */}
-        <circle cx="100" cy="100" r="55" fill="white" className="dark:fill-[#1a1a1a]" />
-        
-        {/* Texto en el centro */}
-        <text
-          x="100"
-          y="95"
-          textAnchor="middle"
-          className="text-2xl font-bold fill-gray-900 dark:fill-white"
-        >
-          {data.reduce((sum, item) => sum + item.value, 0)}
-        </text>
-        <text
-          x="100"
-          y="110"
-          textAnchor="middle"
-          className="text-xs fill-gray-500 dark:fill-gray-400"
-        >
-          Total
-        </text>
-      </svg>
+                onMouseEnter={() => setActiveIndex(index)}
+                onMouseLeave={() => setActiveIndex(null)}
+              />
+            );
+          })}
+        </svg>
+
+        <div className="absolute flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-3xl font-black text-slate-800 dark:text-white leading-none">
+            {activeIndex !== null ? data[activeIndex].value : totalValue}
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">
+            {activeIndex !== null ? data[activeIndex].label : 'Total'}
+          </span>
+        </div>
+      </div>
     );
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto"></div>
-          <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-full w-48 mx-auto"></div>
-        </div>
-      </Card>
-    );
-  }
+  if (loading) return (
+    <Card className="flex items-center justify-center min-h-[350px]">
+       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+    </Card>
+  );
 
   return (
-    <Card>
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center">
-        Propiedades por Tipo
-      </h3>
-      
-      {typeData.length === 0 ? (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          No hay propiedades registradas
-        </div>
-      ) : (
-        <div className="flex flex-col items-center">
+    <Card className="h-full relative overflow-hidden transition-all duration-500">
+      {/* 1. EL GRADIENTE DE FONDO DE LA CARTA PRINCIPAL */}
+      {typeData.map((item, index) => (
+        <div
+          key={`bg-grad-${index}`}
+          className="absolute inset-0 pointer-events-none transition-opacity duration-700 ease-in-out"
+          style={{
+            background: `radial-gradient(circle at top right, ${item.color}15, transparent 40%), 
+                         radial-gradient(circle at bottom left, ${item.color}10, transparent 40%)`,
+            opacity: activeIndex === index ? 1 : 0,
+            zIndex: 0
+          }}
+        />
+      ))}
+
+      {/* 2. LA LÍNEA BRILLANTE EN LA BASE DE LA CARTA PRINCIPAL */}
+      {typeData.map((item, index) => (
+        <div
+          key={`line-base-${index}`}
+          className="absolute bottom-0 left-0 right-0 h-[4px] transition-all duration-500 ease-in-out origin-center z-20"
+          style={{
+            backgroundColor: item.color,
+            boxShadow: `0 -4px 20px ${item.color}80`,
+            opacity: activeIndex === index ? 1 : 0,
+            transform: activeIndex === index ? 'scaleX(1)' : 'scaleX(0)',
+          }}
+        />
+      ))}
+
+      {/* Contenido envuelto en un z-index para que no lo tape el gradiente */}
+      <div className="relative z-10">
+        <TitleCard title="Propiedades por tipo" />
+        
+        <div className="flex flex-col lg:flex-row items-center gap-12 mt-8">
           {renderPieChart(typeData)}
           
-          {/* Leyenda mejorada */}
-          <div className="mt-8 space-y-3 w-full">
-            {typeData.map((item, index) => (
-              <div 
-                key={index} 
-                className="group flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-5 h-5 rounded-full shadow-md group-hover:scale-110 transition-transform duration-200"
-                    style={{ backgroundColor: item.color }}
-                  ></div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {item.label}
-                  </span>
+          <div className="flex flex-col gap-3 w-full">
+            {typeData.map((item, index) => {
+              const isHovered = activeIndex === index;
+              const isAnyHovered = activeIndex !== null;
+
+              return (
+                <div 
+                  key={index} 
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(null)}
+                  className={`flex items-center justify-between p-4 rounded-2xl transition-all duration-300 cursor-pointer
+                    ${isHovered ? 'bg-white/60 dark:bg-slate-800/60 translate-x-3 shadow-sm backdrop-blur-sm' : ''}
+                    ${isAnyHovered && !isHovered ? 'opacity-40 grayscale' : 'opacity-100'}
+                  `}
+                >
+                  <div className="flex items-center gap-4">
+                    <div 
+                      className="w-4 h-4 rounded-full border-2 border-white dark:border-slate-700 shadow-sm transition-colors duration-500" 
+                      style={{ backgroundColor: isAnyHovered && !isHovered ? '#cbd5e1' : item.color }} 
+                    />
+                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{item.label}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-base font-black text-slate-900 dark:text-white">{item.value}</span>
+                    <span className="text-[11px] bg-white dark:bg-slate-700 px-2 py-1 rounded-lg font-black text-slate-500 shadow-sm border border-slate-100 dark:border-none">
+                      {Math.round(item.percentage)}%
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">
-                    {item.value}
-                  </span>
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                    {item.percentage}%
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
     </Card>
   );
 }
