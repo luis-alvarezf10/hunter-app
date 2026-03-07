@@ -3,7 +3,7 @@ import React from 'react';
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ReactNode;
   text?: string;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" ;
 }
 export const IconButton: React.FC<IconButtonProps> = ({
   icon,
@@ -16,7 +16,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
   const variants = {
     primary: "bg-gradient-to-r from-secondary to-wine-red text-white shadow-md hover:opacity-90",
     secondary: "bg-gray-500/10 text-gray-700 dark:text-gray-300 hover:bg-gray-500/20",
-    outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800",
+    outline: "border border-gray-300/50 bg-transparent hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10 cursor-pointer",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600",
   };

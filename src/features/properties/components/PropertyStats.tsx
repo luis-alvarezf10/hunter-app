@@ -102,11 +102,9 @@ export function PropertyStats() {
     },
   ];
 
-  const maxValue = Math.max(...statusData.map((d) => d.value), 1);
-
   if (loading) {
     return (
-      <Card>
+      <Card className="p-5 md:p-8">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           <div className="space-y-4">
@@ -123,7 +121,7 @@ export function PropertyStats() {
   }
 
   return (
-    <Card className="flex flex-col gap-6">
+    <Card className="flex flex-col gap-6 p-5 md:p-8">
       <TitleCard
         title="Propiedades por status"
       />

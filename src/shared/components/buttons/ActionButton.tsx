@@ -25,7 +25,7 @@ export const ActionButton = ({
 }: ButtonProps) => {
   
   // 1. Estilos base
-  const baseStyles = "flex gap-4 inline-flex items-center justify-center rounded-2xl font-semibold transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
+  const baseStyles = "flex gap-4 inline-flex items-center justify-center rounded-2xl font-semibold transition-all duration-200 hover:scale-102 active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer";
 
   // 2. Diccionario de variantes (Clases de Tailwind)
   const variants = {

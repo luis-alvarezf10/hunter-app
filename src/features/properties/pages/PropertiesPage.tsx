@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   HiOutlineHome,
   HiOutlineLocationMarker,
@@ -11,6 +12,11 @@ import {
   HiViewList,
   HiX,
   HiOutlineRefresh,
+  HiPencil,
+  HiDotsVertical,
+  HiTrash,
+  HiOutlineTrash,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import { PropertyStats, PropertyCharts } from "../components";
 import { createClient } from "@/core/config";
@@ -20,6 +26,9 @@ import { SearchBar } from "@/shared/components/inputs/SearchBar";
 import { IconButton } from "@/shared/components/buttons/IconButton";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
 import ViewToggle from "../components/buttons/ViewToggle";
+import { Card } from "@/shared/components/cards/card";
+import { ConfirmDialog } from "@/shared/components/dialogs/ConfirmDialog";
+import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 
 interface Property {
   id: string;
@@ -83,6 +92,10 @@ export function PropertiesPage() {
   const [propertyTypes, setPropertyTypes] = useState<
     Array<{ id: string; value: string }>
   >([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Cargar propiedades del asesor
   useEffect(() => {
@@ -191,18 +204,46 @@ export function PropertiesPage() {
     setSearchTerm("");
   };
 
+  const handleDeleteProperty = async (propertyId: string) => {
+    setPropertyToDelete(propertyId);
+    setShowDeleteDialog(true);
+    setOpenMenuId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!propertyToDelete) return;
+
+    try {
+      // Eliminar relaciones (ignorar errores si no existen)
+      await supabase.from('property_images').delete().eq('id_property', propertyToDelete);
+      await supabase.from('property_amenities').delete().eq('id_property', propertyToDelete);
+      await supabase.from('details_properties').delete().eq('id_property', propertyToDelete);
+      
+      const { error } = await supabase.from('properties').delete().eq('id', propertyToDelete);
+      if (error) throw error;
+      
+      setProperties(properties.filter(p => p.id !== propertyToDelete));
+      setPropertyToDelete(null);
+      setShowSuccessDialog(true);
+    } catch (err: any) {
+      console.error('Error eliminando propiedad:', err);
+      console.error('Detalles del error:', JSON.stringify(err, null, 2));
+      alert(`Error al eliminar la propiedad: ${err.message || 'Error desconocido'}`);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available":
-        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400";
+        return "bg-emerald-500 text-white";
       case "reserved":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400";
+        return "bg-amber-500 text-white";
       case "saled":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400";
+        return "bg-purple-500 text-white";
       case "rented":
-        return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-400";
+        return "bg-blue-500 text-white";
       default:
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400";
+        return "bg-grey-500 text-white";
     }
   };
 
@@ -322,17 +363,15 @@ export function PropertiesPage() {
               : property.details_properties;
 
             return (
-              <div
-                key={property.id}
-                className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-              >
+              <Card key={property.id} className="p-1 border-1 border-white/20 relative overflow-visible">
+              <div className="rounded-2xl overflow-hidden hover:shadow-lg">
                 {/* Image */}
-                <div className="relative h-48 bg-gray-200 dark:bg-gray-800">
+                <div className="relative h-48">
                   {property.image ? (
                     <img
                       src={property.image}
                       alt={property.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-2xl"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -341,7 +380,7 @@ export function PropertiesPage() {
                   )}
                   <div className="absolute top-3 right-3">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(property.status)}`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(property.status)}`}
                     >
                       {getStatusLabel(property.status)}
                     </span>
@@ -350,9 +389,34 @@ export function PropertiesPage() {
 
                 {/* Content */}
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    {property.title}
-                  </h3>
+                  <div className="flex justify-between gap-2">
+                    <h3 className="font-medium mb-2 truncate">
+                      {property.title}
+                    </h3>
+                    {details?.price && (
+                      <div className="flex items-start gap-2 mb-3">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-semibold text-primary dark:text-white">
+                            ${details.price.toLocaleString()}
+                          </span>
+                          {property.type_offers?.value === "Rent" &&
+                            details.period && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                /
+                                {details.period === "monthly"
+                                  ? "mes"
+                                  : details.period === "daily"
+                                    ? "día"
+                                    : details.period === "weekly"
+                                      ? "semana"
+                                      : "año"}
+                              </span>
+                            )}
+                        </div>
+                      </div>
+                    )}
+                    
+                  </div>
 
                   {property.address && (
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-3">
@@ -361,143 +425,121 @@ export function PropertiesPage() {
                     </div>
                   )}
 
-                  {details?.price && (
-                    <div className="flex items-center gap-2 mb-3">
-                      <HiOutlineCurrencyDollar className="text-xl text-[#6b1e2e]" />
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-[#6b1e2e]">
-                          ${details.price.toLocaleString()}
-                        </span>
-                        {property.type_offers?.value === "Rent" &&
-                          details.period && (
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              /
-                              {details.period === "monthly"
-                                ? "mes"
-                                : details.period === "daily"
-                                  ? "día"
-                                  : details.period === "weekly"
-                                    ? "semana"
-                                    : "año"}
-                            </span>
-                          )}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Badges adicionales */}
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     {property.type_offers && (
-                      <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full">
-                        {property.type_offers.name}
+                      <span className="px-2 py-0.5  text-blue-500 font-medium  text-xs">
+                        - {property.type_offers.name}
                       </span>
                     )}
                     {details?.is_furnished && (
-                      <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
-                        Amueblada
+                      <span className="px-2 py-0.5 text-purple-500 dark:text-purple-500 font-medium text-xs">
+                        - Amueblada
                       </span>
                     )}
                   </div>
 
                   {/* Características destacadas */}
-                  <div className="grid grid-cols-3 gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                    {details?.bedrooms != null && details.bedrooms > 0 ? (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">
+                  <div className="grid grid-cols-3 gap-2 p-4 border-y border-gray-300/50 dark:border-white/10 mb-3">
+                    {details?.bedrooms != null && details.bedrooms > 0 && (
+                      <div className="flex justify-center items-center gap-2">
+                        <span className="material-symbols-outlined text-xl text-gray-600 dark:text-gray-400">
                           bed
-                        </span>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                          {details.bedrooms}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           Hab.
                         </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
-                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">
-                          bed
+                        <span className="text-sm font- text-gray-900 dark:text-white">
+                          {details.bedrooms}
                         </span>
-                        <span className="text-sm font-bold text-gray-400">
-                          -
-                        </span>
-                        <span className="text-xs text-gray-400">Hab.</span>
                       </div>
                     )}
 
-                    {details?.bathrooms != null && details.bathrooms > 0 ? (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">
+                    {details?.bathrooms != null && details.bathrooms > 0 && (
+                      <div className="flex justify-center items-center gap-2">
+                        <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
                           bathtub
-                        </span>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                          {details.bathrooms}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           Baños
                         </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
-                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">
-                          bathtub
+                        <span className="text-sm font- text-gray-900 dark:text-white">
+                          {details.bathrooms}
                         </span>
-                        <span className="text-sm font-bold text-gray-400">
-                          -
-                        </span>
-                        <span className="text-xs text-gray-400">Baños</span>
                       </div>
                     )}
 
-                    {details?.area_sqm != null && details.area_sqm > 0 ? (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-[#6b1e2e] mb-1">
+                    {details?.area_sqm != null && details.area_sqm > 0 && (
+                      <div className="flex justify-center items-center gap-2">
+                        <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
                           square_foot
-                        </span>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                          {details.area_sqm}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           m²
                         </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-40">
-                        <span className="material-symbols-outlined text-2xl text-gray-400 mb-1">
-                          square_foot
+                        <span className="text-sm font- text-gray-900 dark:text-white">
+                          {details.area_sqm}
                         </span>
-                        <span className="text-sm font-bold text-gray-400">
-                          -
-                        </span>
-                        <span className="text-xs text-gray-400">m²</span>
                       </div>
                     )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button
+                    <ActionButton 
                       onClick={() => {
                         setSelectedProperty(property);
                         setShowDetailsDialog(true);
                       }}
-                      className="flex-1 px-3 py-2 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white rounded-lg text-sm font-semibold transition-colors"
+                      className="flex-1"
                     >
                       Ver Detalles
-                    </button>
-                    <button
-                      onClick={() =>
-                        router.push(`/properties/add?id=${property.id}`)
-                      }
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-lg">
-                        edit
-                      </span>
-                    </button>
+                    </ActionButton>
+                    
+                    <div className="relative">
+                      <IconButton 
+                        icon={<HiDotsVertical className="text-lg w-5 h-5" />}
+                        variant="outline" 
+                        className="w-12 h-12"
+                        onClick={() => setOpenMenuId(openMenuId === property.id ? null : property.id)}
+                      />
+                      <AnimatePresence>
+                        {openMenuId === property.id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 bottom-full mb-2 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                          >
+                            <button
+                              onClick={() => {
+                                router.push(`/properties/add?id=${property.id}`);
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
+                            >
+                              <HiOutlinePencil className="text-lg" />
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDeleteProperty(property.id);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
+                            >
+                              <HiOutlineTrash className="text-lg" />
+                              Eliminar
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
               </div>
+          </Card>
             );
           })}
         </div>
@@ -575,12 +617,12 @@ export function PropertiesPage() {
                     {/* Badges */}
                     <div className="flex items-center gap-2 mb-3 flex-wrap">
                       {property.type_offers && (
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full">
+                        <span className="px-2 py-1 text-xs">
                           {property.type_offers.name}
                         </span>
                       )}
                       {details?.is_furnished && (
-                        <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
+                        <span className="px-2 py-1 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
                           Amueblada
                         </span>
                       )}
@@ -1016,6 +1058,23 @@ export function PropertiesPage() {
             </div>
           );
         })()}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        title="Eliminar Propiedad"
+        message="¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+      />
+
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        title="¡Propiedad Eliminada!"
+        message="La propiedad se ha eliminado exitosamente."
+      />
     </div>
   );
 }
