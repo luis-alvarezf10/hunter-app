@@ -11,6 +11,7 @@ import {
   HiOutlineLink,
   HiOutlineStar,
 } from "react-icons/hi";
+import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
 
 interface Stats {
   available: number;
@@ -125,7 +126,6 @@ export function PropertyStats() {
     <Card className="flex flex-col gap-6">
       <TitleCard
         title="Propiedades por status"
-        subtitle="Resumen de tu inventario inmobiliario"
       />
       <div className="space-y-5">
         {statusData.map((item, index) => {
@@ -156,13 +156,11 @@ export function PropertyStats() {
                     <span className="text-gray-900 dark:text-white">
                       {item.value}
                     </span>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full border  border-gray-300/50 dark:border-gray-700/50">
-                      {percentage}%
-                    </span>
+                    <PercentageBadge percentage={percentage} />
                   </div>
                 </div>
                 {/* Contenedor de la barra */}
-                <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                <div className="relative w-full bg-gray-200 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
                   {/* Barra de progreso */}
                   <div
                     className={`h-full rounded-full bg-gradient-to-r ${item.gradient} transition-all duration-1000 ease-out`}

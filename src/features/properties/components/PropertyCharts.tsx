@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import { createClient } from '@/core/config';
-import { Card } from '@/shared/components/cards/card';
-import { TitleCard } from '@/shared/components/text/TitleCard';
+import { useEffect, useState, useMemo } from "react";
+import { createClient } from "@/core/config";
+import { Card } from "@/shared/components/cards/card";
+import { TitleCard } from "@/shared/components/text/TitleCard";
+import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
 
 interface TypeData {
   label: string;
@@ -16,14 +17,26 @@ export function PropertyCharts() {
   const [typeData, setTypeData] = useState<TypeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  
+
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const { data: types } = await supabase.from('type_properties').select('id, value, color');
-        const { data: propCounts } = await supabase.from('properties').select('id_type');
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No hay usuario autenticado");
+          return;
+        }
+        const { data: types } = await supabase
+          .from("type_properties")
+          .select("id, value, color");
+        const { data: propCounts } = await supabase
+          .from("properties")
+          .select("id_type")
+          .eq("id_advisor", user.id);
 
         if (types && propCounts) {
           const total = propCounts.length;
@@ -33,19 +46,19 @@ export function PropertyCharts() {
           }, {});
 
           const chartData = types
-            .map(type => ({
+            .map((type) => ({
               label: type.value,
               value: counts[type.id] || 0,
-              color: type.color || '#6b7280',
+              color: type.color || "#6b7280",
               percentage: total > 0 ? (counts[type.id] / total) * 100 : 0,
             }))
-            .filter(item => item.value > 0)
+            .filter((item) => item.value > 0)
             .sort((a, b) => b.value - a.value);
 
           setTypeData(chartData);
         }
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error("Error loading data:", error);
       } finally {
         setLoading(false);
       }
@@ -61,21 +74,24 @@ export function PropertyCharts() {
 
     return (
       <div className="relative flex-shrink-0 flex items-center justify-center">
-        <svg viewBox="0 0 200 200" className="w-full max-w-[240px] overflow-visible transform -rotate-90">
+        <svg
+          viewBox="0 0 200 200"
+          className="w-full max-w-[240px] overflow-visible transform -rotate-90"
+        >
           {data.map((item, index) => {
             const strokeLength = (item.percentage / 100) * circumference;
-            const gap = data.length > 1 ? 4 : 0; 
+            const gap = data.length > 1 ? 4 : 0;
             const dashArray = `${Math.max(0, strokeLength - gap)} ${circumference}`;
             const dashOffset = -currentOffset;
-            
+
             currentOffset += strokeLength;
+
+            // Ahora el estado depende de algo externo o simplemente se queda estático
             const isHovered = activeIndex === index;
             const isAnyHovered = activeIndex !== null;
 
-            // DETERMINAMOS EL COLOR: Si hay alguien en hover y no soy yo, me pongo gris
-            const strokeColor = isAnyHovered && !isHovered 
-              ? '#e2e8f0' // Gris suave (puedes usar '#334155' para un gris oscuro en dark mode)
-              : item.color;
+            const strokeColor =
+              isAnyHovered && !isHovered ? "#e2e8f0" : item.color;
 
             return (
               <circle
@@ -85,40 +101,42 @@ export function PropertyCharts() {
                 r={radius}
                 fill="transparent"
                 stroke={strokeColor}
+                // Mantenemos una transición suave por si cambias el activeIndex desde fuera
                 strokeWidth={isHovered ? "24" : "18"}
                 strokeDasharray={dashArray}
                 strokeDashoffset={dashOffset}
                 strokeLinecap="round"
-                className="transition-all duration-500 cursor-pointer"
-                style={{ 
-                  filter: isHovered ? `drop-shadow(0 0 12px ${item.color}66)` : 'none',
-                  // Eliminamos la opacidad para que el cambio de color a gris sea el protagonista
-                  opacity: 1 
+                className="transition-all duration-500"
+                style={{
+                  filter: isHovered
+                    ? `drop-shadow(0 0 12px ${item.color}66)`
+                    : "none",
+                  opacity: 1,
                 }}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
               />
             );
           })}
         </svg>
 
-        <div className="absolute flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-3xl font-black text-slate-800 dark:text-white leading-none">
+        {/* El centro del círculo se mantiene igual */}
+        <div className="absolute flex flex-col gap-1 items-center justify-center pointer-events-none">
+          <span className="text-3xl font-semibold leading-none">
             {activeIndex !== null ? data[activeIndex].value : totalValue}
           </span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">
-            {activeIndex !== null ? data[activeIndex].label : 'Total'}
+          <span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
+            {activeIndex !== null ? data[activeIndex].label : "Total"}
           </span>
         </div>
       </div>
     );
   };
 
-  if (loading) return (
-    <Card className="flex items-center justify-center min-h-[350px]">
-       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-    </Card>
-  );
+  if (loading)
+    return (
+      <Card className="flex items-center justify-center min-h-[350px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-500"></div>
+      </Card>
+    );
 
   return (
     <Card className="h-full relative overflow-hidden transition-all duration-500">
@@ -131,7 +149,7 @@ export function PropertyCharts() {
             background: `radial-gradient(circle at top right, ${item.color}15, transparent 40%), 
                          radial-gradient(circle at bottom left, ${item.color}10, transparent 40%)`,
             opacity: activeIndex === index ? 1 : 0,
-            zIndex: 0
+            zIndex: 0,
           }}
         />
       ))}
@@ -145,7 +163,7 @@ export function PropertyCharts() {
             backgroundColor: item.color,
             boxShadow: `0 -4px 20px ${item.color}80`,
             opacity: activeIndex === index ? 1 : 0,
-            transform: activeIndex === index ? 'scaleX(1)' : 'scaleX(0)',
+            transform: activeIndex === index ? "scaleX(1)" : "scaleX(0)",
           }}
         />
       ))}
@@ -153,37 +171,56 @@ export function PropertyCharts() {
       {/* Contenido envuelto en un z-index para que no lo tape el gradiente */}
       <div className="relative z-10">
         <TitleCard title="Propiedades por tipo" />
-        
         <div className="flex flex-col lg:flex-row items-center gap-12 mt-8">
           {renderPieChart(typeData)}
-          
-          <div className="flex flex-col gap-3 w-full">
+
+          <div className="flex flex-col gap-2 w-full">
             {typeData.map((item, index) => {
               const isHovered = activeIndex === index;
               const isAnyHovered = activeIndex !== null;
-
               return (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   onMouseEnter={() => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
-                  className={`flex items-center justify-between p-4 rounded-2xl transition-all duration-300 cursor-pointer
-                    ${isHovered ? 'bg-white/60 dark:bg-slate-800/60 translate-x-3 shadow-sm backdrop-blur-sm' : ''}
-                    ${isAnyHovered && !isHovered ? 'opacity-40 grayscale' : 'opacity-100'}
+                  className={`
+                    relative overflow-hidden flex items-center justify-between px-4 py-2 rounded-2xl transition-all duration-300 cursor-pointer border-l-1 border-t
+                    ${
+                      isHovered
+                        ? "bg-gradient-to-b from-white to-transparent dark:from-[#333333] dark:to-transparent scale-105 shadow-md "
+                        : "border-transparent"
+                    }
+                    ${isAnyHovered && !isHovered ? "opacity-40 grayscale" : "opacity-100"}
                   `}
+                  style={{
+                    // Usamos style para el color dinámico, así nunca falla
+                    borderLeftColor: isHovered ? item.color : "transparent",
+                    borderTopColor: isHovered
+                      ? "rgba(255,255,255,0.3)"
+                      : "transparent",
+                  }}
                 >
+                  <div
+                    className={`absolute left-0 w-24 inset-y-0 transition-opacity duration-500 pointer-events-none ${isHovered ? "opacity-20" : "opacity-0"}`}
+                    style={{
+                      background: `linear-gradient(to right, ${item.color}, transparent)`,
+                    }}
+                  />
                   <div className="flex items-center gap-4">
-                    <div 
-                      className="w-4 h-4 rounded-full border-2 border-white dark:border-slate-700 shadow-sm transition-colors duration-500" 
-                      style={{ backgroundColor: isAnyHovered && !isHovered ? '#cbd5e1' : item.color }} 
+                    <div
+                      className="w-2 h-2 rounded-full shadow-sm transition-colors duration-500"
+                      style={{
+                        backgroundColor:
+                          isAnyHovered && !isHovered ? "#cbd5e1" : item.color,
+                      }}
                     />
-                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{item.label}</span>
+                    <span className="text-sm font-medium">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-base font-black text-slate-900 dark:text-white">{item.value}</span>
-                    <span className="text-[11px] bg-white dark:bg-slate-700 px-2 py-1 rounded-lg font-black text-slate-500 shadow-sm border border-slate-100 dark:border-none">
-                      {Math.round(item.percentage)}%
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {item.value}
                     </span>
+                    <PercentageBadge percentage={Math.round(item.percentage)}/>
                   </div>
                 </div>
               );
