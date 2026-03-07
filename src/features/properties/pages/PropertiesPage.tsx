@@ -12,6 +12,7 @@ import { PropertyStats, PropertyCharts } from "../components";
 import { createClient } from "@/core/config";
 import { TitleView } from "@/shared/components/text/TitleView";
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
+import { SearchBar } from "@/shared/components/inputs/SearchBar";
 
 interface Property {
   id: string;
@@ -203,16 +204,11 @@ export function PropertiesPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="relative">
-        <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
-        <input
-          type="text"
-          placeholder="Buscar por nombre o ubicación..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-[#6b1e2e]/50 focus:border-[#6b1e2e] outline-none"
-        />
-      </div>
+      <SearchBar 
+        value={searchTerm} 
+        onChange={(value) => setSearchTerm(value)}
+        placeholder="Buscar por nombre o ubicación..."
+      />
 
       {/* Properties Grid */}
       {loading ? (
