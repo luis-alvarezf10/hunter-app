@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import {
   HiOutlineHome,
   HiOutlineLocationMarker,
@@ -706,18 +707,35 @@ export function PropertiesPage() {
       )}
 
       {/* Modal de Detalles */}
-      {showDetailsDialog &&
-        selectedProperty &&
+      {showDetailsDialog && selectedProperty && createPortal(
         (() => {
-          // Manejar details_properties como objeto o array
           const details = Array.isArray(selectedProperty.details_properties)
             ? selectedProperty.details_properties[0]
             : selectedProperty.details_properties;
 
           return (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-6xl h-[85vh] overflow-hidden animate-fadeIn">
-                <div className="flex flex-col md:flex-row h-full">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center"
+            >
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => { setShowDetailsDialog(false); setSelectedProperty(null); }} 
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+                className="relative bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-6xl max-h-[85vh] mx-4 overflow-hidden"
+              >
+                <div className="flex flex-col md:flex-row h-full max-h-[85vh]">
                   {/* Columna Izquierda - Imagen */}
                   <div className="md:w-2/5 h-64 md:h-full relative bg-gray-200 dark:bg-gray-800 flex-shrink-0">
                     {selectedProperty.image ? (
@@ -1054,10 +1072,12 @@ export function PropertiesPage() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           );
-        })()}
+        })(),
+        document.body
+      )}
 
       <ConfirmDialog
         isOpen={showDeleteDialog}
