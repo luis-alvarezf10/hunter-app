@@ -10,6 +10,7 @@ import {
   HiViewGrid,
   HiViewList,
   HiX,
+  HiOutlineRefresh,
 } from "react-icons/hi";
 import { PropertyStats, PropertyCharts } from "../components";
 import { createClient } from "@/core/config";
@@ -17,6 +18,7 @@ import { TitleView } from "@/shared/components/text/TitleView";
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import { SearchBar } from "@/shared/components/inputs/SearchBar";
 import { IconButton } from "@/shared/components/buttons/IconButton";
+import { Dropdown } from "@/shared/components/inputs/Dropdown";
 import ViewToggle from "../components/buttons/ViewToggle";
 
 interface Property {
@@ -77,6 +79,7 @@ export function PropertiesPage() {
   const [selectedPropertyType, setSelectedPropertyType] = useState<
     string | null
   >(null);
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [propertyTypes, setPropertyTypes] = useState<
     Array<{ id: string; value: string }>
   >([]);
@@ -173,7 +176,8 @@ export function PropertiesPage() {
           property.address.toLowerCase().includes(searchTerm.toLowerCase()))) &&
       (!selectedTypeFilter ||
         property.type_offers?.value === selectedTypeFilter) &&
-      (!selectedPropertyType || property.id_type === selectedPropertyType),
+      (!selectedPropertyType || property.id_type === selectedPropertyType) &&
+      (!selectedStatus || property.status === selectedStatus),
   );
 
   const offerTypes = Array.from(
@@ -183,6 +187,7 @@ export function PropertiesPage() {
   const resetFilters = () => {
     setSelectedTypeFilter(null);
     setSelectedPropertyType(null);
+    setSelectedStatus(null);
     setSearchTerm("");
   };
 
@@ -258,58 +263,45 @@ export function PropertiesPage() {
           />
         </div>
         <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-        
       </div>
 
       {/* Filtros por Tipo de Propiedad */}
-      <div className="flex gap-2 flex-wrap items-center">
-        <button
-          onClick={() => setSelectedTypeFilter(null)}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-            selectedTypeFilter === null
-              ? "bg-[#6b1e2e] text-white"
-              : "bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-          }`}
-        >
-          Todas
-        </button>
-        {offerTypes.map((type) => (
-          <button
-            key={type}
-            onClick={() => setSelectedTypeFilter(type as string)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-              selectedTypeFilter === type
-                ? "bg-[#6b1e2e] text-white"
-                : "bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-            }`}
-          >
-            {type === "Sale" ? "Venta" : type === "Rent" ? "Renta" : type}
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-2 items-center ">
+        
+          <Dropdown
+            options={[
+              { value: "Sale", label: "Venta" },
+              { value: "Rent", label: "Renta" },
+            ]}
+            value={selectedTypeFilter}
+            onChange={setSelectedTypeFilter}
+            placeholder="Tipo de Oferta"
+          />
 
-        <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
+          <Dropdown
+            options={propertyTypes.map((type) => ({
+              value: type.id,
+              label: type.value,
+            }))}
+            value={selectedPropertyType}
+            onChange={setSelectedPropertyType}
+            placeholder="Tipo de Propiedad"
+          />
 
-        <select
-          value={selectedPropertyType || ""}
-          onChange={(e) => setSelectedPropertyType(e.target.value || null)}
-          className="px-4 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-full text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors outline-none focus:ring-2 focus:ring-[#6b1e2e]/50"
-        >
-          <option value="">Tipo de Propiedad</option>
-          {propertyTypes.map((type) => (
-            <option key={type.id} value={type.id}>
-              {type.value}
-            </option>
-          ))}
-        </select>
+          <Dropdown
+            options={[
+              { value: "available", label: "Disponible" },
+              { value: "reserved", label: "Reservada" },
+              { value: "saled", label: "Vendida" },
+              { value: "rented", label: "Alquilada" },
+            ]}
+            value={selectedStatus}
+            onChange={setSelectedStatus}
+            placeholder="Estado"
+          />
 
-        {(selectedTypeFilter || selectedPropertyType || searchTerm) && (
-          <button
-            onClick={resetFilters}
-            className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-            title="Restablecer filtros"
-          >
-            <HiX className="text-lg text-gray-600 dark:text-gray-400" />
-          </button>
+        {(selectedTypeFilter || selectedPropertyType || selectedStatus || searchTerm) && (
+          <ActionButton variant="danger" iconVariant="reset" onClick={resetFilters} size="sm" children="Reestablecer" className=""/>
         )}
       </div>
 

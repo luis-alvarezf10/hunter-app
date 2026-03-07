@@ -1,10 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { HiOutlineFolderAdd, HiOutlinePlusCircle } from "react-icons/hi";
+import { HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh } from "react-icons/hi";
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel';
+  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -33,7 +33,7 @@ export const ActionButton = ({
     secondary: "bg-gray-500/10",
     outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
-    danger: "bg-red-500 text-white hover:bg-red-600",
+    danger: "bg-red-500 text-white hover:bg-red-600 hover:shadow-red-500/50",
   };
 
   const iconVariants = { 
@@ -43,11 +43,12 @@ export const ActionButton = ({
     view: <HiOutlineFolderAdd className="w-5 h-5" />,
     save: <HiOutlineFolderAdd className="w-5 h-5" />,
     cancel: <HiOutlineFolderAdd className="w-5 h-5" />,
+    reset: <HiOutlineRefresh className="w-5 h-5"/>
   };
 
   // 3. Diccionario de tamaños
   const sizes = {
-    sm: "px-3 py-1.5 text-sm",
+    sm: "px-3 py-2 text-sm",
     md: "px-5 py-2.5 text-base",
     lg: "px-8 py-3 text-lg",
   };
