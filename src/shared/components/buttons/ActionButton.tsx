@@ -31,7 +31,7 @@ export const ActionButton = ({
   const variants = {
     primary: "bg-gradient-to-r from-secondary to-wine-red text-white hover:bg-primary shadow-md",
     secondary: "bg-gray-500/10",
-    outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800",
+    outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600 hover:shadow-red-500/50",
   };

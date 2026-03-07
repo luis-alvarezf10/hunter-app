@@ -30,6 +30,7 @@ import ViewToggle from "../components/buttons/ViewToggle";
 import { Card } from "@/shared/components/cards/card";
 import { ConfirmDialog } from "@/shared/components/dialogs/ConfirmDialog";
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
+import { TitleCard } from "@/shared/components/text/TitleCard";
 
 interface Property {
   id: string;
@@ -216,20 +217,34 @@ export function PropertiesPage() {
 
     try {
       // Eliminar relaciones (ignorar errores si no existen)
-      await supabase.from('property_images').delete().eq('id_property', propertyToDelete);
-      await supabase.from('property_amenities').delete().eq('id_property', propertyToDelete);
-      await supabase.from('details_properties').delete().eq('id_property', propertyToDelete);
-      
-      const { error } = await supabase.from('properties').delete().eq('id', propertyToDelete);
+      await supabase
+        .from("property_images")
+        .delete()
+        .eq("id_property", propertyToDelete);
+      await supabase
+        .from("property_amenities")
+        .delete()
+        .eq("id_property", propertyToDelete);
+      await supabase
+        .from("details_properties")
+        .delete()
+        .eq("id_property", propertyToDelete);
+
+      const { error } = await supabase
+        .from("properties")
+        .delete()
+        .eq("id", propertyToDelete);
       if (error) throw error;
-      
-      setProperties(properties.filter(p => p.id !== propertyToDelete));
+
+      setProperties(properties.filter((p) => p.id !== propertyToDelete));
       setPropertyToDelete(null);
       setShowSuccessDialog(true);
     } catch (err: any) {
-      console.error('Error eliminando propiedad:', err);
-      console.error('Detalles del error:', JSON.stringify(err, null, 2));
-      alert(`Error al eliminar la propiedad: ${err.message || 'Error desconocido'}`);
+      console.error("Error eliminando propiedad:", err);
+      console.error("Detalles del error:", JSON.stringify(err, null, 2));
+      alert(
+        `Error al eliminar la propiedad: ${err.message || "Error desconocido"}`,
+      );
     }
   };
 
@@ -309,41 +324,50 @@ export function PropertiesPage() {
 
       {/* Filtros por Tipo de Propiedad */}
       <div className="flex flex-wrap gap-2 items-center ">
-        
-          <Dropdown
-            options={[
-              { value: "Sale", label: "Venta" },
-              { value: "Rent", label: "Renta" },
-            ]}
-            value={selectedTypeFilter}
-            onChange={setSelectedTypeFilter}
-            placeholder="Tipo de Oferta"
-          />
+        <Dropdown
+          options={[
+            { value: "Sale", label: "Venta" },
+            { value: "Rent", label: "Renta" },
+          ]}
+          value={selectedTypeFilter}
+          onChange={setSelectedTypeFilter}
+          placeholder="Tipo de Oferta"
+        />
 
-          <Dropdown
-            options={propertyTypes.map((type) => ({
-              value: type.id,
-              label: type.value,
-            }))}
-            value={selectedPropertyType}
-            onChange={setSelectedPropertyType}
-            placeholder="Tipo de Propiedad"
-          />
+        <Dropdown
+          options={propertyTypes.map((type) => ({
+            value: type.id,
+            label: type.value,
+          }))}
+          value={selectedPropertyType}
+          onChange={setSelectedPropertyType}
+          placeholder="Tipo de Propiedad"
+        />
 
-          <Dropdown
-            options={[
-              { value: "available", label: "Disponible" },
-              { value: "reserved", label: "Reservada" },
-              { value: "saled", label: "Vendida" },
-              { value: "rented", label: "Alquilada" },
-            ]}
-            value={selectedStatus}
-            onChange={setSelectedStatus}
-            placeholder="Estado"
-          />
+        <Dropdown
+          options={[
+            { value: "available", label: "Disponible" },
+            { value: "reserved", label: "Reservada" },
+            { value: "saled", label: "Vendida" },
+            { value: "rented", label: "Alquilada" },
+          ]}
+          value={selectedStatus}
+          onChange={setSelectedStatus}
+          placeholder="Estado"
+        />
 
-        {(selectedTypeFilter || selectedPropertyType || selectedStatus || searchTerm) && (
-          <ActionButton variant="danger" iconVariant="reset" onClick={resetFilters} size="sm" children="Reestablecer" className=""/>
+        {(selectedTypeFilter ||
+          selectedPropertyType ||
+          selectedStatus ||
+          searchTerm) && (
+          <ActionButton
+            variant="danger"
+            iconVariant="reset"
+            onClick={resetFilters}
+            size="sm"
+            children="Reestablecer"
+            className=""
+          />
         )}
       </div>
 
@@ -364,183 +388,190 @@ export function PropertiesPage() {
               : property.details_properties;
 
             return (
-              <Card key={property.id} className="p-1 border-1 border-white/20 relative overflow-visible">
-              <div className="rounded-2xl overflow-hidden hover:shadow-lg">
-                {/* Image */}
-                <div className="relative h-48">
-                  {property.image ? (
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-full object-cover rounded-2xl"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <HiOutlineHome className="text-6xl text-gray-400" />
-                    </div>
-                  )}
-                  <div className="absolute top-3 right-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(property.status)}`}
-                    >
-                      {getStatusLabel(property.status)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex justify-between gap-2">
-                    <h3 className="font-medium mb-2 truncate">
-                      {property.title}
-                    </h3>
-                    {details?.price && (
-                      <div className="flex items-start gap-2 mb-3">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-semibold text-primary dark:text-white">
-                            ${details.price.toLocaleString()}
-                          </span>
-                          {property.type_offers?.value === "Rent" &&
-                            details.period && (
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                /
-                                {details.period === "monthly"
-                                  ? "mes"
-                                  : details.period === "daily"
-                                    ? "día"
-                                    : details.period === "weekly"
-                                      ? "semana"
-                                      : "año"}
-                              </span>
-                            )}
-                        </div>
-                      </div>
-                    )}
-                    
-                  </div>
-
-                  {property.address && (
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-3">
-                      <HiOutlineLocationMarker className="text-lg" />
-                      <span className="text-sm">{property.address}</span>
-                    </div>
-                  )}
-
-
-                  {/* Badges adicionales */}
-                  <div className="flex items-center gap-2 mb-3 flex-wrap">
-                    {property.type_offers && (
-                      <span className="px-2 py-0.5  text-blue-500 font-medium  text-xs">
-                        - {property.type_offers.name}
-                      </span>
-                    )}
-                    {details?.is_furnished && (
-                      <span className="px-2 py-0.5 text-purple-500 dark:text-purple-500 font-medium text-xs">
-                        - Amueblada
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Características destacadas */}
-                  <div className="grid grid-cols-3 gap-2 p-4 border-y border-gray-300/50 dark:border-white/10 mb-3">
-                    {details?.bedrooms != null && details.bedrooms > 0 && (
-                      <div className="flex justify-center items-center gap-2">
-                        <span className="material-symbols-outlined text-xl text-gray-600 dark:text-gray-400">
-                          bed
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          Hab.
-                        </span>
-                        <span className="text-sm font- text-gray-900 dark:text-white">
-                          {details.bedrooms}
-                        </span>
-                      </div>
-                    )}
-
-                    {details?.bathrooms != null && details.bathrooms > 0 && (
-                      <div className="flex justify-center items-center gap-2">
-                        <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
-                          bathtub
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          Baños
-                        </span>
-                        <span className="text-sm font- text-gray-900 dark:text-white">
-                          {details.bathrooms}
-                        </span>
-                      </div>
-                    )}
-
-                    {details?.area_sqm != null && details.area_sqm > 0 && (
-                      <div className="flex justify-center items-center gap-2">
-                        <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
-                          square_foot
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          m²
-                        </span>
-                        <span className="text-sm font- text-gray-900 dark:text-white">
-                          {details.area_sqm}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    <ActionButton 
-                      onClick={() => {
-                        setSelectedProperty(property);
-                        setShowDetailsDialog(true);
-                      }}
-                      className="flex-1"
-                    >
-                      Ver Detalles
-                    </ActionButton>
-                    
-                    <div className="relative">
-                      <IconButton 
-                        icon={<HiDotsVertical className="text-lg w-5 h-5" />}
-                        variant="outline" 
-                        className="w-12 h-12"
-                        onClick={() => setOpenMenuId(openMenuId === property.id ? null : property.id)}
+              <Card
+                key={property.id}
+                className="p-1 border-1 border-white/20 relative overflow-visible"
+              >
+                <div className="rounded-2xl overflow-hidden hover:shadow-lg">
+                  {/* Image */}
+                  <div className="relative h-48">
+                    {property.image ? (
+                      <img
+                        src={property.image}
+                        alt={property.title}
+                        className="w-full h-full object-cover rounded-2xl"
                       />
-                      <AnimatePresence>
-                        {openMenuId === property.id && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute right-0 bottom-full mb-2 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
-                          >
-                            <button
-                              onClick={() => {
-                                router.push(`/properties/add?id=${property.id}`);
-                                setOpenMenuId(null);
-                              }}
-                              className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <HiOutlineHome className="text-6xl text-gray-400" />
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(property.status)}`}
+                      >
+                        {getStatusLabel(property.status)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <div className="flex justify-between gap-2">
+                      <h3 className="font-medium mb-2 truncate">
+                        {property.title}
+                      </h3>
+                      {details?.price && (
+                        <div className="flex items-start gap-2 mb-3">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-lg font-semibold text-primary dark:text-white">
+                              ${details.price.toLocaleString()}
+                            </span>
+                            {property.type_offers?.value === "Rent" &&
+                              details.period && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  /
+                                  {details.period === "monthly"
+                                    ? "mes"
+                                    : details.period === "daily"
+                                      ? "día"
+                                      : details.period === "weekly"
+                                        ? "semana"
+                                        : "año"}
+                                </span>
+                              )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {property.address && (
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-3">
+                        <HiOutlineLocationMarker className="text-lg" />
+                        <span className="text-sm">{property.address}</span>
+                      </div>
+                    )}
+
+                    {/* Badges adicionales */}
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                      {property.type_offers && (
+                        <span className="px-2 py-0.5  text-blue-500 font-medium  text-xs">
+                          - {property.type_offers.name}
+                        </span>
+                      )}
+                      {details?.is_furnished && (
+                        <span className="px-2 py-0.5 text-purple-500 dark:text-purple-500 font-medium text-xs">
+                          - Amueblada
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Características destacadas */}
+                    <div className="grid grid-cols-3 gap-2 p-4 border-y border-gray-300/50 dark:border-white/10 mb-3">
+                      {details?.bedrooms != null && details.bedrooms > 0 && (
+                        <div className="flex justify-center items-center gap-2">
+                          <span className="material-symbols-outlined text-xl text-gray-600 dark:text-gray-400">
+                            bed
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Hab.
+                          </span>
+                          <span className="text-sm font- text-gray-900 dark:text-white">
+                            {details.bedrooms}
+                          </span>
+                        </div>
+                      )}
+
+                      {details?.bathrooms != null && details.bathrooms > 0 && (
+                        <div className="flex justify-center items-center gap-2">
+                          <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
+                            bathtub
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Baños
+                          </span>
+                          <span className="text-sm font- text-gray-900 dark:text-white">
+                            {details.bathrooms}
+                          </span>
+                        </div>
+                      )}
+
+                      {details?.area_sqm != null && details.area_sqm > 0 && (
+                        <div className="flex justify-center items-center gap-2">
+                          <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
+                            square_foot
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            m²
+                          </span>
+                          <span className="text-sm font- text-gray-900 dark:text-white">
+                            {details.area_sqm}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2">
+                      <ActionButton
+                        onClick={() => {
+                          setSelectedProperty(property);
+                          setShowDetailsDialog(true);
+                        }}
+                        className="flex-1"
+                      >
+                        Ver Detalles
+                      </ActionButton>
+
+                      <div className="relative">
+                        <IconButton
+                          icon={<HiDotsVertical className="text-lg w-5 h-5" />}
+                          variant="outline"
+                          className="w-12 h-12"
+                          onClick={() =>
+                            setOpenMenuId(
+                              openMenuId === property.id ? null : property.id,
+                            )
+                          }
+                        />
+                        <AnimatePresence>
+                          {openMenuId === property.id && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 bottom-full mb-2 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
                             >
-                              <HiOutlinePencil className="text-lg" />
-                              Editar
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleDeleteProperty(property.id);
-                              }}
-                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
-                            >
-                              <HiOutlineTrash className="text-lg" />
-                              Eliminar
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                              <button
+                                onClick={() => {
+                                  router.push(
+                                    `/properties/add?id=${property.id}`,
+                                  );
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
+                              >
+                                <HiOutlinePencil className="text-lg" />
+                                Editar
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleDeleteProperty(property.id);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
+                              >
+                                <HiOutlineTrash className="text-lg" />
+                                Eliminar
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-          </Card>
+              </Card>
             );
           })}
         </div>
@@ -707,377 +738,248 @@ export function PropertiesPage() {
       )}
 
       {/* Modal de Detalles */}
-      {showDetailsDialog && selectedProperty && createPortal(
-        (() => {
-          const details = Array.isArray(selectedProperty.details_properties)
-            ? selectedProperty.details_properties[0]
-            : selectedProperty.details_properties;
+      {showDetailsDialog &&
+        selectedProperty &&
+        createPortal(
+          (() => {
+            const details = Array.isArray(selectedProperty.details_properties)
+              ? selectedProperty.details_properties[0]
+              : selectedProperty.details_properties;
 
-          return (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[9999] flex items-center justify-center"
-            >
-              <motion.div 
+            return (
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => { setShowDetailsDialog(false); setSelectedProperty(null); }} 
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
-              />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-                className="relative bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-6xl max-h-[85vh] mx-4 overflow-hidden"
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center"
               >
-                <div className="flex flex-col md:flex-row h-full max-h-[85vh]">
-                  {/* Columna Izquierda - Imagen */}
-                  <div className="md:w-2/5 h-64 md:h-full relative bg-gray-200 dark:bg-gray-800 flex-shrink-0">
-                    {selectedProperty.image ? (
-                      <img
-                        src={selectedProperty.image}
-                        alt={selectedProperty.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <HiOutlineHome className="text-8xl text-gray-400" />
-                      </div>
-                    )}
-
-                    {/* Badge de estado sobre la imagen */}
-                    <div className="absolute top-4 left-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(selectedProperty.status)}`}
-                      >
-                        {getStatusLabel(selectedProperty.status)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Columna Derecha - Información */}
-                  <div className="md:w-3/5 flex flex-col overflow-y-auto">
-                    {/* Header con botón cerrar */}
-                    <div className="sticky top-0 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between z-10">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        Detalles de la Propiedad
-                      </h2>
-                      <button
-                        onClick={() => {
-                          setShowDetailsDialog(false);
-                          setSelectedProperty(null);
-                        }}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-gray-700 dark:text-gray-300">
-                          close
-                        </span>
-                      </button>
-                    </div>
-
-                    {/* Contenido scrolleable */}
-                    <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-                      {/* Título */}
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                          {selectedProperty.title}
-                        </h3>
-
-                        {/* Badges */}
-                        <div className="flex items-center gap-2 flex-wrap mb-4">
-                          {selectedProperty.type_offers && (
-                            <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-sm font-semibold rounded-full">
-                              {selectedProperty.type_offers.name}
-                            </span>
-                          )}
-                          {details?.is_furnished && (
-                            <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-sm font-semibold rounded-full">
-                              Amueblada
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Precio */}
-                      {details?.price && (
-                        <div className="p-4 bg-gradient-to-r from-[#6b1e2e]/10 to-[#8b2e3e]/10 rounded-lg border-l-4 border-[#6b1e2e]">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                            Precio
-                          </p>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-[#6b1e2e]">
-                              ${details.price.toLocaleString()}
-                            </span>
-                            {selectedProperty.type_offers?.value === "Rent" &&
-                              details.period && (
-                                <span className="text-lg text-gray-500 dark:text-gray-400">
-                                  /
-                                  {details.period === "monthly"
-                                    ? "mes"
-                                    : details.period === "daily"
-                                      ? "día"
-                                      : details.period === "weekly"
-                                        ? "semana"
-                                        : "año"}
-                                </span>
-                              )}
-                          </div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => {
+                    setShowDetailsDialog(false);
+                    setSelectedProperty(null);
+                  }}
+                  className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
+                  className="relative bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-md rounded-2xl border border-gray-300/50 dark:border-white/10 w-full max-w-6xl max-h-[85vh] mx-4 overflow-hidden p-2"
+                >
+                  <div className="flex flex-col md:flex-row h-full max-h-[85vh]">
+                    {/* Columna Izquierda - Imagen */}
+                    <div className="md:w-2/5 h-64 md:h-auto relative flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-2xl">
+                      {selectedProperty.image ? (
+                        <img
+                          src={selectedProperty.image}
+                          alt={selectedProperty.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full">
+                          <HiOutlineHome className="text-8xl text-gray-400" />
                         </div>
                       )}
+                      {/* Badge de estado sobre la imagen */}
+                      <div className="absolute top-3 right-3 z-10">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${getStatusColor(selectedProperty.status)}`}
+                        >
+                          {getStatusLabel(selectedProperty.status)}
+                        </span>
+                      </div>
+                    </div>
 
-                      {/* Ubicación */}
-                      {selectedProperty.address && (
-                        <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                          <HiOutlineLocationMarker className="text-2xl text-[#6b1e2e] flex-shrink-0 mt-1" />
-                          <div>
-                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                              Ubicación
-                            </p>
+                    {/* Columna Derecha - Información */}
+                    <div className="md:w-3/5 flex flex-col overflow-y-auto">
+                      {/* Header con botón cerrar */}
+                      <div className="sticky top-0 border-b border-gray-300/50 dark:border-white/10 p-4 flex items-center justify-between z-10">
+                        <h2 className="text-2xl font-semibold">
+                          Detalles de la Propiedad
+                        </h2>
+                      </div>
+                      <div className="p-6 space-y-6 flex-1 overflow-y-auto">
+                        {/* Título */}
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center  justify-between">
+                            <h3 className="text-2xl font-medium mb-3">
+                              {selectedProperty.title}
+                            </h3>
+                            {details?.price && (
+                              <div className="">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                  Precio
+                                </p>
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-3xl font-bold text-primary">
+                                    ${details.price.toLocaleString()}
+                                  </span>
+                                  {selectedProperty.type_offers?.value ===
+                                    "Rent" &&
+                                    details.period && (
+                                      <span className="text-lg text-gray-600 dark:text-gray-400">
+                                        /
+                                        {details.period === "monthly"
+                                          ? "mes"
+                                          : details.period === "daily"
+                                            ? "día"
+                                            : details.period === "weekly"
+                                              ? "semana"
+                                              : "año"}
+                                      </span>
+                                    )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Badges */}
+                          <div className="flex items-center gap-2 flex-wrap mb-4">
+                            {selectedProperty.type_offers && (
+                              <span className="text-sm text-blue-500 font-medium">
+                                - {selectedProperty.type_offers.name}
+                              </span>
+                            )}
+                            {details?.is_furnished && (
+                              <span className="text-sm text-purple-500 dark:text-purple-400 font-medium">
+                                - Amueblada
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Ubicación */}
+                        {selectedProperty.address && (
+                          <div className="flex items-center gap-3">
+                            <HiOutlineLocationMarker className="text-2xl text-gray-600 dark:text-gray-400 flex-shrink-0" />
                             <p className="text-gray-900 dark:text-white">
                               {selectedProperty.address}
                             </p>
                           </div>
+                        )}
+
+                        {/* Características principales */}
+                        <div className="flex flex-col gap-3">
+                          <TitleCard title="Características" subtitle="verifica los detalles de propiedad aquí: " showDivider />
+                          <div className="grid grid-cols-2 gap-3 min-h-[240px] min-w-[260px]">
+                            {details?.bedrooms != null && details.bedrooms > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Habitaciones
+                                  </p>
+                                  <p className=" text-gray-900 dark:text-white">
+                                    {details.bedrooms}
+                                  </p>
+                              </div>
+                            ) }
+
+                            {details?.bathrooms != null && details.bathrooms > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Baños
+                                  </p>
+                                  <p className=" text-gray-900 dark:text-white">
+                                    {details.bathrooms}
+                                  </p>
+                              </div>
+                            )}
+
+                            {details?.area_sqm != null && details.area_sqm > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Área
+                                  </p>
+                                  <p className="text-gray-900 dark:text-white">
+                                    {details.area_sqm} m²
+                                  </p>
+                              </div>
+                            )}
+
+                            {details?.parking_spots != null && details.parking_spots > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Estacionamientos
+                                  </p>
+                                  <p className="text-gray-900 dark:text-white">
+                                    {details.parking_spots}
+                                  </p>
+                              </div>
+                            )}
+
+                            {details?.half_bath != null && details.half_bath > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Medios Baños
+                                  </p>
+                                  <p className="text-gray-900 dark:text-white">
+                                    {details.half_bath}
+                                  </p>
+                              </div>
+                            )}
+
+                            {details?.lot_size != null && details.lot_size > 0 && (
+                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                    Tamaño del Lote
+                                  </p>
+                                  <p className="text-gray-900 dark:text-white">
+                                    {details.lot_size} m²
+                                  </p>
+                                </div>
+                            )}
+                          </div>
                         </div>
-                      )}
 
-                      {/* Características principales */}
-                      <div>
-                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-                          Características
-                        </h4>
-                        <div className="grid grid-cols-2 gap-3 min-h-[240px]">
-                          {details?.bedrooms ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                bed
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Habitaciones
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.bedrooms}
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                bed
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Habitaciones
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {details?.bathrooms ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                bathtub
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Baños
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.bathrooms}
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                bathtub
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Baños
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {details?.area_sqm ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                square_foot
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Área
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.area_sqm} m²
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                square_foot
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Área
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {details?.parking_spots ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                garage
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Estacionamientos
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.parking_spots}
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                garage
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Estacionamientos
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {details?.half_bath ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                wc
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Medios Baños
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.half_bath}
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                wc
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Medios Baños
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {details?.lot_size ? (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                              <span className="material-symbols-outlined text-2xl text-[#6b1e2e]">
-                                landscape
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Tamaño del Lote
-                                </p>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                                  {details.lot_size} m²
-                                </p>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg opacity-50">
-                              <span className="material-symbols-outlined text-2xl text-gray-400">
-                                landscape
-                              </span>
-                              <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Tamaño del Lote
-                                </p>
-                                <p className="text-lg font-bold text-gray-400">
-                                  N/A
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                        {/* Descripción */}
+                        {selectedProperty.description && (
+                          <div>
+                            <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+                              Descripción
+                            </h4>
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                              {selectedProperty.description}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Descripción */}
-                      {selectedProperty.description && (
-                        <div>
-                          <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-                            Descripción
-                          </h4>
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-                            {selectedProperty.description}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Footer con botones */}
-                    <div className="sticky bottom-0 bg-white dark:bg-[#1a1a1a] border-t border-gray-200 dark:border-gray-700 p-4 flex gap-3">
-                      <button
+                      {/* Footer con botones */}
+                      <div className="sticky bottom-0 border-t border-gray-300/50 dark:border-white/10 p-4 flex gap-3">
+                        <ActionButton
                         onClick={() => {
                           setShowDetailsDialog(false);
-                          router.push(
-                            `/properties/add?id=${selectedProperty.id}`,
-                          );
+                            router.push(
+                              `/properties/add?id=${selectedProperty.id}`,
+                            );
                         }}
-                        className="flex-1 px-4 py-3 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                        className="flex-1"
                       >
-                        <span className="material-symbols-outlined">edit</span>
-                        Editar
-                      </button>
-                      <button
+                        Editar 
+                      </ActionButton>
+                        <ActionButton
                         onClick={() => {
-                          setShowDetailsDialog(false);
-                          setSelectedProperty(null);
+                           setShowDetailsDialog(false);
+                            setSelectedProperty(null);
                         }}
-                        className="px-4 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        className=""
+                        variant="outline"
                       >
                         Cerrar
-                      </button>
+                      </ActionButton>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          );
-        })(),
-        document.body
-      )}
+            );
+          })(),
+          document.body,
+        )}
 
       <ConfirmDialog
         isOpen={showDeleteDialog}
