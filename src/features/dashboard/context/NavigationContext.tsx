@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface NavigationContextType {
   activeItem: string;
@@ -15,7 +16,7 @@ const NavigationContext = createContext<NavigationContextType | undefined>(undef
 const pageTitles: Record<string, string> = {
   // Advisor pages
   home: 'Inicio',
-  schedule: 'Agenda',
+  agenda: 'Agenda',
   reports: 'Reportes',
   sales: 'Ventas',
   clients: 'Clientes',
@@ -29,9 +30,30 @@ const pageTitles: Record<string, string> = {
   logout: 'Cerrar Sesión',
 };
 
+// Mapeo de rutas a IDs de navegación
+const routeToItemId: Record<string, string> = {
+  '/dashboard': 'home',
+  '/properties': 'properties',
+  '/schedule': 'agenda',
+  '/clients': 'clients',
+  '/reports': 'reports',
+  '/sales': 'sales',
+  '/panel': 'panel',
+  '/stats': 'stats',
+  '/advisors': 'advisors',
+  '/settings': 'settings',
+};
+
 export function NavigationProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [activeItem, setActiveItem] = useState('home');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Sincronizar activeItem con la ruta actual
+  useEffect(() => {
+    const itemId = routeToItemId[pathname] || 'home';
+    setActiveItem(itemId);
+  }, [pathname]);
 
   const getPageTitle = () => {
     return pageTitles[activeItem] || 'Dashboard';

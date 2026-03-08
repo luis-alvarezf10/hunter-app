@@ -44,7 +44,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const realtorItems = [
     { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
     { id: 'properties', label: 'Propiedades', icon: <HiOutlineCollection className="text-xl" />, route: '/properties' },
-    { id: 'schedule', label: 'Agenda', icon: <HiOutlineClock className="text-xl" />, route: '/schedule' },
+    { id: 'agenda', label: 'Agenda', icon: <HiOutlineClock className="text-xl" />, route: '/schedule' },
     { id: 'clients', label: 'Clientes', icon: <HiOutlineUserGroup className="text-xl" />, route: '/clients' },
     { id: 'reports', label: 'Reportes', icon: <HiOutlineChartPie className="text-xl" /> },
     { id: 'sales', label: 'Ventas', icon: <HiOutlineChartBar className="text-xl" /> },
