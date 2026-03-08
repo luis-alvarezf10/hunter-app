@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/core/config/supabase';
 import { useRouter } from 'next/navigation';
 import { ScheduleCalendar, ScheduleList } from '../components';
+import { TitleView } from '@/shared/components/text/TitleView';
+import { ActionButton } from '@/shared/components/buttons/ActionButton';
+import { HiOutlinePlusCircle } from 'react-icons/hi';
 
 interface ScheduleItem {
   id: string;
@@ -90,36 +93,38 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="p-3 sm:p-6">
+    <div className="p-8 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Mi Agenda</h1>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <button
-            onClick={() => setView('calendar')}
-            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-sm sm:text-base ${
-              view === 'calendar' 
-                ? 'bg-blue-600 dark:bg-blue-700 text-white' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            Calendario
-          </button>
-          <button
-            onClick={() => setView('list')}
-            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-sm sm:text-base ${
-              view === 'list' 
-                ? 'bg-blue-600 dark:bg-blue-700 text-white' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            Lista
-          </button>
-          <button
+        <TitleView title="Agenda" subtitle="Gestiona tus citas de este mes aquí"/>
+        <div className="flex flex-col md:flex-row gap-2 w-full sm:w-auto">
+          <div>
+            <button
+              onClick={() => setView('calendar')}
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-sm sm:text-base ${
+                view === 'calendar' 
+                  ? 'bg-blue-600 dark:bg-blue-700 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              Calendario
+            </button>
+            <button
+              onClick={() => setView('list')}
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded text-sm sm:text-base ${
+                view === 'list' 
+                  ? 'bg-blue-600 dark:bg-blue-700 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              Lista
+            </button>
+          </div>
+          <ActionButton
             onClick={() => router.push('/schedule/add')}
-            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-800 text-sm sm:text-base"
+            iconVariant="add"
           >
-            + Nueva Cita
-          </button>
+            Nueva cita
+          </ActionButton>
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DayScheduleDialog from './DayScheduleDialog';
+import { HiOutlineChevronDoubleLeft, HiOutlineChevronDoubleRight } from 'react-icons/hi';
 
 interface ScheduleItem {
   id: string;
@@ -92,30 +93,22 @@ export default function ScheduleCalendar({ schedules }: Props) {
   };
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow dark:shadow-gray-800 p-3 sm:p-6 border border-gray-200 dark:border-gray-700">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
-        <button onClick={previousMonth} className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-          ←
+    <div className="p-3 sm:p-6">
+      <div className="flex  justify-between items-center mb-4 gap-3">
+        <button onClick={previousMonth} className=" px-4 py-2 bg-white/90 dark:bg-[#1a1a1a] rounded-xl dark:border dark:border-white/10 shadow-sm">
+          <HiOutlineChevronDoubleLeft />
         </button>
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
           <h2 className="text-lg sm:text-xl font-semibold capitalize text-gray-900 dark:text-white text-center">
             {monthName}
           </h2>
-          {schedules.length > 0 && (
-            <button 
-              onClick={navigateToFirstSchedule}
-              className="text-xs sm:text-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/60 whitespace-nowrap"
-            >
-              Ir a próxima cita
-            </button>
-          )}
         </div>
-        <button onClick={nextMonth} className="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-          →
+        <button onClick={nextMonth} className="px-4 py-2 bg-white/90 dark:bg-[#1a1a1a] rounded-xl dark:border dark:border-white/10 shadow-sm">
+          <HiOutlineChevronDoubleRight />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 sm:gap-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 bg-white/90 dark:bg-[#1a1a1a] dark:border dark:border-white/10 p-2 rounded-2xl  shadow-sm">
         {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(day => (
           <div key={day} className="text-center font-semibold text-gray-600 dark:text-gray-400 py-2 text-xs sm:text-sm">
             <span className="hidden sm:inline">{day}</span>
@@ -139,30 +132,13 @@ export default function ScheduleCalendar({ schedules }: Props) {
             <div
               key={day}
               onClick={() => handleDayClick(day)}
-              className={`border rounded p-1 sm:p-2 min-h-[60px] sm:min-h-[100px] cursor-pointer transition-all hover:shadow-md ${
+              className={`rounded-2xl p-1 sm:p-2 min-h-[50px] sm:min-h-[80px] cursor-pointer transition-all hover:shadow-md flex items-center justify-center ${
                 isToday 
-                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' 
-                  : 'bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                  ? 'bg-gradient-to-b from-secondary to-primary dark:to-wine-red/50 text-white' 
+                  : 'bg-background'
               }`}
             >
-              <div className="font-semibold text-xs sm:text-sm mb-1 text-gray-900 dark:text-white">{day}</div>
-              <div className="space-y-1">
-                {daySchedules.slice(0, 2).map(schedule => (
-                  <div
-                    key={schedule.id}
-                    className={`text-[10px] sm:text-xs rounded px-1 py-0.5 truncate border ${getStatusColor(schedule.status)}`}
-                    title={`${schedule.client_name} - ${schedule.description || ''} (${schedule.status})`}
-                  >
-                    <span className="hidden sm:inline">{schedule.client_name}</span>
-                    <span className="sm:hidden">•</span>
-                  </div>
-                ))}
-                {daySchedules.length > 2 && (
-                  <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    +{daySchedules.length - 2}
-                  </div>
-                )}
-              </div>
+              <div className="font-semibold">{day}</div>
             </div>
           );
         })}
