@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/core/config';
-import { HiOutlineBadgeCheck, HiOutlineChat, HiOutlineCollection, HiOutlineUserAdd } from "react-icons/hi";
+import { HiMinus, HiOutlineBadgeCheck, HiOutlineChat, HiOutlineCollection, HiOutlineTrendingDown, HiOutlineTrendingUp, HiOutlineUserAdd } from "react-icons/hi";
 
 interface Stats {
   totalProperties: number;
@@ -108,7 +108,7 @@ export function StatCards() {
       value: '5',
       icon: <HiOutlineBadgeCheck />,
       gradient: 'from-emeral-500 to-emerald-600',
-      trend: '+3',
+      trend: '0',
       iconBg: 'bg-emerald-500 dark:bg-emerald-500/10',
       iconColor: 'text-emerald-600 dark:text-emerald-400',
       color: '#10b981',
@@ -172,12 +172,13 @@ export function StatCards() {
                 {stat.icon}
               </span>
             </div>
-            <div className={`text-sm font-semibold px-5 py-1/2 rounded-full transition-colors duration-300 ${stat.trend.startsWith('+')
+            <div className={`flex items-center gap-2 text-sm font-semibold px-2 py-1/2 rounded-full transition-colors duration-300 ${stat.trend.startsWith('+')
               ? 'bg-[#74f67b] text-[#1a1a1a]'
               : stat.trend.startsWith('-')
                 ? 'bg-[#f54942] text-white'
-                : 'bg-gray-500/10 text-gray-500'
+                : 'bg-gray-500 text-white'
               }`}>
+                {stat.trend.startsWith('+') ? <HiOutlineTrendingUp className="w-5 h-5"/> : stat.trend.startsWith('-') ? <HiOutlineTrendingDown className="w-5 h-5"/> : <HiMinus className="w-5 h-5"/>}
               {stat.trend}
             </div>
           </div>
