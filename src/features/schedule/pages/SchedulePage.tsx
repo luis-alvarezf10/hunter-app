@@ -8,6 +8,8 @@ import { TitleView } from "@/shared/components/text/TitleView";
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import { HiOutlinePlusCircle } from "react-icons/hi";
 import ViewToggle from "@/shared/components/buttons/ToggleButtons";
+import { LoadSpin } from "@/shared/components/spins/LoadSpin";
+import { div } from "framer-motion/client";
 
 interface ScheduleItem {
   id: string;
@@ -93,8 +95,8 @@ export default function SchedulePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen text-gray-900 dark:text-white">
-        Cargando agenda...
+      <div className="flex items-center justify-center h-screen w-full">
+        <LoadSpin/>
       </div>
     );
   }
