@@ -18,6 +18,7 @@ import {
   HiTrash,
   HiOutlineTrash,
   HiOutlinePencil,
+  HiOutlineEye,
 } from "react-icons/hi";
 import { PropertyStats, PropertyCharts } from "../components";
 import { createClient } from "@/core/config";
@@ -255,11 +256,11 @@ export function PropertiesPage() {
       case "reserved":
         return "bg-amber-500 text-white";
       case "saled":
-        return "bg-purple-500 text-white";
+        return "bg-purple-500  text-white";
       case "rented":
         return "bg-blue-500 text-white";
       default:
-        return "bg-grey-500 text-white";
+        return "bg-grey-500  text-white";
     }
   };
 
@@ -576,151 +577,149 @@ export function PropertiesPage() {
           })}
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredProperties.map((property) => {
-            const details = Array.isArray(property.details_properties)
-              ? property.details_properties[0]
-              : property.details_properties;
+        <div className="">
+          {/* Encabezado de la Tabla - Solo visible en tablet/PC (md+) */}
+          <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-gray-100 dark:bg-white/5 rounded-t-xl border-x border-t border-gray-300 dark:border-white/10 text-xs uppercase font-semibold text-gray-600 dark:text-gray-300">
+            <div className="col-span-5">Propiedad</div>
+            <div className="col-span-2 text-center">Estado</div>
+            <div className="col-span-3 text-center">Precio</div>
+            <div className="col-span-2 text-center">Acciones</div>
+          </div>
 
-            return (
-              <div
-                key={property.id}
-                className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="flex flex-col md:flex-row">
-                  {/* Image */}
-                  <div className="relative md:w-64 h-48 bg-gray-200 dark:bg-gray-800 flex-shrink-0">
-                    {property.image ? (
-                      <img
-                        src={property.image}
-                        alt={property.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <HiOutlineHome className="text-6xl text-gray-400" />
-                      </div>
-                    )}
-                    <div className="absolute top-3 right-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(property.status)}`}
-                      >
-                        {getStatusLabel(property.status)}
-                      </span>
+          {/* Cuerpo de la Tabla / Lista de Cartas */}
+          <div className="space-y-3 md:space-y-0 md:border md:border-gray-300 md:dark:border-white/10 md:rounded-b-xl overflow-hidden">
+            {filteredProperties.map((property) => {
+              const details = Array.isArray(property.details_properties)
+                ? property.details_properties[0]
+                : property.details_properties;
+
+              return (
+                <div
+                  key={property.id}
+                  className="bg-white/90 dark:bg-[#1a1a1a] md:grid md:grid-cols-12 md:items-center gap-4 p-4 md:px-6 md:py-4 dark:border border-gray-300 dark:border-white/10 md:border-none md:border-b md:last:border-b-0 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none rounded-2xl md:rounded-none"
+                >
+                  {/* Columna 1: Info Principal */}
+                  <div className="col-span-5 flex items-center gap-4 mb-4 md:mb-0">
+                    <div className="relative w-16 h-16 md:w-12 md:h-12 bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
+                      {property.image ? (
+                        <img
+                          src={property.image}
+                          alt={property.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <HiOutlineHome className="text-2xl text-gray-400" />
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 p-4 flex flex-col">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <div className="flex gap-3 min-w-0">
+                      <div
+                        className={`w-2 block md:hidden rounded-full ${getStatusColor(property.status)}`}
+                      />
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate text-sm md:text-base">
                           {property.title}
                         </h3>
-                        {property.address && (
-                          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                            <HiOutlineLocationMarker className="text-lg" />
-                            <span className="text-sm">{property.address}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 mt-0.5">
+                          <HiOutlineLocationMarker className="text-xs shrink-0" />
+                          <span className="text-xs truncate">
+                            {property.address || "Sin dirección"}
+                          </span>
+                        </div>
                       </div>
-                      {details?.price && (
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-[#6b1e2e]">
-                            ${details.price.toLocaleString()}
-                          </div>
-                          {property.type_offers?.value === "Rent" &&
-                            details.period && (
-                              <span className="text-sm text-gray-500 dark:text-gray-400">
-                                /
-                                {details.period === "monthly"
-                                  ? "mes"
-                                  : details.period === "daily"
-                                    ? "día"
-                                    : details.period === "weekly"
-                                      ? "semana"
-                                      : "año"}
-                              </span>
-                            )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Badges */}
-                    <div className="flex items-center gap-2 mb-3 flex-wrap">
-                      {property.type_offers && (
-                        <span className="px-2 py-1 text-xs">
-                          {property.type_offers.name}
-                        </span>
-                      )}
-                      {details?.is_furnished && (
-                        <span className="px-2 py-1 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-full">
-                          Amueblada
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Características */}
-                    <div className="flex gap-4 mb-4">
-                      {details?.bedrooms != null && details.bedrooms > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-xl text-[#6b1e2e]">
-                            bed
-                          </span>
-                          <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {details.bedrooms} Hab.
-                          </span>
-                        </div>
-                      )}
-                      {details?.bathrooms != null && details.bathrooms > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-xl text-[#6b1e2e]">
-                            bathtub
-                          </span>
-                          <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {details.bathrooms} Baños
-                          </span>
-                        </div>
-                      )}
-                      {details?.area_sqm != null && details.area_sqm > 0 && (
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-xl text-[#6b1e2e]">
-                            square_foot
-                          </span>
-                          <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {details.area_sqm} m²
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-auto">
-                      <button
-                        onClick={() => {
-                          setSelectedProperty(property);
-                          setShowDetailsDialog(true);
-                        }}
-                        className="flex-1 px-4 py-2 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white rounded-lg text-sm font-semibold transition-colors"
-                      >
-                        Ver Detalles
-                      </button>
-                      <button
-                        onClick={() =>
-                          router.push(`/properties/add?id=${property.id}`)
-                        }
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-lg">
-                          edit
-                        </span>
-                      </button>
                     </div>
                   </div>
+
+                  {/* Columna 2: Estado */}
+                  <div className="col-span-2 hidden md:flex md:justify-center md:items-center">
+                    <span
+                      className={`px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${getStatusColor(property.status)}`}
+                    >
+                      {getStatusLabel(property.status)}
+                    </span>
+                  </div>
+
+                  {/* Columna 3: Precio */}
+                  <div className="col-span-3 border-y md:border-none border-gray-300/50 dark:border-y-white/10 flex flex-row md:flex-col items-center justify-center gap-1">
+                    <span className="text-lg md:text-base font- text-primary dark:text-white">
+                      ${details?.price?.toLocaleString()}
+                    </span>
+                    {property.type_offers?.value === "Rent" &&
+                      details.period && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          /
+                          {details.period === "monthly"
+                            ? "mes"
+                            : details.period === "daily"
+                              ? "día"
+                              : details.period === "weekly"
+                                ? "semana"
+                                : "año"}
+                        </span>
+                      )}
+                  </div>
+
+                  {/* Columna 4: Acciones */}
+                  <div className="col-span-2 flex items-center justify-end gap-2  pt-3 md:pt-0">
+                    <IconButton onClick={() => {
+                        setSelectedProperty(property);
+                        setShowDetailsDialog(true);
+                      }}  
+                      variant="secondary"
+                      className="flex-1 md:flex-none h-12"
+                      icon={<HiOutlineEye  className="text-lg" />}
+                    />
+                    <div className="relative">
+                        <IconButton
+                          icon={<HiDotsVertical className="text-lg w-5 h-5" />}
+                          variant="outline"
+                          className="flex-1 md:flex-none w-12 h-12"
+                          onClick={() =>
+                            setOpenMenuId(
+                              openMenuId === property.id ? null : property.id,
+                            )
+                          }
+                        />
+                        <AnimatePresence>
+                          {openMenuId === property.id && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                            >
+                              <button
+                                onClick={() => {
+                                  router.push(
+                                    `/properties/add?id=${property.id}`,
+                                  );
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
+                              >
+                                <HiOutlinePencil className="text-lg" />
+                                Editar
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleDeleteProperty(property.id);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
+                              >
+                                <HiOutlineTrash className="text-lg" />
+                                Eliminar
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -865,65 +864,75 @@ export function PropertiesPage() {
 
                         {/* Características principales */}
                         <div className="flex flex-col gap-3">
-                          <TitleCard title="Características" subtitle="verifica los detalles de propiedad aquí: " showDivider />
+                          <TitleCard
+                            title="Características"
+                            subtitle="verifica los detalles de propiedad aquí: "
+                            showDivider
+                          />
                           <div className="grid grid-cols-2 gap-3 min-h-[240px] min-w-[260px]">
-                            {details?.bedrooms != null && details.bedrooms > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.bedrooms != null &&
+                              details.bedrooms > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Habitaciones
                                   </p>
                                   <p className=" text-gray-900 dark:text-white">
                                     {details.bedrooms}
                                   </p>
-                              </div>
-                            ) }
+                                </div>
+                              )}
 
-                            {details?.bathrooms != null && details.bathrooms > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.bathrooms != null &&
+                              details.bathrooms > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Baños
                                   </p>
                                   <p className=" text-gray-900 dark:text-white">
                                     {details.bathrooms}
                                   </p>
-                              </div>
-                            )}
+                                </div>
+                              )}
 
-                            {details?.area_sqm != null && details.area_sqm > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.area_sqm != null &&
+                              details.area_sqm > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Área
                                   </p>
                                   <p className="text-gray-900 dark:text-white">
                                     {details.area_sqm} m²
                                   </p>
-                              </div>
-                            )}
+                                </div>
+                              )}
 
-                            {details?.parking_spots != null && details.parking_spots > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.parking_spots != null &&
+                              details.parking_spots > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Estacionamientos
                                   </p>
                                   <p className="text-gray-900 dark:text-white">
                                     {details.parking_spots}
                                   </p>
-                              </div>
-                            )}
+                                </div>
+                              )}
 
-                            {details?.half_bath != null && details.half_bath > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.half_bath != null &&
+                              details.half_bath > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Medios Baños
                                   </p>
                                   <p className="text-gray-900 dark:text-white">
                                     {details.half_bath}
                                   </p>
-                              </div>
-                            )}
+                                </div>
+                              )}
 
-                            {details?.lot_size != null && details.lot_size > 0 && (
-                              <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
+                            {details?.lot_size != null &&
+                              details.lot_size > 0 && (
+                                <div className="flex flex-col md:flex-row items-center gap-1 bg-gray-500/5 rounded-2xl  justify-start p-3  backdrop-blur-md border border-gray-300/50 border-white/10 shadow-md">
                                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     Tamaño del Lote
                                   </p>
@@ -931,7 +940,7 @@ export function PropertiesPage() {
                                     {details.lot_size} m²
                                   </p>
                                 </div>
-                            )}
+                              )}
                           </div>
                         </div>
 
@@ -951,26 +960,26 @@ export function PropertiesPage() {
                       {/* Footer con botones */}
                       <div className="sticky bottom-0 border-t border-gray-300/50 dark:border-white/10 p-4 flex gap-3">
                         <ActionButton
-                        onClick={() => {
-                          setShowDetailsDialog(false);
+                          onClick={() => {
+                            setShowDetailsDialog(false);
                             router.push(
                               `/properties/add?id=${selectedProperty.id}`,
                             );
-                        }}
-                        className="flex-1"
-                      >
-                        Editar 
-                      </ActionButton>
+                          }}
+                          className="flex-1"
+                        >
+                          Editar
+                        </ActionButton>
                         <ActionButton
-                        onClick={() => {
-                           setShowDetailsDialog(false);
+                          onClick={() => {
+                            setShowDetailsDialog(false);
                             setSelectedProperty(null);
-                        }}
-                        className=""
-                        variant="outline"
-                      >
-                        Cerrar
-                      </ActionButton>
+                          }}
+                          className=""
+                          variant="outline"
+                        >
+                          Cerrar
+                        </ActionButton>
                       </div>
                     </div>
                   </div>

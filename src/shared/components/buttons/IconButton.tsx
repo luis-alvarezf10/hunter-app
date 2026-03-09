@@ -15,7 +15,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
 }) => {
   const variants = {
     primary: "bg-gradient-to-r from-secondary to-wine-red text-white shadow-md hover:opacity-90",
-    secondary: "bg-gray-500/10 text-gray-700 dark:text-gray-300 hover:bg-gray-500/20",
+    secondary: "bg-gray-300/50 dark:bg-gray-300/20  text-gray-700 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-300/30",
     outline: "border border-gray-300/50 bg-transparent hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10 cursor-pointer",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600",
@@ -25,7 +25,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
     <button
       onClick={onClick}
       // Cambié p-2 por px-3 para que cuando haya texto no se vea muy pegado a los bordes
-      className={`p-2 sm:px-4 py-2 rounded-2xl text-sm transition-all duration-200 flex items-center justify-center gap-2 ${variants[variant]} ${className}`}
+      className={`p-2 sm:px-4 py-2 rounded-2xl text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${variants[variant]} ${className}`}
       {...props}
     >
       {/* El icono siempre se ve */}
