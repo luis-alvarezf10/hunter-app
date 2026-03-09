@@ -5,6 +5,7 @@ import { createClient } from "@/core/config";
 import { Card } from "@/shared/components/cards/card";
 import { TitleCard } from "@/shared/components/text/TitleCard";
 import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
+import { LoadSpin } from "@/shared/components/spins/LoadSpin";
 
 interface TypeData {
   label: string;
@@ -134,7 +135,7 @@ export function PropertyCharts() {
   if (loading)
     return (
       <Card className="flex items-center justify-center min-h-[350px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-500"></div>
+        <LoadSpin/>
       </Card>
     );
 
