@@ -1,12 +1,14 @@
 "use client";
 
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
+import { Card } from "@/shared/components/cards/card";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
 import { SearchBar } from "@/shared/components/inputs/SearchBar";
 import { useState, useMemo } from "react";
 import {
   HiOutlineArrowNarrowDown,
   HiOutlineArrowNarrowUp,
+  HiOutlineClipboardList,
 } from "react-icons/hi";
 
 interface ScheduleItem {
@@ -14,6 +16,7 @@ interface ScheduleItem {
   description: string;
   client_name: string;
   date: string;
+  time: string;
   status: string;
   property?: {
     name: string;
@@ -122,10 +125,22 @@ export default function ScheduleList({ schedules }: Props) {
     );
   };
 
+  const getStatusBorderColor = (status: string) => {
+    const colors: Record<string, string> = {
+      Pendiente: "border-l-yellow-500 dark:border-l-yellow-600",
+      Confirmada: "border-l-blue-500 dark:border-l-blue-600",
+      Realizada: "border-l-green-500 dark:border-l-green-600",
+      Cancelada: "border-l-red-500 dark:border-l-red-600",
+      "No asistió": "border-l-gray-500 dark:border-l-gray-600",
+      Pospuesta: "border-l-purple-500 dark:border-l-purple-600",
+    };
+    return colors[status] || "border-l-gray-500 dark:border-l-gray-600";
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="">
       {/* Filters */}
-      <div>
+      <div className="flex flex-col gap-4 my-5">
         <div className="flex flex-col md:flex-row justify-between gap-3">
           {/* Search */}
           <div className="">
@@ -182,21 +197,9 @@ export default function ScheduleList({ schedules }: Props) {
         </div>
 
         {/* Stats */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-4 border-t border-gray-300/50 dark:border-white/10">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
+            <HiOutlineClipboardList className="w-5 h-5" />
             <span>
               {filteredAndSortedSchedules.length} cita
               {filteredAndSortedSchedules.length !== 1 ? "s" : ""}
@@ -210,47 +213,71 @@ export default function ScheduleList({ schedules }: Props) {
       </div>
 
       {/* List */}
-      <div className="space-y-6">
-        {Object.entries(groupedSchedules).map(([date, items]) => (
-          <div
-            key={date}
-            className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow dark:shadow-gray-800 p-6 border border-gray-200 dark:border-gray-700"
-          >
-            <h3 className="text-lg font-semibold mb-4 capitalize text-gray-900 dark:text-white">
-              {formatDate(date)}
-            </h3>
-            <div className="space-y-3">
-              {items.map((schedule) => (
-                <div
-                  key={schedule.id}
-                  className="border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {schedule.client_name}
-                      </div>
-                      <div className="text-gray-600 dark:text-gray-400 text-sm">
-                        {schedule.description}
-                      </div>
-                      {schedule.property && (
-                        <div className="text-gray-500 dark:text-gray-500 text-xs mt-1">
-                          📍 {schedule.property.name} -{" "}
-                          {schedule.property.address}
+      <div className="">
+        <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-gray-100 dark:bg-white/5 rounded-t-xl border-x border-t border-gray-300 dark:border-white/10 text-xs uppercase font-semibold text-gray-600 dark:text-gray-300">
+          <div className="col-span-2">Cliente</div>
+          <div className="col-span-2">Propiedad</div>
+          <div className="col-span-3 text-center">Fecha</div>
+          <div className="col-span-2 text-center">Estado</div>
+          <div className="col-span-2 text-center">Acciones</div>
+        </div>
+        <div className="space-y-3 md:space-y-0 md:border md:border-gray-300 md:dark:border-white/10 md:rounded-b-xl overflow-hidden">
+          {Object.entries(groupedSchedules).map(([date, items]) => (
+            <div key={date} className="bg-white/90 dark:bg-[#1a1a1a] md:grid md:grid-cols-12 md:items-center gap-4 p-4 md:px-6 md:py-4 dark:border border-gray-300 dark:border-white/10 md:border-none md:border-b md:last:border-b-0 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none rounded-2xl md:rounded-none">
+              <div className="col-span 5">
+
+              </div>
+              <h3 className="text-lg font-bold mb-4 capitalize text-gray-900 dark:text-white flex items-center gap-2">
+                <span className="w-2 h-2 bg-[#6b1e2e] rounded-full"></span>{" "}
+                {/* Un detalle visual para la fecha */}
+                {formatDate(date)}
+              </h3>
+              <div className="space-y-4">
+                {items.map((schedule) => (
+                  <div
+                    key={schedule.id}
+                    // Cambié el borde a dinámico usando la misma lógica de getStatusColor pero para el borde
+                    className={`border-l-4 pl-4 py-2 transition-all hover:bg-gray-50 dark:hover:bg-white/[0.02] ${getStatusBorderColor(schedule.status)}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          {/* Hora de la cita */}
+                          <span className="text-sm font-black text-[#6b1e2e] dark:text-red-400">
+                            {schedule.time || "00:00"}
+                          </span>
+                          
                         </div>
-                      )}
+
+                        <div className="text-gray-600 dark:text-gray-400 text-sm italic">
+                          {schedule.description}
+                        </div>
+
+                        {schedule.property && (
+                          <div className="text-gray-500 dark:text-gray-500 text-xs mt-2 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-sm">
+                              location_on
+                            </span>
+                            <span className="truncate">
+                              {schedule.property.name} •{" "}
+                              {schedule.property.address}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <span
+                        className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${getStatusColor(schedule.status)}`}
+                      >
+                        {schedule.status}
+                      </span>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${getStatusColor(schedule.status)}`}
-                    >
-                      {schedule.status}
-                    </span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         {filteredAndSortedSchedules.length === 0 && (
           <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow dark:shadow-gray-800 p-12 text-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
