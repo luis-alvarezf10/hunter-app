@@ -21,7 +21,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent px-3 py-1 text-white placeholder-gray-400 focus:outline-none "
+        className="w-full bg-transparent px-3 py-1 placeholder-gray-400 focus:outline-none "
       />
     </div>
   );
