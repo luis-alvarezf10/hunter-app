@@ -468,13 +468,13 @@ export function PropertiesPage() {
                     </div>
 
                     {/* Características destacadas */}
-                    <div className="grid grid-cols-3 gap-2 p-4 border-y border-gray-300/50 dark:border-white/10 mb-3">
+                    <div className="grid grid-cols-3 gap-10 p-4 border-y border-gray-300/50 dark:border-white/10 mb-3">
                       {details?.bedrooms != null && details.bedrooms > 0 && (
                         <div className="flex justify-center items-center gap-2">
                           <span className="material-symbols-outlined text-xl text-gray-600 dark:text-gray-400">
                             bed
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="md:hidden text-xs text-gray-500 dark:text-gray-400">
                             Hab.
                           </span>
                           <span className="text-sm font- text-gray-900 dark:text-white">
@@ -488,7 +488,7 @@ export function PropertiesPage() {
                           <span className="material-symbols-outlined text-gray-600 dark:text-gray-400">
                             bathtub
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="md:hidden text-xs text-gray-500 dark:text-gray-400">
                             Baños
                           </span>
                           <span className="text-sm font- text-gray-900 dark:text-white">

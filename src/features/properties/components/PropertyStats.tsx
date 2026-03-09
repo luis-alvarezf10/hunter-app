@@ -106,12 +106,12 @@ export function PropertyStats() {
     return (
       <Card className="p-5 md:p-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="h-6 bg-gray-200 dark:bg-white/5 rounded w-1/2"></div>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-4 bg-gray-200 dark:bg-white/5 rounded"></div>
+                <div className="h-3 bg-gray-200 dark:bg-white/5 rounded"></div>
               </div>
             ))}
           </div>
