@@ -1,12 +1,10 @@
 "use client";
 
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
-import { Card } from "@/shared/components/cards/card";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
 import { SearchBar } from "@/shared/components/inputs/SearchBar";
 import { useState, useMemo } from "react";
 import {
-  HiOutlineArrowNarrowDown,
   HiOutlineArrowNarrowUp,
   HiOutlineClipboardList,
 } from "react-icons/hi";
@@ -19,8 +17,8 @@ interface ScheduleItem {
   time: string;
   status: string;
   property?: {
-    name: string;
-    address: string;
+    name: string,
+    address: string
   };
 }
 
@@ -46,6 +44,7 @@ export default function ScheduleList({ schedules }: Props) {
       day: "numeric",
     });
   };
+  
 
   const filteredAndSortedSchedules = useMemo(() => {
     const today = new Date();
@@ -127,7 +126,7 @@ export default function ScheduleList({ schedules }: Props) {
 
   const getStatusBorderColor = (status: string) => {
     const colors: Record<string, string> = {
-      Pendiente: "border-l-yellow-500 dark:border-l-yellow-600",
+      Pendiente: "bg-amber-500",
       Confirmada: "border-l-blue-500 dark:border-l-blue-600",
       Realizada: "border-l-green-500 dark:border-l-green-600",
       Cancelada: "border-l-red-500 dark:border-l-red-600",
@@ -213,80 +212,96 @@ export default function ScheduleList({ schedules }: Props) {
       </div>
 
       {/* List */}
-      <div className="">
-        <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-gray-100 dark:bg-white/5 rounded-t-xl border-x border-t border-gray-300 dark:border-white/10 text-xs uppercase font-semibold text-gray-600 dark:text-gray-300">
-          <div className="col-span-2">Cliente</div>
-          <div className="col-span-2">Propiedad</div>
-          <div className="col-span-3 text-center">Fecha</div>
-          <div className="col-span-2 text-center">Estado</div>
-          <div className="col-span-2 text-center">Acciones</div>
+      <div className="w-full">
+  {/* Header - Solo visible en MD+ */}
+  <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-gray-100 dark:bg-white/5 rounded-t-xl border-x border-t border-gray-300 dark:border-white/10 text-xs uppercase font-bold text-gray-500 dark:text-gray-400">
+    <div className="col-span-3">Cliente</div>
+    <div className="col-span-3">Propiedad</div>
+    <div className="col-span-2 text-center">Fecha / Hora</div>
+    <div className="col-span-2 text-center">Estado</div>
+    <div className="col-span-2 text-right">Acciones</div>
+  </div>
+
+  <div className="space-y-4 md:space-y-0 md:border md:border-gray-300 md:dark:border-white/10 md:rounded-b-xl overflow-hidden">
+    {Object.entries(groupedSchedules).map(([date, items]) => (
+      <div key={date}>
+        {/* Separador de Fecha - Sticky para mejor UX */}
+        <div className="sticky top-0 z-10 bg-gray-50/95 dark:bg-[#1a1a1a]/95 backdrop-blur-sm px-6 py-2 border-y border-gray-300 dark:border-white/10">
+          <span className="text-xs font-black uppercase tracking-widest text-[#6b1e2e] dark:text-red-400">
+            {formatDate(date)}
+          </span>
         </div>
-        <div className="space-y-3 md:space-y-0 md:border md:border-gray-300 md:dark:border-white/10 md:rounded-b-xl overflow-hidden">
-          {Object.entries(groupedSchedules).map(([date, items]) => (
-            <div key={date} className="bg-white/90 dark:bg-[#1a1a1a] md:grid md:grid-cols-12 md:items-center gap-4 p-4 md:px-6 md:py-4 dark:border border-gray-300 dark:border-white/10 md:border-none md:border-b md:last:border-b-0 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none rounded-2xl md:rounded-none">
-              <div className="col-span 5">
 
-              </div>
-              <h3 className="text-lg font-bold mb-4 capitalize text-gray-900 dark:text-white flex items-center gap-2">
-                <span className="w-2 h-2 bg-[#6b1e2e] rounded-full"></span>{" "}
-                {/* Un detalle visual para la fecha */}
-                {formatDate(date)}
-              </h3>
-              <div className="space-y-4">
-                {items.map((schedule) => (
-                  <div
-                    key={schedule.id}
-                    // Cambié el borde a dinámico usando la misma lógica de getStatusColor pero para el borde
-                    className={`border-l-4 pl-4 py-2 transition-all hover:bg-gray-50 dark:hover:bg-white/[0.02] ${getStatusBorderColor(schedule.status)}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          {/* Hora de la cita */}
-                          <span className="text-sm font-black text-[#6b1e2e] dark:text-red-400">
-                            {schedule.time || "00:00"}
-                          </span>
-                          
-                        </div>
-
-                        <div className="text-gray-600 dark:text-gray-400 text-sm italic">
-                          {schedule.description}
-                        </div>
-
-                        {schedule.property && (
-                          <div className="text-gray-500 dark:text-gray-500 text-xs mt-2 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">
-                              location_on
-                            </span>
-                            <span className="truncate">
-                              {schedule.property.name} •{" "}
-                              {schedule.property.address}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      <span
-                        className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider whitespace-nowrap ${getStatusColor(schedule.status)}`}
-                      >
-                        {schedule.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+        {items.map((schedule) => (
+          <div
+            key={schedule.id}
+            className="bg-white dark:bg-[#1a1a1a] md:grid md:grid-cols-12 md:items-center gap-4 p-4 md:px-6 md:py-4 border-x border-b border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none mb-3 md:mb-0 mx-2 md:mx-0 rounded-2xl md:rounded-none"
+          >
+            {/* Columna 1: Cliente */}
+            <div className="col-span-3 flex items-center gap-3 mb-2 md:mb-0">
+              <div className={`w-1 h-10 rounded-full shrink-0 ${getStatusBorderColor(schedule.status)}`} />
+              <div className="min-w-0">
+                <h3 className="font-bold text-gray-900 dark:text-white truncate text-sm">
+                  {schedule.client_name}
+                </h3>
+                <p className="text-xs text-gray-500 truncate italic">{schedule.description}</p>
               </div>
             </div>
-          ))}
-        </div>
 
-        {filteredAndSortedSchedules.length === 0 && (
-          <div className="bg-white dark:bg-[#1a1a1a] rounded-lg shadow dark:shadow-gray-800 p-12 text-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
-            {searchTerm || filterType !== "all" || filterStatus !== "all"
-              ? "No se encontraron citas con los filtros aplicados"
-              : "No tienes citas programadas"}
+            {/* Columna 2: Propiedad */}
+            <div className="col-span-3 mb-3 md:mb-0 flex items-center gap-1 text-gray-600 dark:text-gray-400">
+              {schedule.property ? (
+                <>
+                  <span className="material-symbols-outlined text-sm shrink-0">location_on</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium truncate">{schedule.property.name}</p>
+                    <p className="text-[10px] opacity-70 truncate">{schedule.property.address}</p>
+                  </div>
+                </>
+              ) : (
+                <span className="text-xs text-gray-400 italic">Sin propiedad asignada</span>
+              )}
+            </div>
+
+            {/* Columna 3: Fecha/Hora */}
+            <div className="col-span-2 md:text-center mb-3 md:mb-0">
+              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">
+                {/* Asumiendo que tienes la hora o la extraes de la fecha */}
+                {schedule.time || "--:--"}
+              </span>
+            </div>
+
+            {/* Columna 4: Estado */}
+            <div className="col-span-2 flex md:justify-center mb-4 md:mb-0">
+              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${getStatusColor(schedule.status)}`}>
+                {schedule.status}
+              </span>
+            </div>
+
+            {/* Columna 5: Acciones */}
+            <div className="col-span-2 flex items-center justify-end gap-2 border-t md:border-none pt-3 md:pt-0">
+              
+            </div>
           </div>
-        )}
+        ))}
       </div>
+    ))}
+  </div>
+
+  {/* Empty State */}
+  {filteredAndSortedSchedules.length === 0 && (
+    <div className="mt-4 bg-white dark:bg-[#1a1a1a] rounded-2xl p-12 text-center border border-dashed border-gray-300 dark:border-white/10">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 mb-4">
+        <span className="material-symbols-outlined text-3xl text-gray-400">calendar_today</span>
+      </div>
+      <p className="text-gray-500 dark:text-gray-400 font-medium">
+        {searchTerm || filterType !== "all" || filterStatus !== "all"
+          ? "No se encontraron citas con los filtros aplicados"
+          : "No tienes citas programadas"}
+      </p>
     </div>
+  )}
+</div>
+      </div>
   );
 }
