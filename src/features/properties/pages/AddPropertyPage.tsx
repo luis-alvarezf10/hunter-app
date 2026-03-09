@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/core/config';
 import { HiOutlineArrowLeft, HiOutlineCamera } from 'react-icons/hi';
+import { ActionButton } from '@/shared/components/buttons/ActionButton';
 
 export function AddPropertyPage() {
   const router = useRouter();
@@ -857,32 +858,18 @@ export function AddPropertyPage() {
         </div>
 
         {/* Botones */}
-        <div className="flex gap-4 justify-end">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-6 py-2.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2.5 bg-[#6b1e2e] hover:bg-[#6b1e2e]/90 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {loading ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                Guardando...
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-sm">save</span>
-                Guardar Propiedad
-              </>
-            )}
-          </button>
-        </div>
+         <div className="bg-white/90 dark:bg-[#1a1a1a]/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl flex items-center justify-end gap-4 z-40">
+         <ActionButton onClick={() => router.back()} variant='outline' size='md' className='flex-1 md:flex-none'>
+          Cancelar
+         </ActionButton>
+        <ActionButton onClick={handleSubmit} disabled={loading} size='md' className='flex-1 md:flex-none'>
+        {loading ? (
+          <span> Guardando...</span>
+        ) : (
+          <>Guardar </>
+        )}
+        </ActionButton>
+      </div>
       </form>
 
       {/* Dialog de Búsqueda de Cliente */}
