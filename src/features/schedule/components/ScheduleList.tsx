@@ -315,7 +315,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                   <div className="col-span-3 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`w-1 h-10 rounded-full shrink-0 ${getStatusBorderColor(schedule.status)}`}
+                        className={`w-2 h-10 rounded-full shrink-0 ${getStatusBorderColor(schedule.status)}`}
                       />
                       <div className="min-w-0">
                         <h3 className="font-semibold truncate text-sm">
