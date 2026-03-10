@@ -343,7 +343,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                   </div>
 
                   {/* Columna 2: Propiedad */}
-                  <div className="col-span-3 flex border-t md:border-none gap-1 pt-7 md:pt-0">
+                  <div className="col-span-3 flex border-t border-gray-300/50 dark:border-white/10  md:border-none gap-1 pt-7 md:pt-0">
                     <div className="flex items-start gap-1 justify-between w-full">
                       {schedule.property ? (
                         <>
