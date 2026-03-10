@@ -347,7 +347,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                     <div className="flex items-start gap-1 justify-between w-full">
                       {schedule.property ? (
                         <>
-                          <div className="flex items-start gap-1">
+                          <div className="flex items-start gap-1 min-w-0">
                             <HiOutlineLocationMarker />
                             <div className="min-w-0">
                               <p className="text-sm font-medium truncate">
