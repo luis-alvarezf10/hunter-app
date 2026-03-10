@@ -277,12 +277,8 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
         <div className="pt-4 border-t border-gray-300/50 dark:border-white/10">
           <div className="flex items-end gap-2 text-sm text-gray-600 dark:text-gray-400">
             <HiOutlineClipboardList className="w-5 h-5" />
-            <span className="font-semibold">
-              Total de citas:
-            </span>
-            <span>
-              {filteredAndSortedSchedules.length} 
-            </span>
+            <span className="font-semibold">Total de citas:</span>
+            <span>{filteredAndSortedSchedules.length}</span>
           </div>
         </div>
       </div>
@@ -302,55 +298,123 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
           {Object.entries(groupedSchedules).map(([date, items]) => (
             <div key={date}>
               {/* Separador de Fecha - Sticky para mejor UX */}
-              <div className="md:hidden sticky top-0 z-10 bg-gray-50/95 dark:bg-[#1a1a1a]/95 backdrop-blur-sm px-6 py-2 border-y border-gray-300 dark:border-white/10">
-                <span className="text-xs font-black uppercase tracking-widest text-[#6b1e2e] dark:text-red-400">
+
+              <div className="md:hidden sticky top-0 mb-5 z-10 py-2 flex items-center justify-center gap-3">
+                <div className="flex-1 bg-gray-300 dark:bg-white/20 h-0.5 rounded-full " />
+                <span className="text-xs font-black uppercase tracking-widest dark:text-secondary">
                   {formatDate(date)}
                 </span>
+                <div className="flex-1 bg-gray-300 dark:bg-white/20 h-0.5 rounded-full " />
               </div>
-
               {items.map((schedule) => (
                 <div
                   key={schedule.id}
-                  className="bg-white dark:bg-[#1a1a1a] md:grid md:grid-cols-12 md:items-center gap-4 p-4 md:px-6 md:py-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none mb-3 md:mb-0 mx-2 md:mx-0 rounded-2xl md:rounded-none"
+                  className="bg-white dark:bg-[#1a1a1a] flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 p-6 md:px-6 md:py-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors shadow-sm md:shadow-none mb-3 md:mb-0 rounded-2xl md:rounded-none"
                 >
                   {/* Columna 1: Cliente */}
-                  <div className="col-span-3 flex items-center gap-3 mb-2 md:mb-0">
-                    <div
-                      className={`w-1 h-10 rounded-full shrink-0 ${getStatusBorderColor(schedule.status)}`}
-                    />
-                    <div className="min-w-0">
-                      <h3 className="font-semibold truncate text-sm">
-                        {schedule.client_name}
-                      </h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate italic">
-                        {schedule.description}
-                      </p>
+                  <div className="col-span-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`w-1 h-10 rounded-full shrink-0 ${getStatusBorderColor(schedule.status)}`}
+                      />
+                      <div className="min-w-0">
+                        <h3 className="font-semibold truncate text-sm">
+                          {schedule.client_name}
+                        </h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate italic">
+                          {schedule.description}
+                        </p>
+                      </div>
                     </div>
+                    <div className="md:hidden text-center flex flex-col gap-1">
+                      <span className="text-sm font-medium ">
+                        {/* Asumiendo que tienes la hora o la extraes de la fecha */}
+                        {shortDate(schedule.date)}
+                      </span>
+                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                        {formatTime(schedule.time)}
+                      </span>
+                    </div>
+                    {/* <span
+                      className={`md:hidden px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-white ${getStatusColor(schedule.status)}`}
+                    >
+                      {schedule.status}
+                    </span> */}
                   </div>
 
                   {/* Columna 2: Propiedad */}
-                  <div className="col-span-3 flex  gap-1">
-                    {schedule.property ? (
-                      <>
-                        <HiOutlineLocationMarker />
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {schedule.property.name}
-                          </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                            {schedule.property.address}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-xs text-gray-400 italic">
-                        Sin propiedad asignada
-                      </span>
-                    )}
+                  <div className="col-span-3 flex border-t md:border-none gap-1 pt-7 md:pt-0">
+                    <div className="flex items-start gap-1 justify-between w-full">
+                      {schedule.property ? (
+                        <>
+                          <div className="flex items-start gap-1">
+                            <HiOutlineLocationMarker />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {schedule.property.name}
+                              </p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                {schedule.property.address}
+                              </p>
+                            </div>
+
+                          </div>
+                        </>
+                      ) : (
+                        <span className="text-xs text-gray-400 italic">
+                          Sin propiedad asignada
+                        </span>
+                      )}
+                      <div className="relative">
+                        <IconButton
+                          icon={<HiDotsVertical className="text-lg w-5 h-5" />}
+                          variant="outline"
+                          className="md:hidden flex-1 md:flex-none w-12 h-12"
+                          onClick={() =>
+                            setOpenMenuId(
+                              openMenuId === schedule.id ? null : schedule.id,
+                            )
+                          }
+                        />
+                        <AnimatePresence>
+                          {openMenuId === schedule.id && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                            >
+                              <button
+                                onClick={() => {
+                                  router.push(
+                                    `/schedule/add?id=${schedule.id}`,
+                                  );
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
+                              >
+                                <HiOutlinePencil className="text-lg" />
+                                Editar
+                              </button>
+                              <button
+                                onClick={() => {
+                                  handleDeleteDate(schedule.id);
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
+                              >
+                                <HiOutlineTrash className="text-lg" />
+                                Eliminar
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Columna 3: Fecha/Hora */}
-                  <div className="col-span-2 md:text-center flex flex-col gap-1">
+                  <div className="col-span-2 hidden md:text-center md:flex flex-col gap-1">
                     <span className="text-sm font-medium ">
                       {/* Asumiendo que tienes la hora o la extraes de la fecha */}
                       {shortDate(schedule.date)}
@@ -361,7 +425,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                   </div>
 
                   {/* Columna 4: Estado */}
-                  <div className="col-span-2 flex md:justify-center">
+                  <div className="col-span-2 hidden md:flex md:justify-center">
                     <span
                       className={`px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-white ${getStatusColor(schedule.status)}`}
                     >
@@ -370,8 +434,8 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                   </div>
 
                   {/* Columna 5: Acciones */}
-                  <div className="col-span-2 flex items-center justify-center gap-2 border-t md:border-none pt-3 md:pt-0">
-                    <div className="relative">
+                  <div className="col-span-2 flex items-center justify-center gap-2 pt-3 md:pt-0">
+                    <div className="hidden md:block relative">
                       <IconButton
                         icon={<HiDotsVertical className="text-lg w-5 h-5" />}
                         variant="outline"
