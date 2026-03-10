@@ -18,6 +18,7 @@ interface ScheduleItem {
   description: string;
   client_name: string;
   date: string;
+  time: string;
   status: string;
   created_at: string;
   property?: {
@@ -37,57 +38,59 @@ export default function SchedulePage() {
   }, []);
 
   const fetchSchedules = async () => {
+    setLoading(true);
     try {
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      console.log("Current user:", user);
+      if (!user) return;
 
-      if (!user) {
-        console.log("No user found");
-        return;
-      }
-
-      // First, get schedules without the join
-      const { data: schedulesData, error: schedulesError } = await supabase
+      // 1. Definimos la consulta.
+      // Usamos 'id_advisdor' porque así está en tu tabla.
+      const { data: fetchedData, error: fetchError } = await supabase
         .from("schedule")
-        .select("*")
+        .select(
+          `
+        *,
+        property:properties (
+          title, 
+          address
+        )
+      `,
+        )
         .eq("id_advisdor", user.id)
         .order("date", { ascending: true });
 
-      if (schedulesError) {
-        console.error("Supabase error:", schedulesError);
-        throw schedulesError;
-      }
+      if (fetchError) throw fetchError;
 
-      console.log("Raw schedules from Supabase:", schedulesData);
-
-      // Then, get properties for each schedule
-      const transformedData = await Promise.all(
-        (schedulesData || []).map(async (schedule) => {
-          if (schedule.id_property) {
-            const { data: propertyData } = await supabase
-              .from("properties")
-              .select("name, address")
-              .eq("id", schedule.id_property)
-              .single();
-
-            return {
-              ...schedule,
-              property: propertyData || undefined,
-            };
-          }
-          return schedule;
-        }),
+      // 2. Transformamos los datos con tipado explícito para evitar el error de 'any'
+      const transformedData: ScheduleItem[] = (fetchedData || []).map(
+        (item: any) => {
+          return {
+            id: item.id,
+            id_advisor: item.id_advisdor, // Mapeamos el typo de la DB al campo de tu interfaz
+            id_property: item.id_property,
+            description: item.description,
+            client_name: item.client_name,
+            date: item.date,
+            time: item.time,
+            status: item.status,
+            created_at: item.created_at,
+            property: item.property
+              ? {
+                  name: item.property.title, // Aquí title de la DB pasa a ser name en tu UI
+                  address: item.property.address,
+                }
+              : undefined,
+          };
+        },
       );
 
-      console.log("Schedules loaded:", transformedData);
-      console.log("Total schedules:", transformedData.length);
       setSchedules(transformedData);
-    } catch (error) {
-      console.error("Error fetching schedules:", error);
+    } catch (err) {
+      console.error("Error fetching schedules:", err);
     } finally {
       setLoading(false);
     }
@@ -96,7 +99,7 @@ export default function SchedulePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen w-full">
-        <LoadSpin/>
+        <LoadSpin />
       </div>
     );
   }
