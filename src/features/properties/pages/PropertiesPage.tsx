@@ -642,7 +642,7 @@ export function PropertiesPage() {
 
                   {/* Columna 3: Precio */}
                   <div className="col-span-3 border-y md:border-none border-gray-300/50 dark:border-y-white/10 flex flex-row md:flex-col items-center justify-center gap-1">
-                    <span className="text-lg md:text-base font- text-primary dark:text-white">
+                    <span className="text-lg md:text-sm font-medium">
                       ${details?.price?.toLocaleString()}
                     </span>
                     {property.type_offers?.value === "Rent" &&
@@ -661,7 +661,7 @@ export function PropertiesPage() {
                   </div>
 
                   {/* Columna 4: Acciones */}
-                  <div className="col-span-2 flex items-center justify-end gap-2  pt-3 md:pt-0">
+                  <div className="col-span-2 flex items-center justify-center gap-2  pt-3 md:pt-0">
                     <IconButton onClick={() => {
                         setSelectedProperty(property);
                         setShowDetailsDialog(true);
