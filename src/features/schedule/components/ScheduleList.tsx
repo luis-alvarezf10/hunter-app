@@ -134,7 +134,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
     filtered.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      return sortOrder === "desc" ? dateA - dateB : dateB - dateA;
     });
 
     return filtered;
@@ -262,7 +262,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
               size="sm"
             >
               <span className="text-sm">
-                {sortOrder === "asc" ? "Más antiguas" : "Más recientes"}
+                {sortOrder === "desc" ? "Más antiguas" : "Más recientes"}
               </span>
               <div
                 className={`transition-transform duration-300 ${sortOrder === "desc" ? "rotate-180" : "rotate-0"}`}
