@@ -383,7 +383,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               exit={{ opacity: 0, y: 10, scale: 0.95 }}
                               transition={{ duration: 0.15 }}
-                              className="absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                              className="md:hidden absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
                             >
                               <button
                                 onClick={() => {
