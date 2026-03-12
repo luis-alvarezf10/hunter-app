@@ -160,7 +160,7 @@ export function StatCards() {
       gradient: "from-blue-500 to-blue-600",
       trend: loading ? "0" : formatTrend(trends.properties),
       iconBg: "bg-blue-500 dark:bg-blue-500/10 ",
-      iconColor: "text-blue-400",
+      iconColor: "text-blue-400 dark:text-blue-400",
       color: "#3b82f6", // blue-500
     },
     {

@@ -5,7 +5,7 @@ export default function ReportsPage() {
   return (
     <div className="p-6 space-y-8">
       <TitleView 
-        title="Análisis de Rendimiento" 
+        title="Reportes" 
         subtitle="Métricas clave de tus ventas, propiedades y gestión de clientes"
       />
 
