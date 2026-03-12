@@ -46,7 +46,7 @@ export function Sidebar({ userRole }: SidebarProps) {
     { id: 'properties', label: 'Propiedades', icon: <HiOutlineCollection className="text-xl" />, route: '/properties' },
     { id: 'agenda', label: 'Agenda', icon: <HiOutlineClock className="text-xl" />, route: '/schedule' },
     { id: 'clients', label: 'Clientes', icon: <HiOutlineUserGroup className="text-xl" />, route: '/clients' },
-    { id: 'reports', label: 'Reportes', icon: <HiOutlineChartPie className="text-xl" /> },
+    { id: 'reports', label: 'Reportes', icon: <HiOutlineChartPie className="text-xl" />, route: '/reports'  },
     { id: 'sales', label: 'Ventas', icon: <HiOutlineChartBar className="text-xl" /> },
   ];
 
@@ -64,14 +64,14 @@ export function Sidebar({ userRole }: SidebarProps) {
     <>
       {/* Sidebar */}
       <aside className="w-64 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
-        {/* <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
+        <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40"/>
-        </div> */}
-
-        <div className="h-25 flex flex-col items-center justify-center gap-3">
-          <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
-          <p className="text-sm text-gray-400">{userRole} App</p>
         </div>
+
+        <p className="text-sm text-center text-gray-400">{userRole} App</p>
+        {/* <div className="h-25 flex flex-col items-center justify-center gap-3">
+          <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
+        </div> */}
 
         {/* --- SECCIÓN DE MENÚ PRINCIPAL --- */}
         <nav className="flex-1 py-4 space-y-1">
