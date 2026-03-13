@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { HiOutlineExclamation } from "react-icons/hi";
-import { ActionButton } from '../buttons/ActionButton';
+import { ActionButton } from "../buttons/ActionButton";
+import { BaseDialog } from "./BaseDialog";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -22,9 +23,9 @@ export function ConfirmDialog({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirmar',
-  cancelText = 'Cancelar',
-  confirmColor = 'bg-red-600 hover:bg-red-700',
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  confirmColor = "bg-red-600 hover:bg-red-700",
 }: ConfirmDialogProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -95,10 +96,12 @@ export function ConfirmDialog({
         />
 
         {/* Dialog */}
-        <div className="group dialog-animate relative bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-200 dark:border-gray-700">
-        <div className={`absolute inset-0 bg-gradient-to-br  
+        <BaseDialog className="group max-w-md">
+          <div
+            className={`absolute inset-0 bg-gradient-to-br  
           from-gray-200 to-gray-300/20 
-          opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}></div>
+          opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}
+          ></div>
           {/* Icon with bounce animation */}
           <div className="flex items-center justify-center mb-4">
             <div className="transition-all duration-300 icon-animate size-15 rounded-2xl bg-red-500 dark:bg-red-500/10 flex items-center justify-center rounded-2xl transition-all duration-300 border-b-1 border-t-1 border-transparent group-hover:scale-110 group-hover:dark:border-b-red-500 group-hover:dark:border-t-white/10">
@@ -115,8 +118,6 @@ export function ConfirmDialog({
           <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
             {message}
           </p>
-
-
 
           <div className="flex flex-col-reverse md:flex-row gap-3">
             <ActionButton
@@ -138,7 +139,7 @@ export function ConfirmDialog({
               {confirmText}
             </ActionButton>
           </div>
-        </div>
+        </BaseDialog>
       </div>
     </>
   );

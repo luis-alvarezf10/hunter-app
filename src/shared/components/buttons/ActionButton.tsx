@@ -3,7 +3,7 @@ import { HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh } from "react
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'confirm';
   iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
@@ -34,7 +34,8 @@ export const ActionButton = ({
     outline: "border border-gray-300 bg-transparent hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600 hover:shadow-red-500/50",
-    glass: "bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-sm hover:shadow-xl dark:border-y-1 border-y-white/30 p-2 text-sm text-gray-700 dark:text-gray-300 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] active:duration-75"
+    glass: "bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-sm hover:shadow-xl dark:border-y-1 border-y-white/30 p-2 text-sm text-gray-700 dark:text-gray-300 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] active:duration-75",
+    confirm: "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-md"
   };
 
   const iconVariants = { 
