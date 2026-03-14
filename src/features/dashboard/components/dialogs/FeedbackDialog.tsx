@@ -278,7 +278,7 @@ export function FeedbackDialog({
                         <HiThumbDown className="text-lg shrink-0" /> El cliente no asistió
                       </ActionButton>
                       <ActionButton
-                        onClick={() => handleUpdate("Cancelada por cliente")}
+                        onClick={() => handleUpdate("Cancelada")}
                         variant="secondary"
                         className="flex-1 min-w-0"
                         disabled={loading}

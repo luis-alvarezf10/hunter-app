@@ -161,7 +161,7 @@ export default function ScheduleList({ schedules, onRefresh }: Props) {
     };
     return (
       colors[status] ||
-      "bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300"
+      "bg-gray-500 "
     );
   };
 
