@@ -45,6 +45,7 @@ export function DashboardPage() {
               property:properties (
                 title,
                 address,
+                id_type_offer,
                 details_properties (
                   bedrooms,
                   bathrooms,
