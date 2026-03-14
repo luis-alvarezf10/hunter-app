@@ -26,7 +26,7 @@ export function SocialMediaButtons() {
         href={social.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="border border-slate-300 dark:border-slate-700 bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-slate-700 dark:text-slate-300 p-4 rounded-lg "
+        className="border border-gray-300/50 dark:border-white/10 bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-slate-700 dark:text-slate-300 p-4 rounded-2xl "
         aria-label={social.name}
       >
         {social.icon}
