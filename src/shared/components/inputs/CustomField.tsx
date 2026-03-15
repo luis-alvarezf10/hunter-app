@@ -1,69 +1,84 @@
 import React, { useState } from 'react';
-import { IconType } from 'react-icons';
-import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
+import { HiOutlineEye, HiOutlineEyeOff, HiOutlineCalendar, HiOutlineDocumentText } from 'react-icons/hi';
 
-interface CustomFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// Extendemos para que soporte tanto Input como Textarea
+interface CustomFieldProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
   label: string;
   error?: string;
   icon?: React.ReactNode;
   rightElement?: React.ReactNode;
+  isTextArea?: boolean; // Nueva prop para descripciones largas
 }
 
 export const CustomField = ({
   label,
   error,
-  icon: Icon,
+  icon,
   rightElement,
-  type, // Extraemos el type para manejarlo internamente
+  type,
   className = "",
+  isTextArea = false,
   ...props
 }: CustomFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  // Determinamos si es un campo de password para mostrar el ojo
   const isPasswordField = type === 'password';
+  const isDateField = type === 'date';
   
-  // El tipo final del input cambia según el estado
   const inputType = isPasswordField 
     ? (showPassword ? 'text' : 'password') 
     : type;
 
+  // Icono automático para fechas o descripciones si no se pasa uno
+  const autoIcon = isDateField ? <HiOutlineCalendar size={20} /> : (isTextArea ? <HiOutlineDocumentText size={20} /> : icon);
+
+  // Estilos base compartidos
+  const sharedClasses = `
+    w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none
+    text-base md:text-sm
+    min-w-0 flex-shrink appearance-none
+    ${autoIcon ? 'pl-12' : 'pl-5'}
+    ${(rightElement || isPasswordField) ? 'pr-12' : 'pr-5'}
+    ${error 
+      ? 'border-red-500 bg-red-50/50 dark:bg-red-500/5' 
+      : 'bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-white/10 focus:border-secondary/50 focus:ring-4 focus:ring-secondary/5 shadow-sm'
+    }
+    dark:text-white text-gray-800 placeholder:text-gray-400
+  `;
+
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`}>
-      <label className="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 ml-1">
+      <label className="text-xs font-semibold tracking-widest text-gray-600 dark:text-gray-400 ml-2">
         {label}
       </label>
 
       <div className="relative group">
-        {Icon && (
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-            {Icon}
+        {autoIcon && (
+          <div className="absolute left-4 top-[18px] text-gray-400 group-focus-within:text-secondary transition-colors">
+            {autoIcon}
           </div>
         )}
 
-        <input
-          {...props}
-          type={inputType}
-          className={`
-            w-full py-4 px-4 rounded-2xl border transition-all duration-300 outline-none
-            text-base md:text-sm
-            ${Icon ? 'pl-12' : 'pl-5'}
-            ${(rightElement || isPasswordField) ? 'pr-12' : 'pr-5'}
-            ${error 
-              ? 'border-red-500 bg-red-50/50 dark:bg-red-500/5' 
-              : 'bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-sm hover:shadow-xl dark:border-1 border-gray-200 dark:border-white/10 p-2 text-gray-700 dark:text-gray-300 transition-all duration-300 ease-in-out focus:ring-2 focus:ring-wine-red/10'
-            }
-            dark:text-white text-gray-800 placeholder:text-gray-400
-          `}
-        />
+        {isTextArea ? (
+          <textarea
+            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+            rows={4}
+            className={`${sharedClasses} resize-none min-h-[120px]`}
+          />
+        ) : (
+          <input
+            {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
+            type={inputType}
+            className={`${sharedClasses} ${isDateField ? 'cursor-pointer' : ''}`}
+          />
+        )}
 
-        {/* Lógica para mostrar el botón del ojo o el rightElement */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
+        <div className="absolute right-4 top-[18px] flex items-center">
           {isPasswordField ? (
             <button
-              type="button" // Importante: para que no haga submit al formulario
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="p-1 text-gray-400 hover:text-secondary transition-colors focus:outline-none"
+              className="p-1 text-gray-400 hover:text-secondary transition-colors"
             >
               {showPassword ? <HiOutlineEyeOff size={20} /> : <HiOutlineEye size={20} />}
             </button>

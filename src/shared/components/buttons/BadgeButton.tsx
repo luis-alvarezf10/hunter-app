@@ -3,7 +3,7 @@ import { HiOutlineChevronLeft, HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlin
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'red' | 'normal' | 'primary';
+  variant?: 'red' | 'normal' | 'primary' | 'secondary';
   iconVariant?: 'back';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
@@ -31,7 +31,8 @@ export const BadgeButton = ({
   const variants = {
     normal: "text-gray-600 dark:text-gray-400",
     primary: "bg-blue-600 text-white shadow-blue",
-    red: "bg-red-600/50 text-red-500 shadow-red",
+    red: "text-red-500 shadow-red",
+    secondary: "bg-gray-300/50 dark:bg-white/5 border-t-1 border-t-white/10"
    
   };
 

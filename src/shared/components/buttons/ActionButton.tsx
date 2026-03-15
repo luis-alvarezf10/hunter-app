@@ -1,10 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh, HiOutlineX } from "react-icons/hi";
+import { HiOutlineCheck, HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh, HiOutlineSearch, HiOutlineX } from "react-icons/hi";
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'confirm';
-  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset' | 'close';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'confirm' | 'dotted';
+  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset' | 'close' | 'search' | 'check';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -35,7 +35,8 @@ export const ActionButton = ({
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600 hover:shadow-red-500/50",
     glass: "bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-sm hover:shadow-xl dark:border-y-1 border-y-white/30 p-2 text-sm text-gray-700 dark:text-gray-300 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] active:duration-75",
-    confirm: "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-md"
+    confirm: "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-md",
+    dotted: "border-2 border-dashed border-gray-300 dark:border-white/30 text-gray-600 dark:text-gray-400"
   };
 
   const iconVariants = { 
@@ -46,7 +47,9 @@ export const ActionButton = ({
     view: <HiOutlineFolderAdd className="w-5 h-5" />,
     save: <HiOutlineFolderAdd className="w-5 h-5" />,
     cancel: <HiOutlineFolderAdd className="w-5 h-5" />,
-    reset: <HiOutlineRefresh className="w-5 h-5"/>
+    reset: <HiOutlineRefresh className="w-5 h-5"/>,
+    search: <HiOutlineSearch className="w-5 h-5"/>,
+    check: <HiOutlineCheck className="w-5 h-5"/>
   };
 
   // 3. Diccionario de tamaños
