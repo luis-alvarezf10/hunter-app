@@ -68,7 +68,7 @@ export function Sidebar({ userRole }: SidebarProps) {
           <LogoImage className="h-40"/>
         </div>
 
-        <p className="text-sm text-center text-gray-400">{userRole} App</p>
+        <p className="text-sm text-center text-gray-400 capitalize">{userRole} App</p>
         {/* <div className="h-25 flex flex-col items-center justify-center gap-3">
           <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
         </div> */}

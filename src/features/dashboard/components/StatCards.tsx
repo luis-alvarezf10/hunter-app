@@ -258,10 +258,10 @@ export function StatCards() {
               <div
                 className={`flex items-center gap-2 text-sm font-semibold px-2 py-1/2 rounded-full transition-colors duration-300 ${
                   stat.trend.startsWith("+")
-                    ? "bg-[#74f67b] text-[#1a1a1a]"
+                    ? "bg-[#74f67b] text-[#1a1a1a] dark:bg-[#74f67b]/10 dark:text-[#74f67b] group-hover:dark:text-[#1a1a1a] group-hover:dark:bg-[#74f67b]"
                     : stat.trend.startsWith("-")
-                      ? "bg-[#f54942] text-white"
-                      : "bg-gray-500 text-white"
+                      ? "bg-[#f54942] text-white dark:bg-[#f54942]/10 dark:text-[#f54942] group-hover:dark:text-white group-hover:dark:bg-[#f54942]"
+                      : "bg-gray-500 text-white dark:bg-gray-500/20 dark:text-gray-300 group-hover:dark:text-white group-hover:dark:bg-gray-500"
                 }`}
               >
                 {stat.trend.startsWith("+") ? (
