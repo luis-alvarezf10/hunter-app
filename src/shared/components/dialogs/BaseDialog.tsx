@@ -52,7 +52,7 @@ export const BaseDialog = ({ className = "", children }: BaseDialogProps) => {
       `}</style>
 
       <div
-        className={`dialog-animate relative bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full mx-4 p-8 border border-white/20 dark:border-white/10 ${className}`}
+        className={`dialog-animate relative bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full mx-4 p-6 md:p-8 border border-white/20 dark:border-white/10 ${className}`}
       >
         {children || <></>}
       </div>

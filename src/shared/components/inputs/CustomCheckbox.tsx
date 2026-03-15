@@ -28,7 +28,7 @@ export const CustomCheckbox = ({
             disabled:opacity-50 disabled:cursor-not-allowed
           `}
         />
-        <HiOutlineCheck className="absolute top-0.5 left-0.5 pointer-events-none hidden peer-checked:block text-black dark:text-white md:text-white " />
+        <HiOutlineCheck className="absolute top-0.5 left-0.5 pointer-events-none hidden peer-checked:block text-white " />
       </div>
 
       <label

@@ -1,10 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh } from "react-icons/hi";
+import { HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh, HiOutlineX } from "react-icons/hi";
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'confirm';
-  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset';
+  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset' | 'close';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -40,6 +40,7 @@ export const ActionButton = ({
 
   const iconVariants = { 
     add: <HiOutlinePlusCircle className="w-5 h-5" />,
+    close: <HiOutlineX className="w-5 h-5"/>,
     edit: <HiOutlineFolderAdd className="w-5 h-5" />,
     delete: <HiOutlineFolderAdd className="w-5 h-5" />,
     view: <HiOutlineFolderAdd className="w-5 h-5" />,
