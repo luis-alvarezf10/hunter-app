@@ -1,23 +1,36 @@
-'use client';
-import { HiOutlineHome, HiOutlineChartBar, HiOutlineUserGroup, HiOutlineChartPie, HiOutlineClock, HiOutlineCog, HiOutlineLogout, HiOutlineCollection } from "react-icons/hi";
+"use client";
+import {
+  HiOutlineHome,
+  HiOutlineChartBar,
+  HiOutlineUserGroup,
+  HiOutlineChartPie,
+  HiOutlineClock,
+  HiOutlineCog,
+  HiOutlineLogout,
+  HiOutlineCollection,
+} from "react-icons/hi";
 
-import { LogoImage } from '@/shared/components/images/LogoImage';
-import { useState } from 'react';
-import { useNavigation } from '../context/NavigationContext';
-import { ConfirmDialog } from '@/shared/components/dialogs';
-import { createClient } from '@/core/config';
-import { useRouter } from 'next/navigation';
-import { ROUTES } from '@/core/config';
+import { LogoImage } from "@/shared/components/images/LogoImage";
+import { useEffect, useState } from "react";
+import { useNavigation } from "../context/NavigationContext";
+import { ConfirmDialog } from "@/shared/components/dialogs";
+import { createClient } from "@/core/config";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/core/config";
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
-  userRole: 'realtor' | 'manager';
+  userRole: "realtor" | "manager";
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
-  const { activeItem, setActiveItem, isSidebarOpen, setIsSidebarOpen } = useNavigation();
+  const { activeItem, setActiveItem, isSidebarOpen, setIsSidebarOpen } =
+    useNavigation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -25,7 +38,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   };
 
   const handleMenuClick = (itemId: string, route?: string) => {
-    if (itemId === 'logout') {
+    if (itemId === "logout") {
       setShowLogoutDialog(true);
     } else {
       setActiveItem(itemId);
@@ -37,38 +50,110 @@ export function Sidebar({ userRole }: SidebarProps) {
   };
 
   const generalMenuItems = [
-    { id: 'settings', label: 'Configuración', icon: <HiOutlineCog className="text-xl" /> },
-    { id: 'logout', label: 'Cerrar Sesión', icon: <HiOutlineLogout className="text-xl" /> }
+    {
+      id: "settings",
+      label: "Configuración",
+      icon: <HiOutlineCog className="text-xl" />,
+    },
+    {
+      id: "logout",
+      label: "Cerrar Sesión",
+      icon: <HiOutlineLogout className="text-xl" />,
+    },
   ];
 
   const realtorItems = [
-    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
-    { id: 'properties', label: 'Propiedades', icon: <HiOutlineCollection className="text-xl" />, route: '/properties' },
-    { id: 'agenda', label: 'Agenda', icon: <HiOutlineClock className="text-xl" />, route: '/schedule' },
-    { id: 'clients', label: 'Clientes', icon: <HiOutlineUserGroup className="text-xl" />, route: '/clients' },
-    { id: 'reports', label: 'Reportes', icon: <HiOutlineChartPie className="text-xl" />, route: '/reports'  },
-    { id: 'sales', label: 'Ventas', icon: <HiOutlineChartBar className="text-xl" /> },
+    {
+      id: "home",
+      label: "Inicio",
+      icon: <HiOutlineHome className="text-xl" />,
+      route: "/dashboard",
+    },
+    {
+      id: "properties",
+      label: "Propiedades",
+      icon: <HiOutlineCollection className="text-xl" />,
+      route: "/properties",
+    },
+    {
+      id: "agenda",
+      label: "Agenda",
+      icon: <HiOutlineClock className="text-xl" />,
+      route: "/schedule",
+    },
+    {
+      id: "clients",
+      label: "Clientes",
+      icon: <HiOutlineUserGroup className="text-xl" />,
+      route: "/clients",
+    },
+    {
+      id: "reports",
+      label: "Reportes",
+      icon: <HiOutlineChartPie className="text-xl" />,
+      route: "/reports",
+    },
+    {
+      id: "sales",
+      label: "Ventas",
+      icon: <HiOutlineChartBar className="text-xl" />,
+    },
   ];
 
   const managerItems = [
-    { id: 'home', label: 'Inicio', icon: <HiOutlineHome className="text-xl" />, route: '/dashboard' },
-    { id: 'panel', label: 'Panel de control', icon: <HiOutlineChartBar className="text-xl" /> },
-    { id: 'stats', label: 'Estadísticas', icon: <HiOutlineChartPie className="text-xl" /> },
-    { id: 'advisors', label: 'Asesores', icon: <HiOutlineUserGroup className="text-xl" /> },
-    { id: 'properties', label: 'Propiedades en Venta', icon: <HiOutlineChartBar className="text-xl" /> },
+    {
+      id: "home",
+      label: "Inicio",
+      icon: <HiOutlineHome className="text-xl" />,
+      route: "/dashboard",
+    },
+    {
+      id: "panel",
+      label: "Panel de control",
+      icon: <HiOutlineChartBar className="text-xl" />,
+    },
+    {
+      id: "stats",
+      label: "Estadísticas",
+      icon: <HiOutlineChartPie className="text-xl" />,
+    },
+    {
+      id: "advisors",
+      label: "Asesores",
+      icon: <HiOutlineUserGroup className="text-xl" />,
+    },
+    {
+      id: "properties",
+      label: "Propiedades en Venta",
+      icon: <HiOutlineChartBar className="text-xl" />,
+    },
   ];
 
-  const menuItems = userRole === 'manager' ? managerItems : realtorItems;
+  const menuItems = userRole === "manager" ? managerItems : realtorItems;
+
+  useEffect(() => {
+    // Buscamos cuál de nuestros items coincide con la ruta actual
+    const currentItem = menuItems.find(
+      (item) => item.route && pathname.startsWith(item.route),
+    );
+
+    // Si encontramos uno y no es el que está activo, lo actualizamos
+    if (currentItem && activeItem !== currentItem.id) {
+      setActiveItem(currentItem.id);
+    }
+  }, [pathname, menuItems, activeItem, setActiveItem]);
 
   return (
     <>
       {/* Sidebar */}
       <aside className="w-64 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
         <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
-          <LogoImage className="h-40"/>
+          <LogoImage className="h-40" />
         </div>
 
-        <p className="text-sm text-center text-gray-400 capitalize">{userRole} App</p>
+        <p className="text-sm text-center text-gray-400 capitalize">
+          {userRole} App
+        </p>
         {/* <div className="h-25 flex flex-col items-center justify-center gap-3">
           <h1 className="text-2xl text-center"><span className="font-semibold text-[#c52e1a]">Go</span> Hunter</h1>
         </div> */}
@@ -82,21 +167,42 @@ export function Sidebar({ userRole }: SidebarProps) {
                 <div
                   key={item.id}
                   onClick={() => handleMenuClick(item.id, item.route)}
-                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-primary dark:text-white' : 'text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-                    }`}
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${
+                    isActive
+                      ? "text-primary dark:text-white"
+                      : "text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
+                  }`}
                 >
                   {/* Indicador Lateral */}
-                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-primary translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
-                    }`} />
+                  <div
+                    className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${
+                      isActive
+                        ? "bg-primary translate-x-0 opacity-100 scale-y-100"
+                        : "bg-transparent -translate-x-2 opacity-0 scale-y-0"
+                    }`}
+                  />
 
                   {/* Contenedor Principal */}
-                  <div className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border-l-1 border-t-1 ${isActive
-                      ? 'bg-gradient-to-b from-white dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-secondary border-t-white/30'
-                      : 'border-transparent'
-                    }`}>
-                    <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
-                    <div className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? '' : 'bg-white/50 dark:bg-[#333333]/50 ' }`}>{item.icon}</div>
-                    <span className={`z-10 transition-all duration-300 ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
+                  <div
+                    className={`group relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border-l-1 border-t-1 ${
+                      isActive
+                        ? "bg-gradient-to-b from-white dark:from-[#333333] dark:to-[#333333]/10 border-transparent border-l-secondary border-t-white/30"
+                        : "border-transparent"
+                    }`}
+                  >
+                    <div
+                      className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? "opacity-100" : "opacity-0"} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`}
+                    />
+                    <div
+                      className={`group-hover:scale-110 duration-300 p-1 z-10 rounded-full ${isActive ? "" : "bg-white/50 dark:bg-[#333333]/50 "}`}
+                    >
+                      {item.icon}
+                    </div>
+                    <span
+                      className={`z-10 transition-all duration-300 ${isActive ? "font-medium" : "font-normal"}`}
+                    >
+                      {item.label}
+                    </span>
                   </div>
                 </div>
               );
@@ -115,21 +221,44 @@ export function Sidebar({ userRole }: SidebarProps) {
                 <div
                   key={item.id}
                   onClick={() => handleMenuClick(item.id)}
-                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${isActive ? 'text-primary dark:text-white' : isLogout ? 'text-red-500' : 'text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-                    }`}
+                  className={`flex items-center gap-1 rounded-lg cursor-pointer group transition-all duration-300 px-2 ${
+                    isActive
+                      ? "text-primary dark:text-white"
+                      : isLogout
+                        ? "text-red-500"
+                        : "text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
+                  }`}
                 >
                   {/* Indicador Lateral replicado */}
-                  <div className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${isActive ? 'bg-[#c52e1a] translate-x-0 opacity-100 scale-y-100' : 'bg-transparent -translate-x-2 opacity-0 scale-y-0'
-                    }`} />
+                  <div
+                    className={`relative -left-2 w-1 h-7 rounded-r-full transition-all duration-500 transform ${
+                      isActive
+                        ? "bg-[#c52e1a] translate-x-0 opacity-100 scale-y-100"
+                        : "bg-transparent -translate-x-2 opacity-0 scale-y-0"
+                    }`}
+                  />
 
                   {/* Contenedor Principal replicado para mantener simetría */}
-                  <div className={`relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${isActive
-                      ? 'bg-gradient-to-b dark:from-[#333333] dark:via-[#333333]/10 border-transparent border-t-white/30 border-l-[#c52e1a]'
-                      : isLogout ? 'bg-red-600/20 dark:bg-red-800/10 hover:bg-red-800/20 border-transparent' : ' border-transparent'
-                    }`}>
-                      <div className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`} />
-                    <div className="group-hover:scale-110 duration-300 p-1 z-10">{item.icon}</div>
-                    <span className={`z-10 transition-all duration-300 ${isActive ? 'font-medium' : 'font-normal'}`}>{item.label}</span>
+                  <div
+                    className={`relative overflow-hidden flex items-center gap-3 w-full py-2 px-2 rounded-xl transition-all duration-300 border ${
+                      isActive
+                        ? "bg-gradient-to-b dark:from-[#333333] dark:via-[#333333]/10 border-transparent border-t-white/30 border-l-[#c52e1a]"
+                        : isLogout
+                          ? "bg-red-600/20 dark:bg-red-800/10 hover:bg-red-800/20 border-transparent"
+                          : " border-transparent"
+                    }`}
+                  >
+                    <div
+                      className={`absolute left-0 w-20 inset-y-0 transition-opacity duration-700 ${isActive ? "opacity-100" : "opacity-0"} bg-gradient-to-r from-[#c52e1a]/20 via-[#c52e1a]/10 to-transparent`}
+                    />
+                    <div className="group-hover:scale-110 duration-300 p-1 z-10">
+                      {item.icon}
+                    </div>
+                    <span
+                      className={`z-10 transition-all duration-300 ${isActive ? "font-medium" : "font-normal"}`}
+                    >
+                      {item.label}
+                    </span>
                   </div>
                 </div>
               );
