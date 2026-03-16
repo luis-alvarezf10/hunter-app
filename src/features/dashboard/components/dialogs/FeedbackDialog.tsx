@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   HiCalendar,
-  HiOutlineArrowLeft,
-  HiOutlineCalendar,
-  HiOutlineCheck,
-  HiOutlineCurrencyDollar,
   HiOutlineInformationCircle,
-  HiOutlineTag,
-  HiOutlineX,
   HiThumbDown,
   HiThumbUp,
 } from "react-icons/hi";
@@ -21,6 +15,8 @@ import { BadgeButton } from "@/shared/components/buttons/BadgeButton";
 import ViewToggle from "@/shared/components/buttons/ToggleButtons";
 import { CustomField } from "@/shared/components/inputs/CustomField";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
+import { ConfirmDialog } from "@/shared/components/dialogs";
+import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 
 interface Appointment {
   id: string;
@@ -38,10 +34,12 @@ interface Appointment {
 interface FeedbackModalProps {
   appointments: Appointment[];
   onComplete: () => void;
+  onRefresh?: () => void;
 }
 export function FeedbackDialog({
   appointments,
   onComplete,
+  onRefresh 
 }: FeedbackModalProps) {
   const [mounted, setMounted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -54,9 +52,7 @@ export function FeedbackDialog({
     Array<{ id: string; name: string }>
   >([]);
 
-  const [selectedPropertyType, setSelectedPropertyType] = useState<
-    string | null
-  >(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Control de Pasos
   const [step, setStep] = useState<
@@ -176,8 +172,12 @@ export function FeedbackDialog({
         ]);
         if (offerError) throw offerError;
       }
+      setShowSuccessDialog(true);
 
-      nextStep();
+      setTimeout(() => {
+        if (onRefresh) onRefresh();
+        
+      }, 1000);
     } catch (error) {
       console.error("Error en la operación:", error);
     } finally {
@@ -230,6 +230,19 @@ export function FeedbackDialog({
                     <ActionButton
                       onClick={() => {
                         advanceIndicator();
+                        setStep("cancelled");
+                      }}
+                      variant="secondary"
+                      className="flex-1"
+                      disabled={loading}
+                      size={window.innerWidth < 768 ? "md" : "sm"}
+                      leftIcon={<HiThumbDown className="text-xl" />}
+                    >
+                      No se realizó
+                    </ActionButton>
+                    <ActionButton
+                      onClick={() => {
+                        advanceIndicator();
                         setStep("reprogram");
                       }}
                       variant="confirm"
@@ -254,72 +267,44 @@ export function FeedbackDialog({
                       Si se realizó
                     </ActionButton>
                   </div>
-                  <div className="border-t border-gray-200 dark:border-white/10 pt-4">
-                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-3">
-                      Se canceló o no se realizó
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                      <ActionButton
-                        onClick={() => handleUpdate("No asistí")}
-                        variant="secondary"
-                        className="flex-1 min-w-0"
-                        disabled={loading}
-                        size="sm"
-                      >
-                        <HiThumbDown className="text-lg shrink-0" /> No asistí
-                      </ActionButton>
-                      <ActionButton
-                        onClick={() => handleUpdate("Cliente no asistió")}
-                        variant="secondary"
-                        className="flex-1 min-w-0"
-                        disabled={loading}
-                        size="sm"
-                      >
-                        <HiThumbDown className="text-lg shrink-0" /> El cliente no asistió
-                      </ActionButton>
-                      <ActionButton
-                        onClick={() => handleUpdate("Cancelada")}
-                        variant="secondary"
-                        className="flex-1 min-w-0"
-                        disabled={loading}
-                        size="sm"
-                      >
-                        <HiThumbDown className="text-lg shrink-0" /> El cliente canceló la cita
-                      </ActionButton>
-                    </div>
-                  </div>
                 </div>
               </>
             )}
 
             {step === "reprogram" && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <button
+                 <BadgeButton
                   onClick={() => {
                     decreaseIndicator();
                     setStep("selection");
+                    setAcceptedConditions(null); // Resetear al volver
                   }}
-                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-secondary mb-4"
+                  iconVariant="back"
+                  className="absolute top-3 left-3"
                 >
-                  <HiOutlineArrowLeft /> Volver
-                </button>
+                  Volver
+                </BadgeButton>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
                   Nueva Fecha
                 </h3>
-                <input
-                  type="date"
-                  value={newDate}
-                  onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full p-4 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 outline-none text-center text-lg mb-6"
-                />
-                <ActionButton
-                  onClick={() => handleUpdate("Pendiente", { date: newDate })}
-                  variant="primary"
-                  className="w-full py-4"
-                  disabled={loading || !newDate}
-                >
-                  Confirmar Reprogramación
-                </ActionButton>
+                <div className="flex flex-col gap-5">
+                  <CustomField 
+                    label="Selecciona la nueva fecha"
+                    type="datetime-local"
+                    value={newDate}
+                    onChange={(e) => setNewDate(e.target.value)}
+
+                  />
+                  <ActionButton
+                    onClick={() => handleUpdate("Pendiente", { date: newDate })}
+                    variant="primary"
+                    className="w-full py-4"
+                    disabled={loading || !newDate}
+                  >
+                    Confirmar Reprogramación
+                  </ActionButton>
+
+                </div>
               </div>
             )}
 
@@ -329,7 +314,7 @@ export function FeedbackDialog({
                   onClick={() => {
                     decreaseIndicator();
                     setStep("selection");
-                    setAcceptedConditions(null); // Resetear al volver
+                    setAcceptedConditions(null); 
                   }}
                   iconVariant="back"
                   className="absolute top-3 left-3"
@@ -363,7 +348,7 @@ export function FeedbackDialog({
 
                 {/* Formulario condicional: Solo sale si marcó que NO aceptó */}
                 {acceptedConditions === false && (
-                  <div className="flex flex-col md:flex-row gap-5 animate-in zoom-in-95 duration-300">
+                  <div className="flex flex-col items-start md:items-end md:flex-row gap-5 animate-in zoom-in-95 duration-300 p-5 ">
                     {/* Aquí tus inputs de Monto y Tipo */}
                     <CustomField
                       label="Monto de la Oferta"
@@ -376,7 +361,6 @@ export function FeedbackDialog({
                         })
                       }
                     />
-
                     <Dropdown
                       options={offerTypes.map((type) => ({
                         value: type.id,
@@ -387,6 +371,7 @@ export function FeedbackDialog({
                         setOfferData({ ...offerData, type_id: val || "" })
                       }
                       placeholder="Tipo de Propiedad"
+                      className=" px-5 py-4"
                     />
                   </div>
                 )}
@@ -408,47 +393,60 @@ export function FeedbackDialog({
                       ? "Confirmar y Guardar"
                       : "Guardar Propuesta"}
                   </ActionButton>
-
-                  {acceptedConditions !== null && (
-                    <button
-                      onClick={() => setAcceptedConditions(null)}
-                      className="text-xs text-gray-400 hover:text-gray-600 py-2"
-                    >
-                      Cambiar respuesta
-                    </button>
-                  )}
                 </div>
               </div>
             )}
 
             {step === "cancelled" && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <button
+                 <BadgeButton
                   onClick={() => {
                     decreaseIndicator();
                     setStep("selection");
+                    setAcceptedConditions(null); // Resetear al volver
                   }}
-                  className="flex items-center gap-1 text-xs text-gray-400 hover:text-secondary mb-4"
+                  iconVariant="back"
+                  className="absolute top-3 left-3"
                 >
-                  <HiOutlineArrowLeft /> Volver
-                </button>
+                  Volver
+                </BadgeButton>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-                  Nueva Fecha
+                  Cancelación de cita
                 </h3>
-                <input
-                  type="date"
-                  value={newDate}
-                  onChange={(e) => setNewDate(e.target.value)}
-                  className="w-full p-4 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 outline-none text-center text-lg mb-6"
-                />
-                <ActionButton
-                  onClick={() => handleUpdate("Pendiente", { date: newDate })}
-                  variant="primary"
-                  className="w-full py-4"
-                  disabled={loading || !newDate}
-                >
-                  Confirmar Reprogramación
-                </ActionButton>
+                <div className="pt-4">
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                      Lo sentimos mucho. Cuentanos la razón.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                      <ActionButton
+                        onClick={() => handleUpdate("No asistí")}
+                        variant="secondary"
+                        className="flex-1 min-w-0"
+                        disabled={loading}
+                        size="sm"
+                      >
+                        No asistí
+                      </ActionButton>
+                      <ActionButton
+                        onClick={() => handleUpdate("Cliente no asistió")}
+                        variant="secondary"
+                        className="flex-1 min-w-0"
+                        disabled={loading}
+                        size="sm"
+                      >
+                         El cliente no asistió
+                      </ActionButton>
+                      <ActionButton
+                        onClick={() => handleUpdate("Cancelada")}
+                        variant="secondary"
+                        className="flex-1 min-w-0"
+                        disabled={loading}
+                        size="sm"
+                      >
+                         El cliente canceló la cita
+                      </ActionButton>
+                    </div>
+                  </div>
               </div>
             )}
 
@@ -462,13 +460,13 @@ export function FeedbackDialog({
                     <div
                       key={`progress-${idx}`}
                       className={`
-            h-2 rounded-full flex-shrink-0 min-w-[8px] transition-all duration-500 ease-out
-            ${
-              isActive
-                ? "w-8 bg-secondary shadow-sm shadow-secondary/40"
-                : "w-2 bg-gray-200 dark:bg-gray-500 hover:bg-gray-400"
-            }
-          `}
+                        h-2 rounded-full flex-shrink-0 min-w-[8px] transition-all duration-500 ease-out
+                        ${
+                          isActive
+                            ? "w-8 bg-secondary shadow-sm shadow-secondary/40"
+                            : "w-2 bg-gray-200 dark:bg-gray-500 hover:bg-gray-400"
+                        }
+                      `}
                     />
                   );
                 });
@@ -477,6 +475,15 @@ export function FeedbackDialog({
           </div>
         </BaseDialog>
       </div>
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={() => {
+          setShowSuccessDialog(false);
+          nextStep();
+        }}
+        title="!Reporte de cita notificada!"
+        message="La cita se ha reportada exitosamente, te felicitamos de antemano por tu esfuerzo."
+      />
     </>
   );
 

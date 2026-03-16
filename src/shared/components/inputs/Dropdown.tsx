@@ -39,11 +39,11 @@ export const Dropdown = ({
   }, []);
 
   return (
-    <div ref={dropdownRef} className={`relative ${className}`}>
+    <div ref={dropdownRef} className="relative" >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex gap-1 bg-white dark:bg-[#1a1a1a] rounded-2xl transition-all shadow-sm hover:shadow-lg transition-all duration-300  dark:border-y-1 border-y-white/30 p-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] transition-colors outline-none focus:ring-1 focus:ring-primary/80 flex items-center gap-2 min-w-[160px] justify-between cursor-pointer"
+        className={`inline-flex gap-1 bg-white dark:bg-[#1a1a1a] rounded-2xl transition-all shadow-sm hover:shadow-lg transition-all duration-300  dark:border-y-1 border-y-white/30 p-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gradient-to-b hover:dark:from-white/10 hover:dark:to-[#1a1a1a] transition-colors outline-none focus:ring-1 focus:ring-primary/80 flex items-center gap-2 min-w-[160px] justify-between cursor-pointer ${className}`}
       >
         <span className="truncate">{selectedOption?.label || placeholder}</span>
         <HiChevronDown

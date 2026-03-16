@@ -32,6 +32,7 @@ export default function AddSchedulePage() {
     client_name: "",
     description: "",
     date: "",
+    time: ""
   });
 
   const handlePropertySelect = (property: Property) => {
@@ -59,6 +60,7 @@ export default function AddSchedulePage() {
         client_name: formData.client_name,
         description: formData.description || null,
         date: formData.date,
+        time: formData.time,
         id_property: selectedProperty?.id || null,
         status: "Pendiente",
       });
@@ -109,11 +111,15 @@ export default function AddSchedulePage() {
               />
               <CustomField
                 label="Fecha *"
-                type="date"
+                type="datetime-local"
                 required
                 value={formData.date}
                 onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
+                  setFormData({ 
+                    ...formData, 
+                    date: e.target.value,
+                    time: e.target.value.split("T")[1]
+                  })
                 }
               />
             </div>
@@ -143,7 +149,7 @@ export default function AddSchedulePage() {
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {selectedProperty.address}
                       </p>
-
+                      
                       <div>
                         <StatusPropertyBadge status={selectedProperty.status} />
                       </div>
@@ -175,7 +181,7 @@ export default function AddSchedulePage() {
               <ActionButton
                 onClick={() => router.back()}
                 variant="secondary"
-                className="flex-1 md:flex-none md:w-32"
+                className="flex-1 md:flex-none md:w-48"
                 iconVariant="close"
                 size={window.innerWidth > 768 ? "md" : "sm"}
               >
