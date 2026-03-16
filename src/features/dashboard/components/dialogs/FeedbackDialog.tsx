@@ -353,6 +353,8 @@ export function FeedbackDialog({
                     <CustomField
                       label="Monto de la Oferta"
                       type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*[.,]?[0-9]*"
                       value={offerData.price}
                       onChange={(e) =>
                         setOfferData({
