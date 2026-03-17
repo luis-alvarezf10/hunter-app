@@ -293,10 +293,9 @@ export function FeedbackDialog({
                     type="datetime-local"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-
                   />
                   <ActionButton
-                    onClick={() => handleUpdate("Pendiente", { date: newDate })}
+                    onClick={() => handleUpdate("Pendiente", { date: newDate, time: newDate.split("T")[1] })}
                     variant="primary"
                     className="w-full py-4"
                     disabled={loading || !newDate}
