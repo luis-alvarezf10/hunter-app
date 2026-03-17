@@ -3,15 +3,13 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/core/config";
 import {
-  HiMinus,
   HiOutlineBadgeCheck,
   HiOutlineChat,
   HiOutlineCollection,
-  HiOutlineTrendingDown,
-  HiOutlineTrendingUp,
   HiOutlineUserAdd,
 } from "react-icons/hi";
 import { StatCard } from "@/shared/components/cards/StatCard";
+import { StatCardSkeleton } from "@/shared/components/skeletons/StatCardSkeleton";
 
 interface Stats {
   properties: number;
@@ -33,35 +31,6 @@ const formatTrend = (value: number): string => {
   return "0";
 };
 
-function StatCardSkeleton() {
-  return (
-    <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl p-5 md:p-4 overflow-hidden shadow-sm dark:border-t-1 border-t-white/10 flex flex-col gap-4 animate-pulse">
-      {/* Fila Superior: Icono y Badge de tendencia */}
-      <div className="flex items-center justify-between relative z-10">
-        {/* Icono Skeleton */}
-        <div className="w-12 h-12 bg-gray-200 dark:bg-white/5 rounded-2xl" />
-
-        {/* Trend Badge Skeleton */}
-        <div className="w-14 h-6 bg-gray-200 dark:bg-white/5 rounded-full" />
-      </div>
-
-      {/* Fila Inferior: Texto y Números */}
-      <div className="flex flex-col gap-2 relative z-10">
-        {/* Label Skeleton */}
-        <div className="h-3 w-24 bg-gray-200 dark:bg-white/5 rounded" />
-
-        <div className="flex items-baseline gap-2">
-          {/* Value (Número grande) Skeleton */}
-          <div className="h-8 w-12 bg-gray-200 dark:bg-white/10 rounded-md" />
-
-          {/* Description Skeleton */}
-          <div className="h-3 w-20 bg-gray-100 dark:bg-white/5 rounded" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function StatCards() {
   const [stats, setStats] = useState<Stats>({
     properties: 0,
@@ -78,13 +47,8 @@ export function StatCards() {
   });
 
   const [loading, setLoading] = useState(true);
-  const [newThisMonth, setNewThisMonth] = useState(0);
   const supabase = createClient();
   const [pointsRealtor, setPointsRealtor] = useState<number>(0);
-  const trendProperties = newThisMonth; // Ejemplo: 2
-  const trendCitas = 5; // Ejemplo: valor estático o calculado
-  const trendOfertas = 0;
-  const trendProspectos = -1;
 
   useEffect(() => {
     async function loadStats() {
@@ -115,7 +79,7 @@ export function StatCards() {
           .maybeSingle();
         if (pointsData) setPointsRealtor(pointsData.value);
 
-        // 3. Obtener Propiedades
+        // FILTRO DE TOTAL PROPIEDADES
         const { data: allMyProperties } = await supabase
           .from("properties")
           .select(`id, created_at, status`)
@@ -141,7 +105,34 @@ export function StatCards() {
           }));
         }
 
-        // Nota: Aquí podrías añadir lógica similar para 'schedules' (dates) y 'leads'
+        // FILTRO DE TOTAL DE CITAS REALIZADAS
+        const { data: allMyDates } = await supabase
+          .from("schedule")
+          .select(`id, date, status`)
+          .eq("id_realtor", user.id)
+          .eq("status", "Realizada");
+        
+        console.log(allMyDates);
+        if (allMyDates) {
+          // Filtrar citas de ESTE mes (para el valor principal)
+          const thisMonthCount = allMyDates.filter(
+            (d) => new Date(d.date) >= firstDayThisMonth,
+          ).length;
+
+          // Filtrar citas del MES PASADO (para la tendencia)
+          const lastMonthCount = allMyDates.filter((d) => {
+            const date = new Date(d.date);
+            return date >= firstDayLastMonth && date < firstDayThisMonth;
+          }).length;
+
+          // Actualizar Estados de Citas
+          setStats((prev) => ({ ...prev, dates: thisMonthCount }));
+          setTrends((prev) => ({
+            ...prev,
+            dates: thisMonthCount - lastMonthCount,
+          }));
+        }
+
       } catch (error) {
         console.error("Error loading stats:", error);
       } finally {
@@ -167,10 +158,10 @@ export function StatCards() {
     {
       label: "Citas Realizadas",
       description: "Encuentro con clientes",
-      value: "10",
+      value: loading ? "..." : stats.dates,
       icon: <HiOutlineChat />,
       gradient: "from-amber-500 to-amber-600",
-      trend: "+5",
+      trend: loading ? "0" : formatTrend(trends.dates),
       iconBg: "bg-amber-500 dark:bg-amber-500/10",
       iconColor: "text-amber-600 dark:text-amber-400",
       color: "#f59e0b", // emerald-500
