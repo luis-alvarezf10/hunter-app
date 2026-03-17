@@ -56,7 +56,7 @@ export default function AddSchedulePage() {
       }
 
       const { error } = await supabase.from("schedule").insert({
-        id_advisdor: user.id,
+        id_realtor: user.id,
         client_name: formData.client_name,
         description: formData.description || null,
         date: formData.date,

@@ -24,7 +24,7 @@ import {
 
 interface ScheduleItem {
   id: string;
-  id_advisor: string;
+  id_realtor: string;
   id_property: string;
   description: string;
   client_name: string;

@@ -13,7 +13,7 @@ import { div } from "framer-motion/client";
 
 interface ScheduleItem {
   id: string;
-  id_advisor: string;
+  id_realtor: string;
   id_property: string;
   description: string;
   client_name: string;
@@ -60,7 +60,7 @@ export default function SchedulePage() {
         )
       `,
         )
-        .eq("id_advisdor", user.id)
+        .eq("id_realtor", user.id)
         .order("date", { ascending: true });
 
       if (fetchError) throw fetchError;
@@ -70,7 +70,7 @@ export default function SchedulePage() {
         (item: any) => {
           return {
             id: item.id,
-            id_advisor: item.id_advisdor, // Mapeamos el typo de la DB al campo de tu interfaz
+            id_realtor: item.id_realtor, // Mapeamos el typo de la DB al campo de tu interfaz
             id_property: item.id_property,
             description: item.description,
             client_name: item.client_name,

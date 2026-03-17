@@ -43,6 +43,7 @@ export function DashboardPage() {
             `
               *,
               property:properties (
+                id,
                 title,
                 address,
                 id_type_offer,
@@ -62,7 +63,7 @@ export function DashboardPage() {
           ) // Asegúrate de que los nombres de columnas coincidan exactamente en la tabla 'properties'
           .lt("date", new Date().toISOString().split("T")[0])
           .eq("status", "Pendiente")
-          .eq("id_advisdor", user.id);
+          .eq("id_realtor", user.id);
 
         if (scheduleData && scheduleData.length > 0) {
           setPendingAppointments(scheduleData);
