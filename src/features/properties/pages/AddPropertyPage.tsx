@@ -1,32 +1,50 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/core/config';
-import { HiOutlineArrowLeft, HiOutlineCamera } from 'react-icons/hi';
-import { ActionButton } from '@/shared/components/buttons/ActionButton';
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/core/config";
+import { HiOutlineArrowLeft, HiOutlineCamera } from "react-icons/hi";
+import { ActionButton } from "@/shared/components/buttons/ActionButton";
+import { TitleView } from "@/shared/components/text/TitleView";
+import { BadgeButton } from "@/shared/components/buttons/BadgeButton";
 
 export function AddPropertyPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const propertyId = searchParams.get('id');
+  const propertyId = searchParams.get("id");
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [propertyTypes, setPropertyTypes] = useState<Array<{ value: string; id: string }>>([]);
-  const [offerTypes, setOfferTypes] = useState<Array<{ name: string; value: string; id: string }>>([]);
-  const [clients, setClients] = useState<Array<{ id: string; name: string; last_name: string }>>([]);
+  const [propertyTypes, setPropertyTypes] = useState<
+    Array<{ value: string; id: string }>
+  >([]);
+  const [offerTypes, setOfferTypes] = useState<
+    Array<{ name: string; value: string; id: string }>
+  >([]);
+  const [clients, setClients] = useState<
+    Array<{ id: string; name: string; last_name: string }>
+  >([]);
   const [showClientDialog, setShowClientDialog] = useState(false);
-  const [searchNationalId, setSearchNationalId] = useState('');
-  const [searchedClient, setSearchedClient] = useState<{ id: string; name: string; last_name: string; national_id: string } | null>(null);
+  const [searchNationalId, setSearchNationalId] = useState("");
+  const [searchedClient, setSearchedClient] = useState<{
+    id: string;
+    name: string;
+    last_name: string;
+    national_id: string;
+  } | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [selectedClient, setSelectedClient] = useState<{ id: string; name: string; last_name: string; national_id: string } | null>(null);
+  const [selectedClient, setSelectedClient] = useState<{
+    id: string;
+    name: string;
+    last_name: string;
+    national_id: string;
+  } | null>(null);
   const [showCreateClientForm, setShowCreateClientForm] = useState(false);
   const [newClientData, setNewClientData] = useState({
-    name: '',
-    last_name: '',
-    national_id: '',
+    name: "",
+    last_name: "",
+    national_id: "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -34,36 +52,40 @@ export function AddPropertyPage() {
   // Estados del formulario
   const [formData, setFormData] = useState({
     // Datos básicos de la propiedad
-    title: '',
-    description: '',
-    address: '',
-    latitude: '',
-    longitude: '',
-    status: 'available',
-    type: '',
-    type_offer: '',
-    id_owner: '',
-    
+    title: "",
+    description: "",
+    address: "",
+    latitude: "",
+    longitude: "",
+    status: "available",
+    type: "",
+    type_offer: "",
+    id_owner: "",
+
     // Detalles de la propiedad
-    area_sqm: '',
-    bedrooms: '',
-    bathrooms: '',
-    half_bath: '',
-    lot_size: '',
-    parking_spots: '',
-    price: '',
+    area_sqm: "",
+    bedrooms: "",
+    bathrooms: "",
+    half_bath: "",
+    lot_size: "",
+    parking_spots: "",
+    price: "",
     is_furnished: false,
-    period: 'monthly',
+    period: "monthly",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
+
+    if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({ ...prev, [name]: checked }));
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -73,31 +95,31 @@ export function AddPropertyPage() {
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d')!;
-          
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d")!;
+
           // Redimensionar si es muy grande (máximo 1920px de ancho)
           let width = img.width;
           let height = img.height;
           const maxWidth = 1920;
-          
+
           if (width > maxWidth) {
             height = (height * maxWidth) / width;
             width = maxWidth;
           }
-          
+
           canvas.width = width;
           canvas.height = height;
-          
+
           // Dibujar imagen redimensionada
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           // Convertir a blob con compresión (calidad 0.7)
           canvas.toBlob(
             (blob) => {
               if (blob) {
                 const compressedFile = new File([blob], file.name, {
-                  type: 'image/jpeg',
+                  type: "image/jpeg",
                   lastModified: Date.now(),
                 });
                 resolve(compressedFile);
@@ -105,8 +127,8 @@ export function AddPropertyPage() {
                 resolve(file);
               }
             },
-            'image/jpeg',
-            0.7
+            "image/jpeg",
+            0.7,
           );
         };
         img.src = e.target?.result as string;
@@ -121,7 +143,7 @@ export function AddPropertyPage() {
       // Comprimir imagen
       const compressedFile = await compressImage(file);
       setImageFile(compressedFile);
-      
+
       // Mostrar preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -141,38 +163,44 @@ export function AddPropertyPage() {
     setShowCreateClientForm(false);
 
     if (!searchNationalId.trim()) {
-      setSearchError('Ingresa una cédula');
+      setSearchError("Ingresa una cédula");
       return;
     }
 
     try {
       const { data, error } = await supabase
-        .from('clients')
-        .select('id, name, last_name, national_id')
-        .eq('national_id', searchNationalId.trim())
+        .from("clients")
+        .select("id, name, last_name, national_id")
+        .eq("national_id", searchNationalId.trim())
         .single();
 
       if (error || !data) {
-        setSearchError('Cliente no encontrado');
+        setSearchError("Cliente no encontrado");
         setShowCreateClientForm(true);
-        setNewClientData(prev => ({ ...prev, national_id: searchNationalId.trim() }));
+        setNewClientData((prev) => ({
+          ...prev,
+          national_id: searchNationalId.trim(),
+        }));
         return;
       }
 
       setSearchedClient(data);
     } catch (err) {
-      setSearchError('Error al buscar cliente');
+      setSearchError("Error al buscar cliente");
       setShowCreateClientForm(true);
-      setNewClientData(prev => ({ ...prev, national_id: searchNationalId.trim() }));
+      setNewClientData((prev) => ({
+        ...prev,
+        national_id: searchNationalId.trim(),
+      }));
     }
   };
 
   const handleSelectClient = () => {
     if (searchedClient) {
-      setFormData(prev => ({ ...prev, id_owner: searchedClient.id }));
+      setFormData((prev) => ({ ...prev, id_owner: searchedClient.id }));
       setSelectedClient(searchedClient);
       setShowClientDialog(false);
-      setSearchNationalId('');
+      setSearchNationalId("");
       setSearchedClient(null);
       setSearchError(null);
       setShowCreateClientForm(false);
@@ -181,13 +209,13 @@ export function AddPropertyPage() {
 
   const handleCreateClient = async () => {
     if (!newClientData.name.trim() || !newClientData.national_id.trim()) {
-      setSearchError('Nombre y cédula son requeridos');
+      setSearchError("Nombre y cédula son requeridos");
       return;
     }
 
     try {
       const { data, error } = await supabase
-        .from('clients')
+        .from("clients")
         .insert({
           name: newClientData.name.trim(),
           last_name: newClientData.last_name.trim() || null,
@@ -199,27 +227,27 @@ export function AddPropertyPage() {
       if (error) throw error;
 
       if (data) {
-        setFormData(prev => ({ ...prev, id_owner: data.id }));
+        setFormData((prev) => ({ ...prev, id_owner: data.id }));
         setSelectedClient(data);
         setShowClientDialog(false);
-        setSearchNationalId('');
+        setSearchNationalId("");
         setSearchedClient(null);
         setSearchError(null);
         setShowCreateClientForm(false);
-        setNewClientData({ name: '', last_name: '', national_id: '' });
+        setNewClientData({ name: "", last_name: "", national_id: "" });
       }
     } catch (err: any) {
-      setSearchError(err.message || 'Error al crear cliente');
+      setSearchError(err.message || "Error al crear cliente");
     }
   };
 
   const handleCloseDialog = () => {
     setShowClientDialog(false);
-    setSearchNationalId('');
+    setSearchNationalId("");
     setSearchedClient(null);
     setSearchError(null);
     setShowCreateClientForm(false);
-    setNewClientData({ name: '', last_name: '', national_id: '' });
+    setNewClientData({ name: "", last_name: "", national_id: "" });
   };
 
   // Cargar tipos de propiedades y clientes
@@ -227,40 +255,40 @@ export function AddPropertyPage() {
     const loadData = async () => {
       // Cargar tipos de propiedades
       const { data: typesData, error: typesError } = await supabase
-        .from('type_properties')
-        .select('value, id')
-        .order('value');
-      
+        .from("type_properties")
+        .select("value, id")
+        .order("value");
+
       if (typesError) {
-        console.error('Error cargando tipos:', typesError);
+        console.error("Error cargando tipos:", typesError);
       }
-      
+
       if (typesData) {
-        console.log('Tipos cargados:', typesData);
+        console.log("Tipos cargados:", typesData);
         setPropertyTypes(typesData);
       }
 
       // Cargar tipos de ofertas
       const { data: offersData, error: offersError } = await supabase
-        .from('type_offers')
-        .select('name, value, id')
-        .order('name');
-      
+        .from("type_offers")
+        .select("name, value, id")
+        .order("name");
+
       if (offersError) {
-        console.error('Error cargando tipos de ofertas:', offersError);
+        console.error("Error cargando tipos de ofertas:", offersError);
       }
-      
+
       if (offersData) {
-        console.log('Tipos de ofertas cargados:', offersData);
+        console.log("Tipos de ofertas cargados:", offersData);
         setOfferTypes(offersData);
       }
 
       // Cargar clientes
       const { data: clientsData } = await supabase
-        .from('clients')
-        .select('id, name, last_name')
-        .order('name');
-      
+        .from("clients")
+        .select("id, name, last_name")
+        .order("name");
+
       if (clientsData) {
         setClients(clientsData);
       }
@@ -268,8 +296,9 @@ export function AddPropertyPage() {
       // Si hay un ID, cargar la propiedad para editar
       if (propertyId) {
         const { data: property, error: propertyError } = await supabase
-          .from('properties')
-          .select(`
+          .from("properties")
+          .select(
+            `
             *,
             details_properties (
               area_sqm,
@@ -282,37 +311,38 @@ export function AddPropertyPage() {
               is_furnished,
               period
             )
-          `)
-          .eq('id', propertyId)
+          `,
+          )
+          .eq("id", propertyId)
           .single();
 
         if (propertyError) {
-          console.error('Error cargando propiedad:', propertyError);
-          setError('Error al cargar la propiedad');
+          console.error("Error cargando propiedad:", propertyError);
+          setError("Error al cargar la propiedad");
           return;
         }
 
         if (property) {
           const details = property.details_properties;
           setFormData({
-            title: property.title || '',
-            description: property.description || '',
-            address: property.address || '',
-            latitude: property.latitude?.toString() || '',
-            longitude: property.longitude?.toString() || '',
-            status: property.status || 'available',
-            type: property.id_type || '',
-            type_offer: property.id_type_offer || '',
-            id_owner: property.id_owner || '',
-            area_sqm: details?.area_sqm?.toString() || '',
-            bedrooms: details?.bedrooms?.toString() || '',
-            bathrooms: details?.bathrooms?.toString() || '',
-            half_bath: details?.half_bath?.toString() || '',
-            lot_size: details?.lot_size?.toString() || '',
-            parking_spots: details?.parking_spots?.toString() || '',
-            price: details?.price?.toString() || '',
+            title: property.title || "",
+            description: property.description || "",
+            address: property.address || "",
+            latitude: property.latitude?.toString() || "",
+            longitude: property.longitude?.toString() || "",
+            status: property.status || "available",
+            type: property.id_type || "",
+            type_offer: property.id_type_offer || "",
+            id_owner: property.id_owner || "",
+            area_sqm: details?.area_sqm?.toString() || "",
+            bedrooms: details?.bedrooms?.toString() || "",
+            bathrooms: details?.bathrooms?.toString() || "",
+            half_bath: details?.half_bath?.toString() || "",
+            lot_size: details?.lot_size?.toString() || "",
+            parking_spots: details?.parking_spots?.toString() || "",
+            price: details?.price?.toString() || "",
             is_furnished: details?.is_furnished || false,
-            period: details?.period || 'monthly',
+            period: details?.period || "monthly",
           });
 
           if (property.image) {
@@ -322,11 +352,11 @@ export function AddPropertyPage() {
           // Cargar cliente seleccionado
           if (property.id_owner) {
             const { data: client } = await supabase
-              .from('clients')
-              .select('id, name, last_name, national_id')
-              .eq('id', property.id_owner)
+              .from("clients")
+              .select("id, name, last_name, national_id")
+              .eq("id", property.id_owner)
               .single();
-            
+
             if (client) {
               setSelectedClient(client);
             }
@@ -334,7 +364,7 @@ export function AddPropertyPage() {
         }
       }
     };
-    
+
     loadData();
   }, [propertyId]);
 
@@ -345,9 +375,11 @@ export function AddPropertyPage() {
 
     try {
       // Obtener el usuario actual (advisor)
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error('Usuario no autenticado');
+        throw new Error("Usuario no autenticado");
       }
 
       let imageUrl = imagePreview;
@@ -355,26 +387,26 @@ export function AddPropertyPage() {
       // Subir imagen si hay una nueva
       if (imageFile) {
         try {
-          const fileExt = imageFile.name.split('.').pop();
+          const fileExt = imageFile.name.split(".").pop();
           const fileName = `${Math.random()}.${fileExt}`;
           const filePath = `properties/${fileName}`;
 
           const { error: uploadError } = await supabase.storage
-            .from('properties')
+            .from("properties")
             .upload(filePath, imageFile);
 
           if (uploadError) {
-            console.error('Error subiendo imagen:', uploadError);
+            console.error("Error subiendo imagen:", uploadError);
             // Continuar sin imagen si falla el upload
           } else {
-            const { data: { publicUrl } } = supabase.storage
-              .from('properties')
-              .getPublicUrl(filePath);
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("properties").getPublicUrl(filePath);
 
             imageUrl = publicUrl;
           }
         } catch (err) {
-          console.error('Error en upload de imagen:', err);
+          console.error("Error en upload de imagen:", err);
           // Continuar sin imagen si falla
         }
       }
@@ -382,13 +414,13 @@ export function AddPropertyPage() {
       // Validar que el tipo de propiedad existe si se seleccionó
       if (formData.type) {
         const { data: typeExists } = await supabase
-          .from('type_properties')
-          .select('id')
-          .eq('id', formData.type)
+          .from("type_properties")
+          .select("id")
+          .eq("id", formData.type)
           .single();
-        
+
         if (!typeExists) {
-          throw new Error('El tipo de propiedad seleccionado no es válido');
+          throw new Error("El tipo de propiedad seleccionado no es válido");
         }
       }
 
@@ -424,9 +456,9 @@ export function AddPropertyPage() {
       if (propertyId) {
         // Actualizar propiedad existente
         const { data, error: propertyError } = await supabase
-          .from('properties')
+          .from("properties")
           .update(propertyData)
-          .eq('id', propertyId)
+          .eq("id", propertyId)
           .select()
           .single();
 
@@ -440,7 +472,9 @@ export function AddPropertyPage() {
           bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
           half_bath: formData.half_bath ? parseInt(formData.half_bath) : null,
           lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
-          parking_spots: formData.parking_spots ? parseInt(formData.parking_spots) : null,
+          parking_spots: formData.parking_spots
+            ? parseInt(formData.parking_spots)
+            : null,
           price: formData.price ? parseFloat(formData.price) : null,
           is_furnished: formData.is_furnished,
           period: formData.period,
@@ -448,23 +482,23 @@ export function AddPropertyPage() {
 
         // Verificar si ya existen detalles
         const { data: existingDetails } = await supabase
-          .from('details_properties')
-          .select('id_property')
-          .eq('id_property', propertyId)
+          .from("details_properties")
+          .select("id_property")
+          .eq("id_property", propertyId)
           .single();
 
         if (existingDetails) {
           // Actualizar detalles existentes
           const { error: detailsError } = await supabase
-            .from('details_properties')
+            .from("details_properties")
             .update(detailsData)
-            .eq('id_property', propertyId);
+            .eq("id_property", propertyId);
 
           if (detailsError) throw detailsError;
         } else {
           // Insertar nuevos detalles
           const { error: detailsError } = await supabase
-            .from('details_properties')
+            .from("details_properties")
             .insert({
               id_property: propertyId,
               ...detailsData,
@@ -475,7 +509,7 @@ export function AddPropertyPage() {
       } else {
         // Insertar nueva propiedad
         const { data, error: propertyError } = await supabase
-          .from('properties')
+          .from("properties")
           .insert(propertyData)
           .select()
           .single();
@@ -485,7 +519,7 @@ export function AddPropertyPage() {
 
         // Insertar los detalles de la propiedad
         const { error: detailsError } = await supabase
-          .from('details_properties')
+          .from("details_properties")
           .insert({
             id_property: property.id,
             area_sqm: formData.area_sqm ? parseFloat(formData.area_sqm) : null,
@@ -493,7 +527,9 @@ export function AddPropertyPage() {
             bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
             half_bath: formData.half_bath ? parseInt(formData.half_bath) : null,
             lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
-            parking_spots: formData.parking_spots ? parseInt(formData.parking_spots) : null,
+            parking_spots: formData.parking_spots
+              ? parseInt(formData.parking_spots)
+              : null,
             price: formData.price ? parseFloat(formData.price) : null,
             is_furnished: formData.is_furnished,
             period: formData.period,
@@ -503,31 +539,33 @@ export function AddPropertyPage() {
       }
 
       // Redirigir a la lista de propiedades
-      router.push('/properties');
+      router.push("/properties");
     } catch (err: any) {
-      setError(err.message || 'Error al guardar la propiedad');
+      setError(err.message || "Error al guardar la propiedad");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-8 space-y-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <button
+      <div className="flex flex-col gap-4 items-start">
+        <TitleView
+          title={propertyId ? "Editar Propiedad" : "Nueva Propiedad"}
+          subtitle={
+            propertyId
+              ? "Actualiza la información de la propiedad"
+              : "Completa la información de la propiedad"
+          }
+        />
+        <BadgeButton
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
+          iconVariant="back"
+          variant="secondary"
         >
-          <HiOutlineArrowLeft className="text-xl" />
-          <span>Volver</span>
-        </button>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {propertyId ? 'Editar Propiedad' : 'Agregar Nueva Propiedad'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {propertyId ? 'Actualiza la información de la propiedad' : 'Completa la información de la propiedad'}
-        </p>
+          Volver
+        </BadgeButton>
       </div>
 
       {error && (
@@ -542,7 +580,7 @@ export function AddPropertyPage() {
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
             Información Básica
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Imagen de la Propiedad */}
             <div className="md:col-span-2">
@@ -552,7 +590,11 @@ export function AddPropertyPage() {
               <div className="flex gap-4">
                 {imagePreview && (
                   <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-700">
-                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
                     <button
                       type="button"
                       onClick={() => {
@@ -561,7 +603,9 @@ export function AddPropertyPage() {
                       }}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                     >
-                      <span className="material-symbols-outlined text-sm">close</span>
+                      <span className="material-symbols-outlined text-sm">
+                        close
+                      </span>
                     </button>
                   </div>
                 )}
@@ -571,7 +615,7 @@ export function AddPropertyPage() {
                   className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1c2b36] hover:bg-[#1c2b36]/90 text-white rounded-lg font-semibold transition-colors"
                 >
                   <HiOutlineCamera className="text-xl" />
-                  {imagePreview ? 'Cambiar Imagen' : 'Subir/Tomar Foto'}
+                  {imagePreview ? "Cambiar Imagen" : "Subir/Tomar Foto"}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -625,7 +669,7 @@ export function AddPropertyPage() {
                 placeholder="Ej: Urbanización Los Pinos, Calle 5, Casa 10"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Tipo de Oferta
@@ -644,7 +688,7 @@ export function AddPropertyPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Tipo de Propiedad
@@ -663,7 +707,7 @@ export function AddPropertyPage() {
                 ))}
               </select>
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Cliente/Propietario
@@ -673,7 +717,9 @@ export function AddPropertyPage() {
                 onClick={() => setShowClientDialog(true)}
                 className="w-full px-4 py-2.5 bg-[#1c2b36] hover:bg-[#1c2b36]/90 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined text-sm">search</span>
+                <span className="material-symbols-outlined text-sm">
+                  search
+                </span>
                 Buscar Cliente
               </button>
 
@@ -697,7 +743,7 @@ export function AddPropertyPage() {
                       type="button"
                       onClick={() => {
                         setSelectedClient(null);
-                        setFormData(prev => ({ ...prev, id_owner: '' }));
+                        setFormData((prev) => ({ ...prev, id_owner: "" }));
                       }}
                       className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     >
@@ -715,7 +761,7 @@ export function AddPropertyPage() {
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
             Detalles de la Propiedad
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -763,7 +809,8 @@ export function AddPropertyPage() {
             </div>
 
             {/* Solo mostrar período si es alquiler */}
-            {offerTypes.find(t => t.id === formData.type_offer)?.value === 'Rent' && (
+            {offerTypes.find((t) => t.id === formData.type_offer)?.value ===
+              "Rent" && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Período de Pago
@@ -783,7 +830,8 @@ export function AddPropertyPage() {
             )}
 
             {/* Solo mostrar amueblada si es alquiler */}
-            {offerTypes.find(t => t.id === formData.type_offer)?.value === 'Rent' && (
+            {offerTypes.find((t) => t.id === formData.type_offer)?.value ===
+              "Rent" && (
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -793,7 +841,10 @@ export function AddPropertyPage() {
                   onChange={handleChange}
                   className="w-5 h-5 text-[#6b1e2e] bg-white dark:bg-[#1a1a1a] border-gray-300 dark:border-gray-700 rounded focus:ring-[#6b1e2e] focus:ring-2"
                 />
-                <label htmlFor="is_furnished" className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                <label
+                  htmlFor="is_furnished"
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer"
+                >
                   Propiedad Amueblada
                 </label>
               </div>
@@ -858,18 +909,24 @@ export function AddPropertyPage() {
         </div>
 
         {/* Botones */}
-         <div className="bg-white/90 dark:bg-[#1a1a1a]/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl flex items-center justify-end gap-4 z-40">
-         <ActionButton onClick={() => router.back()} variant='outline' size='md' className='flex-1 md:flex-none'>
-          Cancelar
-         </ActionButton>
-        <ActionButton onClick={handleSubmit} disabled={loading} size='md' className='flex-1 md:flex-none'>
-        {loading ? (
-          <span> Guardando...</span>
-        ) : (
-          <>Guardar </>
-        )}
-        </ActionButton>
-      </div>
+        <div className="bg-white/90 dark:bg-[#1a1a1a]/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl flex items-center justify-end gap-4 z-40">
+          <ActionButton
+            onClick={() => router.back()}
+            variant="outline"
+            size="md"
+            className="flex-1 md:flex-none"
+          >
+            Cancelar
+          </ActionButton>
+          <ActionButton
+            onClick={handleSubmit}
+            disabled={loading}
+            size="md"
+            className="flex-1 md:flex-none"
+          >
+            {loading ? <span> Guardando...</span> : <>Guardar </>}
+          </ActionButton>
+        </div>
       </form>
 
       {/* Dialog de Búsqueda de Cliente */}
@@ -900,7 +957,7 @@ export function AddPropertyPage() {
                     value={searchNationalId}
                     onChange={(e) => setSearchNationalId(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         if (searchedClient) {
                           handleSelectClient();
                         } else {
@@ -922,15 +979,17 @@ export function AddPropertyPage() {
 
               {searchError && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                  <p className="text-sm text-red-600 dark:text-red-400">{searchError}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    {searchError}
+                  </p>
                 </div>
               )}
 
               {searchedClient && (
-                <div 
+                <div
                   className="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg"
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleSelectClient();
                     }
                   }}
@@ -960,7 +1019,7 @@ export function AddPropertyPage() {
                   <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Crear Nuevo Cliente
                   </p>
-                  
+
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                       Cédula *
@@ -968,7 +1027,12 @@ export function AddPropertyPage() {
                     <input
                       type="text"
                       value={newClientData.national_id}
-                      onChange={(e) => setNewClientData(prev => ({ ...prev, national_id: e.target.value }))}
+                      onChange={(e) =>
+                        setNewClientData((prev) => ({
+                          ...prev,
+                          national_id: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6b1e2e]/50 focus:border-[#6b1e2e] outline-none"
                       placeholder="V-12345678"
                     />
@@ -981,7 +1045,12 @@ export function AddPropertyPage() {
                     <input
                       type="text"
                       value={newClientData.name}
-                      onChange={(e) => setNewClientData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setNewClientData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-[#6b1e2e]/50 focus:border-[#6b1e2e] outline-none"
                       placeholder="Juan"
                     />
@@ -994,9 +1063,14 @@ export function AddPropertyPage() {
                     <input
                       type="text"
                       value={newClientData.last_name}
-                      onChange={(e) => setNewClientData(prev => ({ ...prev, last_name: e.target.value }))}
+                      onChange={(e) =>
+                        setNewClientData((prev) => ({
+                          ...prev,
+                          last_name: e.target.value,
+                        }))
+                      }
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleCreateClient();
                         }
                       }}
