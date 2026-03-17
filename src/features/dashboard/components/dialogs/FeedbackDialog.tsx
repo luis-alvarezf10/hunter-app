@@ -24,11 +24,13 @@ interface Appointment {
   date: string;
   description: string;
   property?: {
+    id: string;
     title: string;
     address: string;
     details_properties?: Array<{ price?: number }> | { price?: number };
     id_type_offer?: string;
   };
+  id_advisor: string;
 }
 
 interface FeedbackModalProps {
@@ -168,6 +170,8 @@ export function FeedbackDialog({
             price: parseFloat(offerData.price),
             id_type_offer: offerData.type_id || null, // ID de la tabla type_offers
             status: "Pendiente",
+            id_property: currentAppt.property?.id,
+            id_realtor: currentAppt.id_advisor
           },
         ]);
         if (offerError) throw offerError;
