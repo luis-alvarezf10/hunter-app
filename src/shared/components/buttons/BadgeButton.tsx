@@ -31,7 +31,7 @@ export const BadgeButton = ({
   const variants = {
     normal: "text-gray-600 dark:text-gray-400",
     primary: "bg-blue-600 text-white shadow-blue",
-    red: "text-red-500 shadow-red",
+    red: "text-red-500 shadow-red hover:bg-red-500/10",
     secondary: "bg-gray-300/50 dark:bg-white/5 border-t-1 border-t-white/10"
    
   };
@@ -72,13 +72,13 @@ export const BadgeButton = ({
       
       {/* Icono izquierdo */}
       {iconVariant && !isLoading && (
-        <span className="mr-2">
+        <span className="">
           {iconVariants[iconVariant]}
         </span>
       )}
-      {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+      {!isLoading && leftIcon && <span>{leftIcon}</span>}
       {children}
-      {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+      {!isLoading && rightIcon && <span>{rightIcon}</span>}
     </button>
   );
 };

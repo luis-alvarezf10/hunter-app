@@ -140,7 +140,7 @@ export function PropertyCharts() {
     );
 
   return (
-    <Card className="h-full relative overflow-hidden transition-all duration-500 p-5 md:p-8">
+    <Card className="h-full relative overflow-hidden transition-all duration-500 p-5 md:p-8" showEffect showHoverEffect>
       {/* 1. EL GRADIENTE DE FONDO DE LA CARTA PRINCIPAL */}
       {typeData.map((item, index) => (
         <div

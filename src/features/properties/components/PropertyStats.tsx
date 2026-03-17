@@ -121,7 +121,7 @@ export function PropertyStats() {
   }
 
   return (
-    <Card className="flex flex-col gap-6 p-5 md:p-8">
+    <Card className="flex flex-col gap-6 p-5 md:p-8" showHoverEffect>
       <TitleCard
         title="Propiedades por status"
       />
