@@ -243,8 +243,6 @@ export function StatCards() {
           />
         ),
       )}
-
-      {/* Valor Total Card - Destacado */}
     </div>
   );
 }

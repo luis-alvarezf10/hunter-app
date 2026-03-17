@@ -32,6 +32,7 @@ import { Card } from "@/shared/components/cards/card";
 import { ConfirmDialog } from "@/shared/components/dialogs/ConfirmDialog";
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 import { TitleCard } from "@/shared/components/text/TitleCard";
+import { LoadSpin } from "@/shared/components/spins/LoadSpin";
 
 interface Property {
   id: string;
@@ -374,11 +375,8 @@ export function PropertiesPage() {
 
       {/* Properties Grid/List */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin inline-block w-12 h-12 border-4 border-[#6b1e2e] border-t-transparent rounded-full"></div>
-          <p className="text-gray-600 dark:text-gray-400 mt-4">
-            Cargando propiedades...
-          </p>
+        <div className="flex items-center justify-center p-20">
+          <LoadSpin/>
         </div>
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
