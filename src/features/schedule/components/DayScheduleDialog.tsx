@@ -2,6 +2,7 @@
 
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import { BaseDialog } from "@/shared/components/dialogs/BaseDialog";
+import { createPortal } from "react-dom";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 
 interface ScheduleItem {
@@ -27,11 +28,11 @@ export default function DayScheduleDialog({ isOpen, onClose, schedules, date }: 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       'Pendiente': 'bg-amber-500',
-      'Confirmada': 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300',
-      'Realizada': 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300',
+      'Confirmada': 'bg-green-500',
+      'Realizada': 'bg-emerald-500',
       'Cancelada': 'bg-red-500 ',
-      'No asistió': 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
-      'Pospuesta': 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300'
+      'No asistió': 'bg-gray-500',
+      'Pospuesta': 'bg-purple-500'
     };
     return colors[status] || 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300';
   };
@@ -48,16 +49,16 @@ export default function DayScheduleDialog({ isOpen, onClose, schedules, date }: 
     });
   };
 
-  return (
+  const dialogContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
       
       {/* Dialog */}
-      <BaseDialog>
+      <BaseDialog className="max-w-2xl">
         {/* Header */}
         <div className="flex justify-between items-center p-6">
           <h2 className="text-lg font-medium text-gray-900 dark:text-white capitalize">
@@ -76,13 +77,13 @@ export default function DayScheduleDialog({ isOpen, onClose, schedules, date }: 
               {schedules.map((schedule) => (
                 <div 
                   key={schedule.id}
-                  className="border border-gray-300/50 dark:border-white/10 rounded-2xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  className="border border-gray-300/50 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-md  rounded-2xl p-4 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">
                       {schedule.client_name}
                     </h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(schedule.status)}`}>
+                    <span className={`px-2 py-1 rounded text-xs font-medium text-white ${getStatusColor(schedule.status)}`}>
                       {schedule.status}
                     </span>
                   </div>
@@ -122,4 +123,5 @@ export default function DayScheduleDialog({ isOpen, onClose, schedules, date }: 
       </BaseDialog>
     </div>
   );
+  return createPortal(dialogContent, document.body);
 }
