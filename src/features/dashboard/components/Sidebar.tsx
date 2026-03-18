@@ -93,11 +93,11 @@ export function Sidebar({ userRole }: SidebarProps) {
       icon: <HiOutlineChartPie className="text-xl" />,
       route: "/reports",
     },
-    {
-      id: "sales",
-      label: "Ventas",
-      icon: <HiOutlineChartBar className="text-xl" />,
-    },
+    // {
+    //   id: "sales",
+    //   label: "Ventas",
+    //   icon: <HiOutlineChartBar className="text-xl" />,
+    // },
   ];
 
   const managerItems = [
