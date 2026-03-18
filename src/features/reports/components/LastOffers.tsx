@@ -68,7 +68,7 @@ export default function LastOffers() {
         {loading ? (
           // Skeleton simple
           [...Array(5)].map((_, i) => (
-            <div key={i} className="h-12 w-full bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg" />
+            <div key={i} className="h-12 w-full bg-gray-100 dark:bg-white/10 animate-pulse rounded-lg" />
           ))
         ) : offers.length > 0 ? (
           offers.map((offer) => (
