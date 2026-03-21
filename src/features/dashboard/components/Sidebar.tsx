@@ -20,7 +20,7 @@ import { ROUTES } from "@/core/config";
 import { usePathname } from "next/navigation";
 
 interface SidebarProps {
-  userRole: "realtor" | "manager";
+  userRole: "realtor" | "manager" | 'admin';
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
@@ -129,7 +129,42 @@ export function Sidebar({ userRole }: SidebarProps) {
     },
   ];
 
-  const menuItems = userRole === "manager" ? managerItems : realtorItems;
+  const adminItems = [
+    {
+      id: "home",
+      label: "Inicio",
+      icon: <HiOutlineHome className="text-xl" />,
+      route: "/dashboard",
+    },
+    {
+      id: "advisors",
+      label: "Asesores",
+      icon: <HiOutlineUserGroup className="text-xl" />,
+    },
+    {
+      id: "properties",
+      label: "Propiedades",
+      icon: <HiOutlineChartBar className="text-xl" />,
+    },
+    {
+      id: "companies",
+      label: "Empresas",
+      icon: <HiOutlineUserGroup className="text-xl" />,
+    },
+    {
+      id: "stats",
+      label: "Estadísticas",
+      icon: <HiOutlineChartPie className="text-xl" />,
+    },
+  ];
+
+  const menuItems =
+    userRole === "admin"
+      ? adminItems
+      : userRole === "manager"
+        ? managerItems
+        : realtorItems;
+
 
   useEffect(() => {
     // Buscamos cuál de nuestros items coincide con la ruta actual

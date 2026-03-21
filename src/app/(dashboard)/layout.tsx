@@ -32,7 +32,7 @@ function DashboardLayoutContent({
   const pathname = usePathname();
   const isHomePage = pathname === '/dashboard';
   
-  const roleLabel = stakeholder.role === 'manager' ? 'Gerente' : 'Asesor';
+  const roleLabel = stakeholder.role === 'admin' ? 'Admin' : stakeholder.role === 'realtor' ? 'Asesor' : 'Gerente';
   const fullName = stakeholder.lastname
     ? `${stakeholder.name} ${stakeholder.lastname}`
     : stakeholder.name;
@@ -45,7 +45,7 @@ function DashboardLayoutContent({
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        <Sidebar userRole={stakeholder.role as 'realtor' | 'manager'} />
+        <Sidebar userRole={stakeholder.role as 'realtor' | 'manager' | 'admin'} />
       </div>
 
       {/* Mobile Menu Button - Hamburger animado */}
