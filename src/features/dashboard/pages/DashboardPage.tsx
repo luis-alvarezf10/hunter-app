@@ -19,7 +19,6 @@ export function DashboardPage() {
 
   useEffect(() => {
     async function loadPendingAppointments() {
-      console.log("Context State:", { role, nickname, userLoading });
       if (userLoading) return;
       if (role !== "realtor" || !user) {
         console.log("No es realtor o no hay user, saltando búsqueda de citas.");
