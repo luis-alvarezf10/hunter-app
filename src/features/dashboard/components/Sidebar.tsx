@@ -18,9 +18,10 @@ import { createClient } from "@/core/config";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/core/config";
 import { usePathname } from "next/navigation";
+import { LoadingPage } from "@/shared/pages/LoadingPage";
 
 interface SidebarProps {
-  userRole: "realtor" | "manager" | 'admin';
+  userRole: "realtor" | "manager" | "admin";
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
@@ -29,12 +30,14 @@ export function Sidebar({ userRole }: SidebarProps) {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const pathname = usePathname();
 
   const handleLogout = async () => {
+    setIsRedirecting(true);
     await supabase.auth.signOut();
-    router.push(ROUTES.AUTH.LOGIN);
+    window.location.href = ROUTES.AUTH.LOGIN;
   };
 
   const handleMenuClick = (itemId: string, route?: string) => {
@@ -165,7 +168,6 @@ export function Sidebar({ userRole }: SidebarProps) {
         ? managerItems
         : realtorItems;
 
-
   useEffect(() => {
     // Buscamos cuál de nuestros items coincide con la ruta actual
     const currentItem = menuItems.find(
@@ -180,7 +182,6 @@ export function Sidebar({ userRole }: SidebarProps) {
 
   return (
     <>
-      {/* Sidebar */}
       <aside className="w-64 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md flex flex-col shrink-0 h-full rounded-2xl overflow-y-auto border border-white/10 shadow-2xl">
         <div className="h-25 flex items-center justify-center px-4 pointer-events-none">
           <LogoImage className="h-40" />

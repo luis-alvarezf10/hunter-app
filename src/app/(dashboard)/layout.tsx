@@ -30,7 +30,6 @@ function DashboardLayoutContent({
 }) {
   const { isSidebarOpen, setIsSidebarOpen } = useNavigation();
   const pathname = usePathname();
-  const isHomePage = pathname === '/dashboard';
   
   const roleLabel = stakeholder.role === 'admin' ? 'Admin' : stakeholder.role === 'realtor' ? 'Asesor' : 'Gerente';
   const fullName = stakeholder.lastname
