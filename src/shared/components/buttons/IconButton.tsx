@@ -1,15 +1,21 @@
+import { watch } from 'fs';
 import React from 'react';
+import { HiEye } from 'react-icons/hi';
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
+  iconVariant?: "watch";
   text?: string;
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "glass" ;
+  isLoading?: boolean;
 }
 export const IconButton: React.FC<IconButtonProps> = ({
   icon,
   onClick,
+  iconVariant,
   variant = "primary",
   className = "",
+  isLoading = false,
   text,
   ...props
 }) => {
@@ -22,6 +28,10 @@ export const IconButton: React.FC<IconButtonProps> = ({
     glass: "backdrop-blur-sm bg-white/30 dark:bg-black/20 border border-white/20 hover:bg-white/50 dark:hover:bg-black/30"
   };
 
+    const iconVariants = { 
+      watch: <HiEye />
+    };
+
   return (
     <button
       onClick={onClick}
@@ -31,6 +41,11 @@ export const IconButton: React.FC<IconButtonProps> = ({
     >
       {/* El icono siempre se ve */}
       {icon}
+      {iconVariant && !isLoading && (
+        <span className="mr-2">
+          {iconVariants[iconVariant]}
+        </span>
+      )}
 
       {/* El texto se esconde en móvil (hidden) y aparece en desktop (sm:block) */}
       {text && (
