@@ -27,7 +27,7 @@ import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import { SearchBar } from "@/shared/components/inputs/SearchBar";
 import { IconButton } from "@/shared/components/buttons/IconButton";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
-import ViewToggle from "../components/buttons/ViewToggle";
+import ViewToggle from "../../../shared/components/buttons/ViewToggleButton";
 import { Card } from "@/shared/components/cards/card";
 import { ConfirmDialog } from "@/shared/components/dialogs/ConfirmDialog";
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";

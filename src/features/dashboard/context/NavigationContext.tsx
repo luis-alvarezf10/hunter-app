@@ -28,6 +28,7 @@ const pageTitles: Record<string, string> = {
   // General pages
   settings: 'Configuración',
   logout: 'Cerrar Sesión',
+  realtors: 'Agentes',
 };
 
 // Mapeo de rutas a IDs de navegación
@@ -40,7 +41,7 @@ const routeToItemId: Record<string, string> = {
   '/sales': 'sales',
   '/panel': 'panel',
   '/stats': 'stats',
-  '/advisors': 'advisors',
+  '/realtors': 'realtors',
   '/settings': 'settings',
 };
 

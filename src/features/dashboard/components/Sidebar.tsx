@@ -140,14 +140,16 @@ export function Sidebar({ userRole }: SidebarProps) {
       route: "/dashboard",
     },
     {
-      id: "advisors",
-      label: "Asesores",
+      id: "realtors",
+      label: "Agentes",
       icon: <HiOutlineUserGroup className="text-xl" />,
+      route: "/realtors",
     },
-    {
+     {
       id: "properties",
       label: "Propiedades",
-      icon: <HiOutlineChartBar className="text-xl" />,
+      icon: <HiOutlineCollection className="text-xl" />,
+      route: "/properties",
     },
     {
       id: "companies",
