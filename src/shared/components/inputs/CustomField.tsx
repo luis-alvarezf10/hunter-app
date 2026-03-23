@@ -34,7 +34,7 @@ export const CustomField = ({
 
   // Estilos base compartidos
   const sharedClasses = `
-    w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none
+    w-full px-5 py-3 rounded-2xl border transition-all duration-300 outline-none
     text-base md:text-sm
     min-w-0 flex-shrink appearance-none
     ${autoIcon ? 'pl-12' : 'pl-5'}
@@ -48,7 +48,7 @@ export const CustomField = ({
 
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className}`}>
-      <label className="text-xs font-semibold tracking-widest text-gray-600 dark:text-gray-400 ml-2">
+      <label className="text-xs font-semibold tracking-widest text-gray-900 dark:text-gray-300 ml-2">
         {label}
       </label>
 

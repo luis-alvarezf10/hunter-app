@@ -88,11 +88,11 @@ export default function CompaniesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <TitleView
             title="Empresas Registradas"
-            subtitle="Empresa inmobiliarias aliadas a go hunter app."
+            subtitle="Empresas inmobiliarias aliadas a go hunter app."
           />
         <ActionButton
           className="w-full md:w-auto justify-center" 
-          onClick={() => router.push("")}
+          onClick={() => router.push("/companies/add")}
           iconVariant="add"
         >
           Nueva Empresa
