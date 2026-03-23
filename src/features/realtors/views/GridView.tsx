@@ -43,7 +43,7 @@ export default function GridView({ items, onRefresh }: Props) {
     return (
     <div>
       {items.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {items.map((realtor) => (
             <Card key={realtor.id}>
               <div className="p-6 flex flex-col gap-3">
@@ -70,10 +70,6 @@ export default function GridView({ items, onRefresh }: Props) {
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     <span className="font-medium">Empresa:</span>{" "}
                     {realtor.company?.name || "No asignada"}
-                  </p>
-                  <p className="text-xs text-gray-700 dark:text-gray-300">
-                    <span className="font-medium">Registrado:</span>{" "}
-                    {new Date(realtor.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="flex gap-3">

@@ -7,8 +7,8 @@ import { TitleView } from "@/shared/components/text/TitleView";
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import ViewToggle from "@/shared/components/buttons/ViewToggleButton";
 import { LoadSpin } from "@/shared/components/spins/LoadSpin";
-import { Card } from "@/shared/components/cards/card";
 import GridView from "../views/GridView";
+import { SearchBar } from "@/shared/components/inputs/SearchBar";
 
 interface realtorItem {
   id: string;
@@ -28,6 +28,7 @@ export default function RealtorsPage() {
   const [realtors, setRealtors] = useState<realtorItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchRealtors();
@@ -85,6 +86,17 @@ export default function RealtorsPage() {
       setLoading(false);
     }
   };
+  const filteredRealtors = realtors.filter((realtor) => {
+  const search = searchTerm.toLowerCase();
+  
+  // Buscamos en nombre, apellido, nickname o cédula
+  return (
+    realtor.name.toLowerCase().includes(search) ||
+    realtor.lastname.toLowerCase().includes(search) ||
+    realtor.nickname.toLowerCase().includes(search) ||
+    realtor.national_id?.toLowerCase().includes(search)
+  );
+});
 
   if (loading) {
     return (
@@ -96,29 +108,33 @@ export default function RealtorsPage() {
 
   return (
     <div className="p-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <TitleView
-          title="Agentes"
-          subtitle="Visualiza los datos y estadísticas de todos los agentes inmobiliarios."
-        />
-
-        {/* Contenedor de acciones: ocupa todo el ancho en móvil */}
-        <div className="flex md:gap-2 w-full md:w-auto md:justify-end">
-          <div className="w-full md:w-auto">
-            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-          </div>
-
-          <ActionButton
-            className="w-full md:w-auto justify-center" // Centramos el contenido del botón en móvil
-            onClick={() => router.push("")}
-            iconVariant="add"
-          >
-            Crear Agente
-          </ActionButton>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <TitleView
+            title="Agentes"
+            subtitle="Visualiza los datos y estadísticas de todos los agentes inmobiliarios registrados."
+          />
+        <ActionButton
+          className="w-full md:w-auto justify-center" 
+          onClick={() => router.push("")}
+          iconVariant="add"
+        >
+          Crear Agente
+        </ActionButton>
+      </div>
+      <div className="flex gap-3 items-center justify-between">
+        <div className="w-full md:w-1/2">
+          <SearchBar
+            value={searchTerm}
+            onChange={(value) => setSearchTerm(value)}
+            placeholder="Buscar por nombre, apodo o cedula"
+          />
+        </div>
+        <div className="hidden md:block ">
+          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
         </div>
       </div>
       {viewMode === "grid" ? (
-          <GridView items={realtors} onRefresh={fetchRealtors}/>
+        <GridView items={filteredRealtors} onRefresh={fetchRealtors} />
       ) : (
         <div>chao</div>
       )}
