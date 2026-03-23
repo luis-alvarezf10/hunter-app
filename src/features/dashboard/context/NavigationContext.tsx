@@ -25,10 +25,12 @@ const pageTitles: Record<string, string> = {
   panel: 'Panel de Control',
   stats: 'Estadísticas',
   advisors: 'Asesores',
+  // admin pages
+  realtors: 'Agentes',
+  companies: 'Empresas',
   // General pages
   settings: 'Configuración',
   logout: 'Cerrar Sesión',
-  realtors: 'Agentes',
 };
 
 // Mapeo de rutas a IDs de navegación
@@ -43,6 +45,7 @@ const routeToItemId: Record<string, string> = {
   '/stats': 'stats',
   '/realtors': 'realtors',
   '/settings': 'settings',
+  '/companies': 'companies',
 };
 
 export function NavigationProvider({ children }: { children: ReactNode }) {

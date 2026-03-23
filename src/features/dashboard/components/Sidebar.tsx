@@ -148,7 +148,8 @@ export function Sidebar({ userRole }: SidebarProps) {
     {
       id: "companies",
       label: "Empresas",
-      icon: <HiOutlineOfficeBuilding className="text-xl" />
+      icon: <HiOutlineOfficeBuilding className="text-xl" />,
+      route: "/companies"
     },
     {
       id: "stats",
