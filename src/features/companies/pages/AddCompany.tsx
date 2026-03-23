@@ -21,12 +21,12 @@ export default function AddCompanyPage() {
   const [formData, setFormData] = useState({
     name: "",
     rif: "",
-    country_code: "",
+    country_code: "VE",
   });
 
   const {
     imagePreview,
-    imageFile, // Usamos el imageFile que viene del Hook
+    imageFile, 
     fileInputRef,
     handleCameraClick,
     handleImageChange,
@@ -44,14 +44,29 @@ export default function AddCompanyPage() {
 
       // Subir imagen si existe
       if (imageFile) {
-        const fileExt = imageFile.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("company-logos")
-          .upload(fileName, imageFile);
+         try {
+          const fileExt = imageFile.name.split(".").pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `company-logos/${fileName}`;
 
-        if (uploadError) throw uploadError;
-        logoUrl = uploadData.path;
+          const { error: uploadError } = await supabase.storage
+            .from("company-logos")
+            .upload(filePath, imageFile);
+
+          if (uploadError) {
+            console.error("Error subiendo imagen:", uploadError);
+            // Continuar sin imagen si falla el upload
+          } else {
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("company-logos").getPublicUrl(filePath);
+
+            logoUrl = publicUrl;
+          }
+        } catch (err) {
+          console.error("Error en upload de imagen:", err);
+          // Continuar sin imagen si falla
+        }
       }
 
       // Insertar en la tabla
@@ -151,7 +166,7 @@ export default function AddCompanyPage() {
         />
         {/* Selector de País (Reutilizable) */}
         <CountrySelector
-          value={formData.country_code || "VE"}
+          value={formData.country_code}
           onChange={(code) => setFormData({ ...formData, country_code: code })}
         />
 

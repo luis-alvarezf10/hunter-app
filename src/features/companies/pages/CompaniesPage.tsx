@@ -9,6 +9,7 @@ import ViewToggle from "@/shared/components/buttons/ViewToggleButton";
 import { LoadSpin } from "@/shared/components/spins/LoadSpin";
 
 import { SearchBar } from "@/shared/components/inputs/SearchBar";
+import { GridView } from "../views/GridView";
 
 interface companyItem {
   id: string;
@@ -38,9 +39,7 @@ export default function CompaniesPage() {
 
       const { data: fetchedData, error: fetchError } = await supabase
         .from("companies")
-        .select(
-          `*`,
-        )
+        .select(`*`)
         .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -67,13 +66,13 @@ export default function CompaniesPage() {
     }
   };
   const filteredCompanies = companies.filter((company) => {
-  const search = searchTerm.toLowerCase();
-  
-  return (
-    company.name.toLowerCase().includes(search) ||
-    company.rif.toLowerCase().includes(search)
-  );
-});
+    const search = searchTerm.toLowerCase();
+
+    return (
+      company.name.toLowerCase().includes(search) ||
+      company.rif.toLowerCase().includes(search)
+    );
+  });
 
   if (loading) {
     return (
@@ -86,12 +85,12 @@ export default function CompaniesPage() {
   return (
     <div className="p-8 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <TitleView
-            title="Empresas Registradas"
-            subtitle="Empresas inmobiliarias aliadas a go hunter app."
-          />
+        <TitleView
+          title="Empresas Registradas"
+          subtitle="Empresas inmobiliarias aliadas a go hunter app."
+        />
         <ActionButton
-          className="w-full md:w-auto justify-center" 
+          className="w-full md:w-auto justify-center"
           onClick={() => router.push("/companies/add")}
           iconVariant="add"
         >
@@ -110,52 +109,12 @@ export default function CompaniesPage() {
           <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
         </div>
       </div>
+      <div className="border-b border-white/10 py-1">
+        <span>Total empresas: </span>
+        <span className="font-semibold">{filteredCompanies.length}</span>
+      </div>
       {viewMode === "grid" ? (
-        <div>
-            {filteredCompanies.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCompanies.map((company) => (
-              <div
-                key={company.id}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="p-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {company.name}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {company.rif}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                      {company.country}
-                    </span>
-                    <ActionButton
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => router.push(`/companies/${company.id}`)}
-                    >
-                      Ver detalles
-                    </ActionButton>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">
-              No hay empresas disponibles.
-            </p>
-          </div>
-        )}
-            
-        </div>
+        <GridView items={filteredCompanies} onRefresh={fetchCompanies}/>
       ) : (
         <div>chao</div>
       )}
