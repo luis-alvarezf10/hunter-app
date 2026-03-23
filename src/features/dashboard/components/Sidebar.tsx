@@ -8,6 +8,7 @@ import {
   HiOutlineCog,
   HiOutlineLogout,
   HiOutlineCollection,
+  HiOutlineOfficeBuilding,
 } from "react-icons/hi";
 
 import { LogoImage } from "@/shared/components/images/LogoImage";
@@ -18,7 +19,6 @@ import { createClient } from "@/core/config";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/core/config";
 import { usePathname } from "next/navigation";
-import { LoadingPage } from "@/shared/pages/LoadingPage";
 
 interface SidebarProps {
   userRole: "realtor" | "manager" | "admin";
@@ -145,21 +145,15 @@ export function Sidebar({ userRole }: SidebarProps) {
       icon: <HiOutlineUserGroup className="text-xl" />,
       route: "/realtors",
     },
-     {
-      id: "properties",
-      label: "Propiedades",
-      icon: <HiOutlineCollection className="text-xl" />,
-      route: "/properties",
-    },
     {
       id: "companies",
       label: "Empresas",
-      icon: <HiOutlineUserGroup className="text-xl" />,
+      icon: <HiOutlineOfficeBuilding className="text-xl" />
     },
     {
       id: "stats",
       label: "Estadísticas",
-      icon: <HiOutlineChartPie className="text-xl" />,
+      icon: <HiOutlineChartBar className="text-xl" />
     },
   ];
 
