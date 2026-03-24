@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Registro | Go Hunter',
+  description: 'Página de registro para asesores inmobiliarios',
 };
 
 // Forzar renderizado dinámico
