@@ -1,10 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { HiOutlineCheck, HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh, HiOutlineSearch, HiOutlineX } from "react-icons/hi";
+import { HiOutlineCheck, HiOutlineFolderAdd, HiOutlinePlusCircle, HiOutlineRefresh, HiOutlineSearch, HiOutlineX, HiOutlineExternalLink } from "react-icons/hi";
 
 // Definimos los tipos de las props para tener autocompletado
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'confirm' | 'dotted';
-  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset' | 'close' | 'search' | 'check';
+  iconVariant?: 'add' | 'edit' | 'delete' | 'view' | 'save' | 'cancel' | 'reset' | 'close' | 'search' | 'check' | 'redirect';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: ReactNode;
@@ -49,7 +49,8 @@ export const ActionButton = ({
     cancel: <HiOutlineFolderAdd className="w-5 h-5" />,
     reset: <HiOutlineRefresh className="w-5 h-5"/>,
     search: <HiOutlineSearch className="w-5 h-5"/>,
-    check: <HiOutlineCheck className="w-5 h-5"/>
+    check: <HiOutlineCheck className="w-5 h-5"/>,
+    redirect: <HiOutlineExternalLink className="w-5 h-5" />
   };
 
   // 3. Diccionario de tamaños

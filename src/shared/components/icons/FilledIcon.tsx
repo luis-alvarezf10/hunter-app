@@ -1,8 +1,8 @@
 interface FilledIconProps {
   icon: React.ReactNode;
   backgroundColor?: string;
-  iconColor: string; // Recibe "text-emerald-500"
-  color: string;     // Recibe "#10b981"
+  iconColor: string; 
+  color: string;     
   size?: number;
 }
 

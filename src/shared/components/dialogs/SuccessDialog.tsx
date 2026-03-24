@@ -43,7 +43,7 @@ export function SuccessDialog({
     },
     error: {
       Icon: HiOutlineXCircle,
-      colorClass: "bg-rose-500 dark:bg-rose-500/10",
+      colorClass: "bg-red-500 dark:bg-red-500/10",
       iconColor: "text-white dark:text-rose-500",
       borderHover: "group-hover:dark:border-b-rose-500",
     },

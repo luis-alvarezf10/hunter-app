@@ -73,7 +73,7 @@ export const CustomField = ({
           />
         )}
 
-        <div className="absolute right-4 top-[18px] flex items-center">
+        <div className="absolute right-4 top-3 flex items-center">
           {isPasswordField ? (
             <button
               type="button"

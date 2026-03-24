@@ -115,7 +115,7 @@ export default function RealtorsPage() {
           />
         <ActionButton
           className="w-full md:w-auto justify-center" 
-          onClick={() => router.push("")}
+          onClick={() => router.push("/realtors/add")}
           iconVariant="add"
         >
           Crear Agente
