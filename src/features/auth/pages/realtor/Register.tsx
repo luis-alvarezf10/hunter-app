@@ -13,6 +13,8 @@ import { fireSuccessConfetti } from "@/shared/components/animations/FireSuccessC
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 import { LoginPage } from "../LoginPage";
 import SuccessView from "../../views/sucessView";
+import { SocialLogin } from "../../components/SocialLogin";
+import { div } from "framer-motion/client";
 
 function RealtorRegisterForm() {
   const searchParams = useSearchParams();
@@ -61,13 +63,14 @@ function RealtorRegisterForm() {
     e.preventDefault();
     if (step === 1) {
       nextStep();
-      return; 
+      return;
     }
     if (formData.password !== formData.confirm_password) {
       showAlert("error", "Error", "Las contraseñas no coinciden.");
       return;
     }
-    if (!companyId) showAlert("error", "Error", "No se ha proporcionado una empresa válida.");
+    if (!companyId)
+      showAlert("error", "Error", "No se ha proporcionado una empresa válida.");
 
     setLoading(true);
 
@@ -85,8 +88,8 @@ function RealtorRegisterForm() {
 
       if (authError) throw authError;
       if (!authData.user) throw new Error("No se pudo crear el usuario");
+      console.log("Usuario creado en Auth, insertando en base de datos...");
 
-      // 2. Insertar en la tabla stakeholders
       const { error: dbError } = await supabase.from("stakeholders").insert({
         id: authData.user.id,
         national_id: formData.national_id,
@@ -97,7 +100,10 @@ function RealtorRegisterForm() {
         birthdate: formData.birthdate,
       });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error("Error en stakeholders:", dbError); // Para que veas el error real en consola
+        throw new Error(`Error en perfil: ${dbError.message}`);
+      }
 
       const { error: relError } = await supabase.from("realtors").insert({
         id_realtor: authData.user.id,
@@ -145,7 +151,9 @@ function RealtorRegisterForm() {
               />
             </div>
 
-            <TitleView title={step === 1 ? "Datos Personales" : "Credenciales"}/>
+            <TitleView
+              title={step === 1 ? "Datos Personales" : "Credenciales"}
+            />
 
             <form onSubmit={handleSignUp} className="space-y-6 mt-8">
               {/* PASO 1: Información Personal */}
@@ -256,6 +264,29 @@ function RealtorRegisterForm() {
                 </ActionButton>
               </div>
             </form>
+            <div
+              className={
+                step === 2 ? "block animate-in fade-in duration-500" : "hidden"
+              }
+            >
+              <button
+                onClick={() => {
+                  console.log("Social Login clicked", formData);
+                }}
+              >
+                hola
+              </button>
+              <SocialLogin
+                formData={{
+                  name: formData.name,
+                  lastname: formData.lastname,
+                  national_id: formData.national_id,
+                  birthdate: formData.birthdate,
+                }}
+              />
+            </div>
+
+            {step === 1 && <div className="h-20" />}
           </div>
         </div>
       </div>
@@ -263,7 +294,7 @@ function RealtorRegisterForm() {
         isOpen={dialog.isOpen}
         title={dialog.title}
         message={dialog.message}
-        onClose={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setDialog((prev) => ({ ...prev, isOpen: false }))}
         type={dialog.type}
       />
     </>

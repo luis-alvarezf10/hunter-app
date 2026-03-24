@@ -1,12 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/core/config';
-import { useRouter, usePathname } from 'next/navigation';
-import { Sidebar, Header } from '@/features/dashboard/components';
-import { NavigationProvider, useNavigation } from '@/features/dashboard/context/NavigationContext';
-import { LoadingPage } from '@/shared/pages/LoadingPage';
-import { PageTransition } from '@/shared/components/transitions';
+import { useEffect, useState } from "react";
+import { createClient } from "@/core/config";
+import { useRouter, usePathname } from "next/navigation";
+import { Sidebar, Header } from "@/features/dashboard/components";
+import {
+  NavigationProvider,
+  useNavigation,
+} from "@/features/dashboard/context/NavigationContext";
+import { LoadingPage } from "@/shared/pages/LoadingPage";
+import { PageTransition } from "@/shared/components/transitions";
+import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 
 interface Stakeholder {
   id: string;
@@ -30,9 +34,14 @@ function DashboardLayoutContent({
 }) {
   const { isSidebarOpen, setIsSidebarOpen } = useNavigation();
   const pathname = usePathname();
-  const isHomePage = pathname === '/dashboard';
-  
-  const roleLabel = stakeholder.role === 'admin' ? 'Admin' : stakeholder.role === 'realtor' ? 'Asesor' : 'Gerente';
+  const isHomePage = pathname === "/dashboard";
+
+  const roleLabel =
+    stakeholder.role === "admin"
+      ? "Admin"
+      : stakeholder.role === "realtor"
+        ? "Asesor"
+        : "Gerente";
   const fullName = stakeholder.lastname
     ? `${stakeholder.name} ${stakeholder.lastname}`
     : stakeholder.name;
@@ -40,12 +49,14 @@ function DashboardLayoutContent({
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Sidebar flotante superpuesto */}
-      <div 
+      <div
         className={`p-2 fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <Sidebar userRole={stakeholder.role as 'realtor' | 'manager' | 'admin'} />
+        <Sidebar
+          userRole={stakeholder.role as "realtor" | "manager" | "admin"}
+        />
       </div>
 
       {/* Mobile Menu Button - Hamburger animado */}
@@ -54,19 +65,19 @@ function DashboardLayoutContent({
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         aria-label="Toggle menu"
       >
-        <span 
+        <span
           className={`block w-6 h-0.5 bg-black dark:bg-white transition-all duration-300 ${
-            isSidebarOpen ? 'rotate-45 translate-y-2' : ''
+            isSidebarOpen ? "rotate-45 translate-y-2" : ""
           }`}
         />
-        <span 
+        <span
           className={`block w-6 h-0.5 bg-black dark:bg-white transition-all duration-300 ${
-            isSidebarOpen ? 'opacity-0 scale-x-0' : 'opacity-100 scale-x-100'
+            isSidebarOpen ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
           }`}
         />
-        <span 
+        <span
           className={`block w-6 h-0.5 bg-black dark:bg-white transition-all duration-300 ${
-            isSidebarOpen ? '-rotate-45 -translate-y-2' : ''
+            isSidebarOpen ? "-rotate-45 -translate-y-2" : ""
           }`}
         />
       </button>
@@ -86,23 +97,21 @@ function DashboardLayoutContent({
           <div className="fixed inset-0 bg-gradient-to-b from-[#c52e1a]/40 via-[#9e1e11]/20 to-transparent blur-2xl" />
         </>
       )} */}
-      
+
       {/* Main Content */}
       <main className="relative w-full h-full flex flex-col">
         {/* Header fijo - sin tapar scrollbar */}
-        <div className="fixed top-2 left-4 lg:left-[300px] right-4 lg:right-[45px] z-30 h-[72px]" >
+        <div className="fixed top-2 left-4 lg:left-[300px] right-4 lg:right-[45px] z-30 h-[72px]">
           <Header
             userName={fullName}
             userRole={roleLabel}
             color={stakeholder.ui_color}
           />
         </div>
-        
+
         {/* Contenido con scroll */}
         <div className="flex-1 overflow-y-auto pt-[76px] lg:ml-[272px]">
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <PageTransition>{children}</PageTransition>
         </div>
       </main>
     </div>
@@ -119,33 +128,54 @@ export default function DashboardLayout({
   const router = useRouter();
   const supabase = createClient();
 
+  const [dialog, setDialog] = useState({
+    isOpen: false,
+    type: "success" as "success" | "error" | "warning",
+    title: "",
+    message: "",
+  });
+
+  const showAlert = (
+    type: "success" | "error" | "warning",
+    title: string,
+    message: string,
+  ) => {
+    setDialog({
+      isOpen: true,
+      type,
+      title,
+      message,
+    });
+  };
+
   useEffect(() => {
     async function loadUserData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
         if (!user) {
-          router.push('/auth/login');
+          router.push("/auth/login");
           return;
         }
 
         const { data: stakeholderData, error } = await supabase
-          .from('stakeholders')
-          .select('*')
-          .eq('id', user.id)
+          .from("stakeholders")
+          .select("*")
+          .eq("id", user.id)
           .single();
 
         if (error || !stakeholderData) {
-          console.error('Stakeholder not found:', error);
+          showAlert("error", "Error de acceso", "Usuario no encontrado.");
           await supabase.auth.signOut();
-          router.push('/auth/login');
           return;
         }
 
         setStakeholder(stakeholderData);
       } catch (error) {
-        console.error('Error loading user data:', error);
-        router.push('/auth/login');
+        console.error("Error loading user data:", error);
+        router.push("/auth/login");
       } finally {
         setLoading(false);
       }
@@ -158,15 +188,29 @@ export default function DashboardLayout({
     return <LoadingPage />;
   }
 
-  if (!stakeholder) {
-    return null;
-  }
-
   return (
-    <NavigationProvider>
-      <DashboardLayoutContent stakeholder={stakeholder}>
-        {children}
-      </DashboardLayoutContent>
-    </NavigationProvider>
+    <>
+      {stakeholder ? (
+        <NavigationProvider>
+          <DashboardLayoutContent stakeholder={stakeholder}>
+            {children}
+          </DashboardLayoutContent>
+        </NavigationProvider>
+      ) : (
+        <div className="h-screen w-full" />
+      )}
+      <SuccessDialog
+        isOpen={dialog.isOpen}
+        title={dialog.title}
+        message={dialog.message}
+        onClose={() => {
+          setDialog((prev) => ({ ...prev, isOpen: false }));
+          if (!stakeholder) {
+            router.push("/auth/login");
+          }
+        }}
+        type={dialog.type}
+      />
+    </>
   );
 }

@@ -43,7 +43,7 @@ export default function SuccessView({ name, email }: SuccessViewProps) {
           onClick={() => router.push("/auth/login")}
           variant="secondary"
           className="w-full"
-          // size="lg" // Asegúrate que tu ActionButton acepte size="lg"
+          size="lg" 
           iconVariant="redirect"
         >
           Ir al inicio de sesión
