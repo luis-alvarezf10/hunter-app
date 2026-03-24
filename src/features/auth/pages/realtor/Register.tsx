@@ -11,6 +11,8 @@ import { FilledIcon } from "@/shared/components/icons/FilledIcon";
 import { LogoImage } from "@/shared/components/images/LogoImage";
 import { fireSuccessConfetti } from "@/shared/components/animations/FireSuccessConfetti";
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
+import { LoginPage } from "../LoginPage";
+import SuccessView from "../../views/sucessView";
 
 function RealtorRegisterForm() {
   const searchParams = useSearchParams();
@@ -20,8 +22,27 @@ function RealtorRegisterForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  // Capturamos el ID de la empresa desde la URL (?company_id=...)
   const companyId = searchParams.get("company_id");
+
+  const [dialog, setDialog] = useState({
+    isOpen: false,
+    type: "success" as "success" | "error" | "warning",
+    title: "",
+    message: "",
+  });
+
+  const showAlert = (
+    type: "success" | "error" | "warning",
+    title: string,
+    message: string,
+  ) => {
+    setDialog({
+      isOpen: true,
+      type,
+      title,
+      message,
+    });
+  };
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,14 +61,13 @@ function RealtorRegisterForm() {
     e.preventDefault();
     if (step === 1) {
       nextStep();
-      return; // Detenemos la ejecución aquí para que NO toque Supabase todavía
+      return; 
     }
     if (formData.password !== formData.confirm_password) {
-      setIsError(true);
+      showAlert("error", "Error", "Las contraseñas no coinciden.");
       return;
     }
-    if (!companyId)
-      return alert("Link de invitación inválido (Falta Company ID)");
+    if (!companyId) showAlert("error", "Error", "No se ha proporcionado una empresa válida.");
 
     setLoading(true);
 
@@ -88,57 +108,18 @@ function RealtorRegisterForm() {
       fireSuccessConfetti();
       setIsSuccess(true);
     } catch (error: any) {
-      alert(error.message || "Error al registrarse");
+      showAlert("error", "Error", error.message || "Error al registrarse.");
     } finally {
       setLoading(false);
     }
   };
   if (isSuccess) {
-    return (
-      <div className="h-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-[#0a0a0a]">
-        <div className="group max-w-md w-full bg-white dark:bg-[#1a1a1a] p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-white/5 text-center space-y-6 animate-in fade-in zoom-in duration-300">
-          <div className="flex items-center justify-center">
-            <div
-              className={`icon-animate size-16 rounded-2xl flex items-center justify-center transition-all duration-300 border-b-1 border-t-1 border-transparent group-hover:scale-110 group-hover:dark:border-t-white/10 bg-emerald-500 text-white dark:bg-emerald-500/10 group-hover:dark:border-b-emerald-500 dark:text-emerald-500 `}
-            >
-              <HiOutlineCheck className="text-3xl" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              ¡Casi listo, {formData.name}!
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Hemos enviado un correo de confirmación a <br />
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {formData.email}
-              </span>
-            </p>
-          </div>
-
-          <div className="bg-amber-500 dark:bg-amber-500/10 p-4 rounded-2xl border-1  dark:border-amber-500/10 text-sm text-white dark:text-amber-400 text-left">
-            <strong>Nota:</strong> Si no lo ves en unos minutos, revisa tu
-            carpeta de <b>Spam</b> o correo no deseado.
-          </div>
-
-          <ActionButton
-            onClick={() => router.push("/auth/login")}
-            variant="secondary"
-            className="w-full"
-            size="lg"
-            iconVariant="redirect"
-          >
-            Ir al inicio de sesión
-          </ActionButton>
-        </div>
-      </div>
-    );
+    return <SuccessView name={formData.name} email={formData.email} />;
   }
 
   return (
     <>
-      <div className="h-screen  flex items-center justify-center p-6">
+      <div className="h-screen overflow-y-auto flex items-center justify-center p-6">
         <div className="flex items-stretch justify-center w-full max-w-5xl gap-6 bg-white dark:bg-[#1a1a1a] p-4 rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl min-h-[600px]">
           <div className="relative hidden lg:flex flex-col items-center justify-center gap-2 w-1/2 bg-background rounded-2xl overflow-hidden p-8">
             <div className=" h-40 ">
@@ -150,7 +131,10 @@ function RealtorRegisterForm() {
               Completa los datos para poder gestionar tus estadísticas
             </span>
           </div>
-          <div className="w-full p-10">
+          <div className="relative w-full p-4 md:p-10">
+            <div className=" h-25 md:hidden">
+              <LogoImage className="h-40 absolute -translate-y-1/5 left-1/2 -translate-x-1/2 " />
+            </div>
             {/* Indicador de Pasos (Visual) */}
             <div className="flex items-center gap-4 mb-8">
               <div
@@ -161,14 +145,7 @@ function RealtorRegisterForm() {
               />
             </div>
 
-            <TitleView
-              title={step === 1 ? "Datos Personales" : "Seguridad de la Cuenta"}
-              subtitle={
-                step === 1
-                  ? "Cuéntanos quién eres"
-                  : "Configura tus credenciales de acceso"
-              }
-            />
+            <TitleView title={step === 1 ? "Datos Personales" : "Credenciales"}/>
 
             <form onSubmit={handleSignUp} className="space-y-6 mt-8">
               {/* PASO 1: Información Personal */}
@@ -283,11 +260,11 @@ function RealtorRegisterForm() {
         </div>
       </div>
       <SuccessDialog
-        isOpen={isError}
-        title="¡Error de contraseñas!"
-        message="Las contraseñas ingresadas no coinciden."
-        onClose={() => setIsError(false)}
-        type="error"
+        isOpen={dialog.isOpen}
+        title={dialog.title}
+        message={dialog.message}
+        onClose={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+        type={dialog.type}
       />
     </>
   );
@@ -296,13 +273,7 @@ function RealtorRegisterForm() {
 // Next.js requiere Suspense cuando usas useSearchParams en componentes cliente
 export default function RealtorRegistrationPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-screen items-center justify-center">
-          Cargando...
-        </div>
-      }
-    >
+    <Suspense fallback={<LoginPage />}>
       <RealtorRegisterForm />
     </Suspense>
   );
