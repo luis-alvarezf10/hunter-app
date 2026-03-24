@@ -25,12 +25,29 @@ export default function AddRealtorPage() {
     name: string;
   } | null>(null);
   const [showCompanyDialog, setShowCompanyDialog] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
 
-  // Función para generar el link
+  const [dialog, setDialog] = useState({
+    isOpen: false,
+    type: "success" as "success" | "error" | "warning",
+    title: "",
+    message: ""
+  });
+
+  const showAlert = (type: "success" | "error" | "warning", title: string, message: string) => {
+    setDialog({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+  };
+
   const handleGenerateLink = () => {
-    if (!selectedCompany) return alert("Por favor, selecciona una empresa primero");
+    if (!selectedCompany) {
+      showAlert("error", "Error", "Por favor, selecciona una empresa primero.")
+      return;
+    };
     
     const baseUrl = window.location.origin;
     const link = `${baseUrl}/auth/register/realtor?company_id=${selectedCompany.id}`;
@@ -44,7 +61,6 @@ export default function AddRealtorPage() {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Función para compartir por Email
   const shareEmail = () => {
     if (!inviteLink) return;
     const subject = encodeURIComponent("Invitación Go Hunter");
@@ -54,7 +70,7 @@ export default function AddRealtorPage() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(inviteLink);
-    setShowSuccessDialog(true);
+    showAlert("success", "¡Link copiado!", "Puedes compartirlo con precaución.");
   };
 
   return (
@@ -202,10 +218,11 @@ export default function AddRealtorPage() {
         }}
       />
       <SuccessDialog
-        isOpen={showSuccessDialog}
-        onClose={() => setShowSuccessDialog(false)}
-        title="¡Link copiado!"
-        message="Comparte este link con precaución"
+        isOpen={dialog.isOpen}
+        onClose={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+        title={dialog.title}
+        message={dialog.message}
+        type={dialog.type}
       />
     </>
   );
