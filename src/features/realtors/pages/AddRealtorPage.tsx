@@ -177,7 +177,6 @@ export default function AddRealtorPage() {
                   bgColor={"#ffffff"}
                   fgColor={"#000000"}
                   level={"L"}
-                  includeMargin={false}
                 />
               </div>
             ) : (
