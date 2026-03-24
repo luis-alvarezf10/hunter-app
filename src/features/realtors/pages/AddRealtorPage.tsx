@@ -14,6 +14,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import CompanySearchDialog from "../components/dialogs/CompanySearchDialog";
 import { IconButton } from "@/shared/components/buttons/IconButton";
+import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 
 export default function AddRealtorPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function AddRealtorPage() {
     name: string;
   } | null>(null);
   const [showCompanyDialog, setShowCompanyDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
 
   // Función para generar el link
@@ -46,13 +48,13 @@ export default function AddRealtorPage() {
   const shareEmail = () => {
     if (!inviteLink) return;
     const subject = encodeURIComponent("Invitación Go Hunter");
-    const body = encodeURIComponent(`Hola, utiliza este link para registrarte como Realtor: ${inviteLink}`);
+    const body = encodeURIComponent(`Hola, Únete al equipo de Go Hunter como Realtor aquí: ${inviteLink}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(inviteLink);
-    alert("¡Link copiado!");
+    setShowSuccessDialog(true);
   };
 
   return (
@@ -80,8 +82,8 @@ export default function AddRealtorPage() {
                 Empresa Inmobiliaria
               </label>
               {selectedCompany ? (
-                <div className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
+ 
                     <div className="size-10 rounded-2xl overflow-hidden bg-gray-50 dark:bg-[#1a1a1a] flex-shrink-0 shadow-sm">
                       {selectedCompany.logo ? (
                         <img
@@ -101,12 +103,8 @@ export default function AddRealtorPage() {
                       <h3 className="font-semibold">{selectedCompany.name}</h3>
   
                     </div>
-                  </div>
-                  <IconButton
-                    onClick={() => setSelectedCompany(null)}
-                    icon={<HiOutlineTrash className="w-5 h-5" />}
-                    variant="danger"
-                  />
+ 
+
                 </div>
               ) : (
                 <ActionButton
@@ -116,7 +114,7 @@ export default function AddRealtorPage() {
                   className="w-full py-10"
                   iconVariant="search"
                 >
-                  Buscar y seleccionar empresa
+                  Buscar y seleccionar 
                 </ActionButton>
               )}
             </div>
@@ -125,42 +123,40 @@ export default function AddRealtorPage() {
               <ActionButton
                 onClick={handleGenerateLink}
                 className="w-full justify-center py-4"
-                iconVariant="check"
+                iconVariant="link"
+                variant="confirm"
               >
-                Generar Link de Invitación
+                Generar Link 
               </ActionButton>
             ) : (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 break-all text-sm font-mono text-gray-600 dark:text-gray-400">
+                <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 break-all text-sm font-mono text-gray-600 dark:text-gray-400 truncate ">
                   {inviteLink}
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <ActionButton
+                  <IconButton 
                     onClick={copyToClipboard}
                     variant="secondary"
-                    className="justify-center"
-                  >
-                    <HiOutlineClipboardCopy className="text-xl" />
-                  </ActionButton>
-                  <button
-                    type="button"
+                    iconVariant="copylink"
+                  />
+                  <IconButton 
                     onClick={shareWhatsApp}
-                    className="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-2xl transition-colors"
-                  >
-                    <FaWhatsapp className="text-2xl" />
-                  </button>
-                  <button
-                    type="button"
+                    variant="green"
+                    iconVariant="whatsapp"
+                  />
+                  <IconButton 
                     onClick={shareEmail}
-                    className="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-2xl transition-colors"
-                  >
-                    <HiOutlineMail className="text-2xl" />
-                  </button>
+                    variant="blue"
+                    iconVariant="email"
+                  />
                 </div>
                 <ActionButton
-                  onClick={() => setInviteLink("")}
+                  onClick={() => {
+                    setInviteLink("");
+                    setSelectedCompany(null);
+                  }}
                   variant="dotted"
-                  className="w-full text-xs"
+                  className="w-full text-sm"
                 >
                   Generar otro link
                 </ActionButton>
@@ -205,6 +201,12 @@ export default function AddRealtorPage() {
           setSelectedCompany(company);
           setShowCompanyDialog(false);
         }}
+      />
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        title="¡Link copiado!"
+        message="Comparte este link con precaución"
       />
     </>
   );

@@ -1,12 +1,13 @@
 import { watch } from 'fs';
 import React from 'react';
-import { HiEye } from 'react-icons/hi';
+import { FaWhatsapp } from 'react-icons/fa';
+import { HiEye, HiOutlineLink, HiOutlineMail } from 'react-icons/hi';
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
-  iconVariant?: "watch";
+  iconVariant?: "watch" | 'copylink' | 'email' | 'whatsapp';
   text?: string;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "glass" ;
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger" | "glass" | "blue" | "green";
   isLoading?: boolean;
 }
 export const IconButton: React.FC<IconButtonProps> = ({
@@ -25,11 +26,16 @@ export const IconButton: React.FC<IconButtonProps> = ({
     outline: "border border-gray-300/50 bg-transparent hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/10 cursor-pointer",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800",
     danger: "bg-red-500 text-white hover:bg-red-600",
-    glass: "backdrop-blur-sm bg-white/30 dark:bg-black/20 border border-white/20 hover:bg-white/50 dark:hover:bg-black/30"
+    glass: "backdrop-blur-sm bg-white/30 dark:bg-black/20 border border-white/20 hover:bg-white/50 dark:hover:bg-black/30",
+    blue: "bg-blue-500 text-white hover:bg-blue-600",
+    green: "bg-green-500 text-white hover:bg-green-600"
   };
 
     const iconVariants = { 
-      watch: <HiEye />
+      watch: <HiEye className="w-6 h-6" />,
+      copylink: <HiOutlineLink className="w-6 h-6" />,
+      email: <HiOutlineMail className="w-6 h-6" />,
+      whatsapp: <FaWhatsapp className="text-2xl" />
     };
 
   return (
@@ -42,7 +48,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
       {/* El icono siempre se ve */}
       {icon}
       {iconVariant && !isLoading && (
-        <span className="mr-2">
+        <span className="">
           {iconVariants[iconVariant]}
         </span>
       )}
