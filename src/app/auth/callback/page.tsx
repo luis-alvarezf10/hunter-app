@@ -1,14 +1,15 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { createClient } from "@/core/config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingPage } from "@/shared/pages/LoadingPage";
 
-export default function AuthCallbackPage() {
+// 1. Extraemos la lógica a un componente interno
+function AuthCallbackContent() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isProcessing = useRef(false); // Evita que se ejecute dos veces (StrictMode)
+  const isProcessing = useRef(false);
 
   useEffect(() => {
     if (isProcessing.current) return;
@@ -24,7 +25,7 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      // 2. Extraer los datos de la URL que mandamos desde el SocialLogin
+      // 2. Extraer los datos de la URL
       const national_id = searchParams.get("national_id");
       const name = searchParams.get("name");
       const lastname = searchParams.get("lastname");
@@ -54,14 +55,19 @@ export default function AuthCallbackPage() {
         }
       }
 
-      // 5. Mandar al dashboard
       router.push("/dashboard");
     };
 
     completeRegistration();
   }, [supabase, router, searchParams]);
 
+  return <LoadingPage />;
+}
+
+export default function AuthCallbackPage() {
   return (
-   <LoadingPage/>
+    <Suspense fallback={<LoadingPage />}>
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
