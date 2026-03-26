@@ -11,6 +11,7 @@ interface SocialLoginProps {
     lastname?: string;
     national_id?: string;
     birthdate?: string;
+    phone?: string;
   };
 }
 
@@ -40,6 +41,7 @@ export function SocialLogin({ formData }: SocialLoginProps) {
       national_id: formData?.national_id || "",
       birthdate: formData?.birthdate || "",
       id_company: companyId || "",
+      phone: formData?.phone || "",
     });
 
     await supabase.auth.signInWithOAuth({

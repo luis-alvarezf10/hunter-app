@@ -14,7 +14,6 @@ import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";
 import { LoginPage } from "../LoginPage";
 import SuccessView from "../../views/sucessView";
 import { SocialLogin } from "../../components/SocialLogin";
-import { div } from "framer-motion/client";
 
 function RealtorRegisterForm() {
   const searchParams = useSearchParams();
@@ -54,6 +53,7 @@ function RealtorRegisterForm() {
     password: "",
     birthdate: "",
     national_id: "",
+    phone: "",
     confirm_password: "",
   });
   const nextStep = () => setStep((prev) => prev + 1);
@@ -78,6 +78,7 @@ function RealtorRegisterForm() {
       // 1. Crear el usuario en Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
+        phone: formData.phone,
         password: formData.password,
         options: {
           data: {
@@ -98,6 +99,7 @@ function RealtorRegisterForm() {
         role: "realtor",
         ui_color: "#8b0f08",
         birthdate: formData.birthdate,
+        phone: formData.phone,
       });
 
       if (dbError) {
@@ -184,6 +186,9 @@ function RealtorRegisterForm() {
                       label="Cédula de Identidad"
                       placeholder="ej: 123..."
                       value={formData.national_id}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       onChange={(e) =>
                         setFormData({
                           ...formData,
@@ -198,6 +203,20 @@ function RealtorRegisterForm() {
                       value={formData.birthdate}
                       onChange={(e) =>
                         setFormData({ ...formData, birthdate: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <CustomField
+                      label="Numero Telefónico"
+                      placeholder="ej: 123..."
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phone: e.target.value,
+                        })
                       }
                       required
                     />
@@ -279,7 +298,7 @@ function RealtorRegisterForm() {
               />
             </div>
 
-            {step === 1 && <div className="h-20" />}
+            {step === 1 && <div className="h-10" />}
           </div>
         </div>
       </div>

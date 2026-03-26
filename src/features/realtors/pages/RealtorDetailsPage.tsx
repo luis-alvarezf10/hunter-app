@@ -121,7 +121,7 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
           </div>
           <div>
             <span className="text-gray-400 text-sm">Teléfono</span>
-            <p>{realtor.stakeholder.phone}</p>
+            <p>{realtor.stakeholder.phone ? realtor.stakeholder.phone : "-"}</p>
           </div>
           <div>
             <span className="text-gray-400 text-sm">Cédula</span>

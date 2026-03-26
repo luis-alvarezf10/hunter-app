@@ -31,6 +31,8 @@ function AuthCallbackContent() {
       const lastname = searchParams.get("lastname");
       const birthdate = searchParams.get("birthdate");
       const id_company = searchParams.get("id_company");
+      const phone = searchParams.get("phone") || session.user.phone || "";
+
 
       if (national_id) {
         console.log("Datos detectados, insertando en stakeholders...");
@@ -38,6 +40,8 @@ function AuthCallbackContent() {
         // 3. Inserción manual en stakeholders
         const { error: dbError } = await supabase.from("stakeholders").upsert({
           id: session.user.id,
+          email: session.user.email,
+          phone: phone,
           national_id: national_id,
           name: name,
           lastname: lastname,
