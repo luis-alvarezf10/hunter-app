@@ -269,13 +269,6 @@ function RealtorRegisterForm() {
                 step === 2 ? "block animate-in fade-in duration-500" : "hidden"
               }
             >
-              <button
-                onClick={() => {
-                  console.log("Social Login clicked", formData);
-                }}
-              >
-                hola
-              </button>
               <SocialLogin
                 formData={{
                   name: formData.name,

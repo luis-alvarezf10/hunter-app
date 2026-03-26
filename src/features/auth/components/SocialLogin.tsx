@@ -109,7 +109,7 @@ export function SocialLogin({ formData }: SocialLoginProps) {
           <span className="text-slate-700 dark:text-slate-300">Google</span>
         </button>
 
-        <button
+        {/* <button
           onClick={handleFacebookLogin}
           type="button"
           className="flex items-center justify-center gap-2 h-11 rounded-2xl border border-gray-300/50 dark:border-white/10 bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-slate-700 dark:text-slate-300 text-sm font-semibold cursor-pointer"
@@ -123,7 +123,7 @@ export function SocialLogin({ formData }: SocialLoginProps) {
           </svg>
 
           <span className="text-slate-700 dark:text-slate-300">Facebook</span>
-        </button>
+        </button> */}
       </div>
 
       <SuccessDialog
