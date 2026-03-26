@@ -13,6 +13,10 @@ import {
 } from "react-icons/hi";
 import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
 
+interface userProps {
+  id: string;
+}
+
 interface Stats {
   available: number;
   reserved: number;
@@ -20,7 +24,9 @@ interface Stats {
   rented: number;
 }
 
-export function PropertyStats() {
+
+
+export function PropertyStats({id}: userProps) {
   const [stats, setStats] = useState<Stats>({
     available: 0,
     reserved: 0,
@@ -42,7 +48,7 @@ export function PropertyStats() {
         }
         const { data: properties } = await supabase
           .from("properties")
-          .select("status").eq("id_advisor", user.id);
+          .select("status").eq("id_advisor", id);
 
         if (properties) {
           setStats({

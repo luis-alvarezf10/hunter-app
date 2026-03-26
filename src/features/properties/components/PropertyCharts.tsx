@@ -7,6 +7,10 @@ import { TitleCard } from "@/shared/components/text/TitleCard";
 import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
 import { LoadSpin } from "@/shared/components/spins/LoadSpin";
 
+interface userProps {
+  id: string;
+}
+
 interface TypeData {
   label: string;
   value: number;
@@ -14,7 +18,7 @@ interface TypeData {
   percentage: number;
 }
 
-export function PropertyCharts() {
+export function PropertyCharts({id}:userProps) {
   const [typeData, setTypeData] = useState<TypeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -37,7 +41,7 @@ export function PropertyCharts() {
         const { data: propCounts } = await supabase
           .from("properties")
           .select("id_type")
-          .eq("id_advisor", user.id);
+          .eq("id_advisor", id);
 
         if (types && propCounts) {
           const total = propCounts.length;

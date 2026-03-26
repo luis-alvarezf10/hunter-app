@@ -100,20 +100,22 @@ export function PropertiesPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [agent, setAgent] = useState<any>(null);
 
   // Cargar propiedades del asesor
   useEffect(() => {
     const loadProperties = async () => {
       try {
         const {
-          data: { user },
+          data: { user: authUser },
         } = await supabase.auth.getUser();
-        if (!user) {
+        if (!authUser) {
           console.log("No hay usuario autenticado");
           return;
         }
+        setAgent(authUser);
 
-        console.log("Cargando propiedades para usuario:", user.id);
+        console.log("Cargando propiedades para usuario:", agent.id);
 
         const { data, error } = await supabase
           .from("properties")
@@ -140,7 +142,7 @@ export function PropertiesPage() {
             )
           `,
           )
-          .eq("id_advisor", user.id)
+          .eq("id_advisor", agent.id)
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -304,11 +306,15 @@ export function PropertiesPage() {
       {/* Estadísticas y Gráficas */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-1">
-          <PropertyStats />
+          {agent?.id && (
+            <PropertyStats id={agent.id} />
+          )}
         </div>
 
         <div className="xl:col-span-2">
-          <PropertyCharts />
+          {agent?.id && (
+            <PropertyCharts id={agent.id}/>
+          )}
         </div>
       </div>
 
@@ -376,7 +382,7 @@ export function PropertiesPage() {
       {/* Properties Grid/List */}
       {loading ? (
         <div className="flex items-center justify-center p-20">
-          <LoadSpin/>
+          <LoadSpin />
         </div>
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -660,59 +666,60 @@ export function PropertiesPage() {
 
                   {/* Columna 4: Acciones */}
                   <div className="col-span-2 flex items-center justify-center gap-2  pt-3 md:pt-0">
-                    <IconButton onClick={() => {
+                    <IconButton
+                      onClick={() => {
                         setSelectedProperty(property);
                         setShowDetailsDialog(true);
-                      }}  
+                      }}
                       variant="secondary"
                       className="flex-1 md:flex-none h-12"
-                      icon={<HiOutlineEye  className="text-lg" />}
+                      icon={<HiOutlineEye className="text-lg" />}
                     />
                     <div className="relative">
-                        <IconButton
-                          icon={<HiDotsVertical className="text-lg w-5 h-5" />}
-                          variant="outline"
-                          className="flex-1 md:flex-none w-12 h-12"
-                          onClick={() =>
-                            setOpenMenuId(
-                              openMenuId === property.id ? null : property.id,
-                            )
-                          }
-                        />
-                        <AnimatePresence>
-                          {openMenuId === property.id && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                              animate={{ opacity: 1, y: 0, scale: 1 }}
-                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                              transition={{ duration: 0.15 }}
-                              className="absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                      <IconButton
+                        icon={<HiDotsVertical className="text-lg w-5 h-5" />}
+                        variant="outline"
+                        className="flex-1 md:flex-none w-12 h-12"
+                        onClick={() =>
+                          setOpenMenuId(
+                            openMenuId === property.id ? null : property.id,
+                          )
+                        }
+                      />
+                      <AnimatePresence>
+                        {openMenuId === property.id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 bottom-full md:-bottom-3 md:right-full md:mr-2 mb-2 md:mb-0 w-48  bg-white/90 dark:bg-[#1a1a1a]/90 dark:border-1 border-white/30 rounded-2xl shadow-lg z-[100] backdrop-blur-sm"
+                          >
+                            <button
+                              onClick={() => {
+                                router.push(
+                                  `/properties/add?id=${property.id}`,
+                                );
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
                             >
-                              <button
-                                onClick={() => {
-                                  router.push(
-                                    `/properties/add?id=${property.id}`,
-                                  );
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2 rounded-t-2xl cursor-pointer"
-                              >
-                                <HiOutlinePencil className="text-lg" />
-                                Editar
-                              </button>
-                              <button
-                                onClick={() => {
-                                  handleDeleteProperty(property.id);
-                                }}
-                                className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
-                              >
-                                <HiOutlineTrash className="text-lg" />
-                                Eliminar
-                              </button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                              <HiOutlinePencil className="text-lg" />
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDeleteProperty(property.id);
+                              }}
+                              className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2 rounded-b-2xl cursor-pointer"
+                            >
+                              <HiOutlineTrash className="text-lg" />
+                              Eliminar
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
               );
