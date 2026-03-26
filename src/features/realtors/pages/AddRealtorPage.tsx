@@ -6,12 +6,6 @@ import { BadgeButton } from "@/shared/components/buttons/BadgeButton";
 import { TitleView } from "@/shared/components/text/TitleView";
 import { ActionButton } from "@/shared/components/buttons/ActionButton";
 import { QRCodeSVG } from "qrcode.react"; // Importamos el QR
-import {
-  HiOutlineMail,
-  HiOutlineClipboardCopy,
-  HiOutlineTrash,
-} from "react-icons/hi";
-import { FaWhatsapp } from "react-icons/fa";
 import CompanySearchDialog from "../components/dialogs/CompanySearchDialog";
 import { IconButton } from "@/shared/components/buttons/IconButton";
 import { SuccessDialog } from "@/shared/components/dialogs/SuccessDialog";

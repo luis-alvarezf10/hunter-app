@@ -14,33 +14,32 @@ interface realtorItem {
   ui_color: string;
   created_at: string;
   company?: {
-      name: string;
-    };
+    name: string;
+  };
 }
 
 interface Props {
-    items: realtorItem[];
-    onRefresh: () => void;
+  items: realtorItem[];
+  onRefresh: () => void;
 }
 
 export default function GridView({ items, onRefresh }: Props) {
-    const router = useRouter();
-    
-    
-    const menuActions = [
-      {
-        label: "Editar",
-        icon: <HiOutlinePencil />,
-        onClick: () => router.push(``),
-      },
-      {
-        label: "Eliminar",
-        icon: <HiOutlineTrash />,
-        onClick: () => {},
-        variant: "danger" as const,
-      },
-    ];
-    return (
+  const router = useRouter();
+
+  const menuActions = [
+    {
+      label: "Editar",
+      icon: <HiOutlinePencil />,
+      onClick: () => router.push(``),
+    },
+    {
+      label: "Eliminar",
+      icon: <HiOutlineTrash />,
+      onClick: () => {},
+      variant: "danger" as const,
+    },
+  ];
+  return (
     <div>
       {items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -73,14 +72,21 @@ export default function GridView({ items, onRefresh }: Props) {
                   </p>
                 </div>
                 <div className="flex gap-3">
-                    <ActionButton
+                  <ActionButton
                     variant="secondary"
                     size="sm"
                     className="flex-1"
-                    >
-                        Ver detalles
-                    </ActionButton>
-                  <OptionsMenuButton actions={menuActions} position="top" align="right" />
+                    onClick={() => {
+                      router.push(`/realtors/${realtor.id}`);
+                    }}
+                  >
+                    Ver detalles
+                  </ActionButton>
+                  <OptionsMenuButton
+                    actions={menuActions}
+                    position="top"
+                    align="right"
+                  />
                 </div>
               </div>
             </Card>

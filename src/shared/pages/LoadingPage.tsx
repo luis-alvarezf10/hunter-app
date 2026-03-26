@@ -20,23 +20,17 @@ export function LoadingPage() {
             </div>
           </div>
         </div>
-
+        <span>Cargando ...</span>
         {/* Texto de carga con estilo moderno */}
-        <div className="flex flex-col items-center gap-1">
-          <h2 className="text-2xl tracking-tighter text-slate-900 dark:text-white flex items-center">
-            GO HUNTER
-          </h2>
+        {/* <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold lowercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-              Cargando
-            </span>
             <span className="flex gap-1">
               <span className="h-1 w-1 rounded-full bg-[#6b1e2e] animate-bounce [animation-delay:-0.3s]"></span>
               <span className="h-1 w-1 rounded-full bg-[#6b1e2e] animate-bounce [animation-delay:-0.15s]"></span>
               <span className="h-1 w-1 rounded-full bg-[#6b1e2e] animate-bounce"></span>
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
