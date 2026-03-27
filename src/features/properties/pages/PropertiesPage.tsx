@@ -142,7 +142,7 @@ export function PropertiesPage() {
             )
           `,
           )
-          .eq("id_advisor", agent.id)
+          .eq("id_advisor", authUser.id)
           .order("created_at", { ascending: false });
 
         if (error) {
