@@ -63,49 +63,47 @@ export default function RealtorInfoCard({
 
       <div className="border-t border-gray-300/50 dark:border-white/10 my-6" />
 
+      <div className="flex flex-col-reverse md:flex-row  grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <TitleCard showDivider title="Información Empresa" />
 
-        <div className="flex flex-col-reverse md:flex-row  grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <TitleCard showDivider title="Información Empresa" />
-
-            <div className="mt-4 flex items-center gap-4">
-              <div className="size-10 rounded-2xl overflow-hidden bg-gray-50 dark:bg-[#1a1a1a] flex-shrink-0 shadow-sm">
-                {realtor.company.logo ? (
-                  <img
-                    src={realtor.company.logo}
-                    alt={`${realtor.company.name} logo`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-secondary to-wine-red  text-white">
-                    <span className="text-xl font-semibold uppercase">
-                      {realtor.company.name.charAt(0)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <p>{realtor.company.name}</p>
+          <div className="mt-4 mb-4  flex items-center gap-4">
+            <div className="size-10 rounded-2xl overflow-hidden bg-gray-50 dark:bg-[#1a1a1a] flex-shrink-0 shadow-sm">
+              {realtor.company.logo ? (
+                <img
+                  src={realtor.company.logo}
+                  alt={`${realtor.company.name} logo`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-secondary to-wine-red  text-white">
+                  <span className="text-xl font-semibold uppercase">
+                    {realtor.company.name.charAt(0)}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <span className="text-gray-400 text-sm">
-              Relacionado hace {calculateDaysInCompany(realtor.last_updated)}{" "}
-              días
-            </span>
+            <p>{realtor.company.name}</p>
           </div>
 
-          <div className="md:hidden border-t border-gray-300/50 dark:border-white/10 my-4" />
+          <span className="text-gray-400 text-sm">
+            Relacionado hace {calculateDaysInCompany(realtor.last_updated)} días
+          </span>
+        </div>
 
-          <div>
-            <TitleCard showDivider title="Información Adicional" />
+        <div className="md:hidden border-t border-gray-300/50 dark:border-white/10 my-4" />
 
-            <div className="mt-4">
-              <span className="text-gray-400 text-sm">Total Puntos</span>
+        <div>
+          <TitleCard showDivider title="Información Adicional" />
 
-              <p>{realtor.points}</p>
-            </div>
+          <div className="mt-4 mb-4 ">
+            <span className="text-gray-400 text-sm">Total Puntos</span>
+
+            <p>{realtor.points}</p>
           </div>
         </div>
+      </div>
     </Card>
   );
 }
