@@ -13,6 +13,7 @@ import { notFound, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import RealtorInfoCard from "../components/cards/RealtorInfoCard";
+import StatCards from "../components/cards/StatCards";
 
 interface Props {
   realtorId: string;
@@ -137,9 +138,6 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
 
       <RealtorInfoCard realtor={realtor} calculateDaysInCompany={calculateDaysInCompany} />
 
-      {/* Aquí van tus gráficas de estadísticas de GoHunter */}
-
-      {/* Estadísticas y Gráficas */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-1">
           <PropertyStats id={realtor.stakeholder.id} />
@@ -149,6 +147,7 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
           <PropertyCharts id={realtor.stakeholder.id} />
         </div>
       </div>
+      <StatCards realtorId={realtor.stakeholder.id}/>
     </div>
   );
 }
