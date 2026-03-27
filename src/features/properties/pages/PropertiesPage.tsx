@@ -115,8 +115,6 @@ export function PropertiesPage() {
         }
         setAgent(authUser);
 
-        console.log("Cargando propiedades para usuario:", agent.id);
-
         const { data, error } = await supabase
           .from("properties")
           .select(
