@@ -12,6 +12,7 @@ import { LoadingPage } from "@/shared/pages/LoadingPage";
 import { notFound, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
+import RealtorInfoCard from "../components/cards/RealtorInfoCard";
 
 interface Props {
   realtorId: string;
@@ -134,50 +135,7 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
         </div>
       </div>
 
-      <Card className="p-6">
-        <TitleCard showDivider title="Información General" />
-        <div className="mt-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <span className="text-gray-400 text-sm">Correo Electrónico</span>
-            <p>{realtor.stakeholder.email}</p>
-          </div>
-          <div>
-            <span className="text-gray-400 text-sm">Teléfono</span>
-            <p>{realtor.stakeholder.phone ? realtor.stakeholder.phone : "-"}</p>
-          </div>
-          <div>
-            <span className="text-gray-400 text-sm">Cédula</span>
-            <p>{realtor.stakeholder.national_id}</p>
-          </div>
-          <div>
-            <span className="text-gray-400 text-sm">Fecha de Registro</span>
-            <p>{new Date(realtor.created_at).toLocaleDateString()}</p>
-          </div>
-        </div>
-        <div className="border-t border-gray-300/50 dark:border-white/10 my-4" />
-        <TitleCard showDivider title="Información Empresa" />
-        <div className="mt-4 flex items-center gap-4">
-          <div className="size-10 rounded-2xl overflow-hidden bg-gray-50 dark:bg-[#1a1a1a] flex-shrink-0 shadow-sm">
-            {realtor.company.logo ? (
-              <img
-                src={realtor.company.logo}
-                alt={`${realtor.company.name} logo`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-secondary to-wine-red  text-white">
-                <span className="text-xl font-semibold uppercase">
-                  {realtor.company.name.charAt(0)}
-                </span>
-              </div>
-            )}
-          </div>
-          <p>{realtor.company.name}</p>
-        </div>
-        <span className="text-gray-400 text-sm">
-          Relacionado hace {calculateDaysInCompany(realtor.last_updated)} días
-        </span>
-      </Card>
+      <RealtorInfoCard realtor={realtor} calculateDaysInCompany={calculateDaysInCompany} />
 
       {/* Aquí van tus gráficas de estadísticas de GoHunter */}
 
