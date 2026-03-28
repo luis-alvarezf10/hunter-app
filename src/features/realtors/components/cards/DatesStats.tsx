@@ -59,7 +59,7 @@ export default function DatesStats({ realtorId }: { realtorId: string }) {
   return (
     <div className="w-full bg-white dark:bg-[#1a1a1a] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/10">
       <h3 className="text-lg font-semibold mb-6 text-gray-800 dark:text-white">
-        Rendimiento de Citas este año ({new Date().getFullYear()})
+        Rendimiento de Citas este {new Date().getFullYear()}
       </h3>
       
       <div style={{ width: '100%', height: 300 }}>
