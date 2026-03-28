@@ -73,7 +73,6 @@ export function PropertyCharts({ id }: { id: string }) {
   return (
     <Card
       className="h-full relative overflow-hidden p-5 md:p-8"
-      showEffect
       showHoverEffect
     >
       <div className="relative z-10">

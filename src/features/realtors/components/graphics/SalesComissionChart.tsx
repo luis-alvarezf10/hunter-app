@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { TitleCard } from "@/shared/components/text/TitleCard";
 
 export default function SalesCommissionChart({ realtorId }: { realtorId: string }) {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -68,7 +69,7 @@ if (!mounted) return null;
   return (
     <div className="w-full bg-white dark:bg-[#1a1a1a] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/10">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Flujo de Ventas</h3>
+        <TitleCard title="Rendimiento de citas"/>
       </div>
       {/* Forzamos un alto real aquí */}
       <div className="min-h-[300px] w-full flex items-center justify-center">
