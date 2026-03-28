@@ -13,6 +13,7 @@ import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import RealtorInfoCard from "../components/cards/RealtorInfoCard";
 import GeneralStatCards from "../components/cards/GeneralStatCards";
 import BillingStatCards from "../components/cards/BillingsStatCards";
+import DatesStats from "../components/cards/DatesStats";
 
 interface Props {
   realtorId: string;
@@ -157,6 +158,10 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
       <GeneralStatCards realtorId={realtor.stakeholder.id} />
       <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
       <BillingStatCards realtorId={realtor.stakeholder.id} />
+      <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
+      <TitleView title="Gráfica" subtitle={`Visualiza datos detallados relacionados a ${realtor.stakeholder.nickname ? realtor.stakeholder.nickname : realtor.stakeholder.name}`}/>
+      <DatesStats realtorId={realtor.stakeholder.id} />
     </div>
   );
+  
 }
