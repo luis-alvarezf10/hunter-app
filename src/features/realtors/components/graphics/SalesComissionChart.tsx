@@ -77,8 +77,8 @@ if (!mounted) return null;
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#df1000" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#df1000" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                 </linearGradient>
                 {/* <linearGradient id="colorComisiones" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -100,7 +100,7 @@ if (!mounted) return null;
               <Area 
                 type="monotone" 
                 dataKey="ventas" 
-                stroke="#df1000" 
+                stroke="#10b981"
                 strokeWidth={3}
                 fillOpacity={1} 
                 fill="url(#colorVentas)" 
