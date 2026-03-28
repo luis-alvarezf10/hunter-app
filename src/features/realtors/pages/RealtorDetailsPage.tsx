@@ -159,7 +159,7 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
       <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
       <BillingStatCards realtorId={realtor.stakeholder.id} />
       <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
-      <TitleView title="Gráfica" subtitle={`Visualiza datos detallados relacionados a ${realtor.stakeholder.nickname ? realtor.stakeholder.nickname : realtor.stakeholder.name}`}/>
+      <TitleView title="Gráficas" subtitle={`Visualiza datos detallados relacionados a ${realtor.stakeholder.nickname ? realtor.stakeholder.nickname : realtor.stakeholder.name}`}/>
       <DatesStats realtorId={realtor.stakeholder.id} />
     </div>
   );

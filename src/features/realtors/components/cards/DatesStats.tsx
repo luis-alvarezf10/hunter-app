@@ -84,7 +84,7 @@ export default function DatesStats({ realtorId }: { realtorId: string }) {
             />
             <Legend verticalAlign="bottom" align="right" />
             <Bar dataKey="realizada" name="Realizadas" fill="#10b981" radius={[6, 6, 0, 0]} />
-            <Bar dataKey="cancelada" name="Canceladas" fill="#fb2c36" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="cancelada" name="Canceladas" fill="#fb2c36" radius={[6, 6, 0, 0]}  />
           </BarChart>
         </ResponsiveContainer>
       </div>
