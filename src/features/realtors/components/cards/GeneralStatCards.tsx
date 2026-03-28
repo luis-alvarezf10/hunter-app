@@ -3,16 +3,14 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/core/config";
 import {
-  HiOutlineChat,
   HiOutlineCheck,
   HiOutlineCollection,
-  HiOutlineFire,
   HiOutlineX,
 } from "react-icons/hi";
 import { StatCard } from "@/shared/components/cards/StatCard";
 import { StatCardSkeleton } from "@/shared/components/skeletons/StatCardSkeleton";
-import { TitleCard } from "@/shared/components/text/TitleCard";
 import { Dropdown } from "@/shared/components/inputs/Dropdown";
+import { TitleView } from "@/shared/components/text/TitleView";
 
 interface Props {
   realtorId: string;
@@ -38,7 +36,7 @@ const formatTrend = (value: number): string => {
   return "0";
 };
 
-export default function StatCards({ realtorId }: Props) {
+export default function GeneralStatCards({ realtorId }: Props) {
   const [stats, setStats] = useState<Stats>({
     properties: 0,
     dates: 0,
@@ -135,46 +133,6 @@ export default function StatCards({ realtorId }: Props) {
             canceleds: canceledNow - canceledPrev,
           }));
         }
-        // 3. FETCH DE VENTAS (DETAILS_SALE)
-        const { data: salesData } = await supabase
-          .from("details_sale")
-          .select(`percentage, created_at, sales ( price )`)
-          .eq("id_realtor", realtorId) // O user.id si es el logueado
-          .gte("created_at", startOfPreviousPeriod.toISOString());
-
-        if (salesData) {
-          // --- Ventas Periodo Actual (Suma de precios) ---
-          const currentSales = salesData.filter(
-            (s) => new Date(s.created_at) >= startDate,
-          );
-
-          // Sumamos el precio de la propiedad de cada venta
-          const currentVolume = currentSales.reduce(
-            (acc, curr: any) => acc + (curr.sales?.price || 0),
-            0,
-          );
-
-          // --- Ventas Periodo Anterior (Para tendencia de dinero) ---
-          const previousSales = salesData.filter((s) => {
-            const d = new Date(s.created_at);
-            return d >= startOfPreviousPeriod && d < startDate;
-          });
-
-          const prevVolume = previousSales.reduce(
-            (acc, curr: any) => acc + (curr.sales?.price || 0),
-            0,
-          );
-
-          setStats((prev) => ({
-            ...prev,
-            sales: currentVolume,
-          }));
-
-          setTrends((prev) => ({
-            ...prev,
-            sales: currentVolume - prevVolume, // Diferencia en dinero
-          }));
-        }
       } catch (error) {
         console.error("Error:", error);
       } finally {
@@ -219,25 +177,11 @@ export default function StatCards({ realtorId }: Props) {
       iconColor: "text-red-600 dark:text-red-400",
       color: "#fb2c36", //
     },
-    {
-      label: "Total vendido",
-      description: "En ventas",
-      value: loading ? "..." : stats.sales,
-      icon: <HiOutlineFire />,
-      gradient: "from-orange-500 to-orange-600",
-      trend: loading ? "0" : formatTrend(trends.sales),
-      iconBg: "bg-orange-500 dark:bg-orange-500/10",
-      iconColor: "text-orange-400 dark:text-orange-400",
-      color: "#ff5c00",
-    },
   ];
 
   return (
     <div className="space-y-6">
-      <TitleCard
-        title="Estadísticas"
-        subtitle="Selecciona un rango de tiempo para poder verificarlas."
-      />
+      <TitleView title="Estadísticas generales"/>
       <Dropdown
         options={[
           { label: "Últimos 7 días", value: "7" },
@@ -249,7 +193,7 @@ export default function StatCards({ realtorId }: Props) {
         onChange={(val) => setTimeRange(val)}
         placeholder="Rango de Tiempo"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
         {statCards.map((stat, index) =>
           loading ? (
             <StatCardSkeleton key={index} />

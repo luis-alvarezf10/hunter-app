@@ -3,9 +3,7 @@ import { createClient } from "@/core/config";
 import { PropertyCharts } from "@/features/properties/components/PropertyCharts";
 import { PropertyStats } from "@/features/properties/components/PropertyStats";
 import { BadgeButton } from "@/shared/components/buttons/BadgeButton";
-import { IconButton } from "@/shared/components/buttons/IconButton";
 import { OptionsMenuButton } from "@/shared/components/buttons/OptionsMenuButton";
-import { Card } from "@/shared/components/cards/card";
 import { TitleCard } from "@/shared/components/text/TitleCard";
 import { TitleView } from "@/shared/components/text/TitleView";
 import { LoadingPage } from "@/shared/pages/LoadingPage";
@@ -13,7 +11,8 @@ import { notFound, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import RealtorInfoCard from "../components/cards/RealtorInfoCard";
-import StatCards from "../components/cards/StatCards";
+import GeneralStatCards from "../components/cards/GeneralStatCards";
+import BillingStatCards from "../components/cards/BillingsStatCards";
 
 interface Props {
   realtorId: string;
@@ -136,7 +135,10 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
         </div>
       </div>
 
-      <RealtorInfoCard realtor={realtor} calculateDaysInCompany={calculateDaysInCompany} />
+      <RealtorInfoCard
+        realtor={realtor}
+        calculateDaysInCompany={calculateDaysInCompany}
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-1">
@@ -147,7 +149,14 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
           <PropertyCharts id={realtor.stakeholder.id} />
         </div>
       </div>
-      <StatCards realtorId={realtor.stakeholder.id}/>
+      <TitleCard
+        title="Estadísticas"
+        subtitle="Selecciona un rango de tiempo para poder verificarlas."
+      />
+      <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
+      <GeneralStatCards realtorId={realtor.stakeholder.id} />
+      <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
+      <BillingStatCards realtorId={realtor.stakeholder.id} />
     </div>
   );
 }
