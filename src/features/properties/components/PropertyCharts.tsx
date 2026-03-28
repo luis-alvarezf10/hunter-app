@@ -6,35 +6,21 @@ import { Card } from "@/shared/components/cards/card";
 import { TitleCard } from "@/shared/components/text/TitleCard";
 import { PercentageBadge } from "@/shared/components/badges/PercentageBadge";
 import { LoadSpin } from "@/shared/components/spins/LoadSpin";
+import { PieChart, Pie, Cell, Sector } from "recharts";
 
-interface userProps {
-  id: string;
-}
-
-interface TypeData {
-  label: string;
-  value: number;
-  color: string;
-  percentage: number;
-}
-
-export function PropertyCharts({id}:userProps) {
-  const [typeData, setTypeData] = useState<TypeData[]>([]);
+export function PropertyCharts({ id }: { id: string }) {
+  const [typeData, setTypeData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
+  const [mounted, setMounted] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    setMounted(true);
     async function loadData() {
+      if (!id) return;
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
-          console.log("No hay usuario autenticado");
-          return;
-        }
         const { data: types } = await supabase
           .from("type_properties")
           .select("id, value, color");
@@ -52,7 +38,7 @@ export function PropertyCharts({id}:userProps) {
 
           const chartData = types
             .map((type) => ({
-              label: type.value,
+              name: type.value,
               value: counts[type.id] || 0,
               color: type.color || "#6b7280",
               percentage: total > 0 ? (counts[type.id] / total) * 100 : 0,
@@ -63,142 +49,125 @@ export function PropertyCharts({id}:userProps) {
           setTypeData(chartData);
         }
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
     }
     loadData();
-  }, [supabase]);
+  }, [supabase, id]);
 
-  const renderPieChart = (data: TypeData[]) => {
-    const radius = 70;
-    const circumference = 2 * Math.PI * radius;
-    let currentOffset = 0;
-    const totalValue = data.reduce((sum, item) => sum + item.value, 0);
+  const totalValue = useMemo(
+    () => typeData.reduce((sum, item) => sum + item.value, 0),
+    [typeData],
+  );
 
-    return (
-      <div className="relative flex-shrink-0 flex items-center justify-center">
-        <svg
-          viewBox="0 0 200 200"
-          className="w-full max-w-[240px] overflow-visible transform -rotate-90"
-        >
-          {data.map((item, index) => {
-            const strokeLength = (item.percentage / 100) * circumference;
-            const gap = data.length > 1 ? 4 : 0;
-            const dashArray = `${Math.max(0, strokeLength - gap)} ${circumference}`;
-            const dashOffset = -currentOffset;
-
-            currentOffset += strokeLength;
-
-            // Ahora el estado depende de algo externo o simplemente se queda estático
-            const isHovered = activeIndex === index;
-            const isAnyHovered = activeIndex !== null;
-
-            const strokeColor =
-              isAnyHovered && !isHovered ? "#e2e8f0" : item.color;
-
-            return (
-              <circle
-                key={index}
-                cx="100"
-                cy="100"
-                r={radius}
-                fill="transparent"
-                stroke={strokeColor}
-                // Mantenemos una transición suave por si cambias el activeIndex desde fuera
-                strokeWidth={isHovered ? "24" : "18"}
-                strokeDasharray={dashArray}
-                strokeDashoffset={dashOffset}
-                strokeLinecap="round"
-                className="transition-all duration-500"
-                style={{
-                  filter: isHovered
-                    ? `drop-shadow(0 0 12px ${item.color}66)`
-                    : "none",
-                  opacity: 1,
-                }}
-              />
-            );
-          })}
-        </svg>
-
-        {/* El centro del círculo se mantiene igual */}
-        <div className="absolute flex flex-col gap-1 items-center justify-center pointer-events-none">
-          <span className="text-3xl font-semibold leading-none">
-            {activeIndex !== null ? data[activeIndex].value : totalValue}
-          </span>
-          <span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-            {activeIndex !== null ? data[activeIndex].label : "Total"}
-          </span>
-        </div>
-      </div>
-    );
-  };
-
+  if (!mounted) return null;
   if (loading)
     return (
       <Card className="flex items-center justify-center min-h-[350px]">
-        <LoadSpin/>
+        <LoadSpin />
       </Card>
     );
 
   return (
-    <Card className="h-full relative overflow-hidden transition-all duration-500 p-5 md:p-8" showEffect showHoverEffect>
-      {/* 1. EL GRADIENTE DE FONDO DE LA CARTA PRINCIPAL */}
-      {typeData.map((item, index) => (
-        <div
-          key={`bg-grad-${index}`}
-          className="absolute inset-0 pointer-events-none transition-opacity duration-700 ease-in-out"
-          style={{
-            background: `radial-gradient(circle at top right, ${item.color}15, transparent 40%), 
-                         radial-gradient(circle at bottom left, ${item.color}10, transparent 40%)`,
-            opacity: activeIndex === index ? 1 : 0,
-            zIndex: 0,
-          }}
-        />
-      ))}
-
-      {/* 2. LA LÍNEA BRILLANTE EN LA BASE DE LA CARTA PRINCIPAL */}
-      {typeData.map((item, index) => (
-        <div
-          key={`line-base-${index}`}
-          className="absolute bottom-0 left-0 right-0 h-[4px] transition-all duration-500 ease-in-out origin-center z-20"
-          style={{
-            backgroundColor: item.color,
-            boxShadow: `0 -4px 20px ${item.color}80`,
-            opacity: activeIndex === index ? 1 : 0,
-            transform: activeIndex === index ? "scaleX(1)" : "scaleX(0)",
-          }}
-        />
-      ))}
-
-      {/* Contenido envuelto en un z-index para que no lo tape el gradiente */}
+    <Card
+      className="h-full relative overflow-hidden p-5 md:p-8"
+      showEffect
+      showHoverEffect
+    >
       <div className="relative z-10">
         <TitleCard title="Propiedades por tipo" />
-        <div className="flex flex-col lg:flex-row items-center gap-12 mt-8">
-          {renderPieChart(typeData)}
 
-          <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col lg:flex-row items-center gap-12 mt-8">
+          <div
+            className="flex-shrink-0 flex items-center justify-center bg-transparent"
+            style={{
+              width: "240px",
+              height: "240px",
+              minWidth: "240px",
+              minHeight: "240px",
+            }}
+          >
+            {typeData.length > 0 && (
+              <div className="relative">
+                <PieChart width={240} height={240}>
+                  <Pie
+                    data={typeData}
+                    cx={120}
+                    cy={120}
+                    innerRadius={70}
+                    outerRadius={90}
+                    dataKey="value"
+                    stroke="none"
+                    paddingAngle={8}
+                    cornerRadius={40}
+                    isAnimationActive={false} // Desactivamos para que la transición CSS sea la reina
+                  >
+                    {typeData.map((entry, index) => {
+                      const isHovered = activeIndex === index;
+                      const isAnyHovered = activeIndex !== undefined;
+                      return (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            !isAnyHovered || isHovered ? entry.color : "#f1f5f9"
+                          }
+                          style={{
+                            transform: isHovered ? "scale(1.1)" : "scale(1)",
+                            transformOrigin: "center",
+                            transition:
+                              "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                            filter: isHovered
+                              ? `drop-shadow(0px 8px 16px ${entry.color}40)`
+                              : "none",
+                            outline: "none",
+                          }}
+                        />
+                      );
+                    })}
+                  </Pie>
+                </PieChart>
+
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span
+                    className={`text-4xl font-bold transition-all duration-500 ${activeIndex !== undefined ? "scale-110" : ""}`}
+                  >
+                    {activeIndex !== undefined
+                      ? typeData[activeIndex].value
+                      : totalValue}
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    {activeIndex !== undefined
+                      ? typeData[activeIndex].name
+                      : "Total"}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1 w-full">
             {typeData.map((item, index) => {
               const isHovered = activeIndex === index;
-              const isAnyHovered = activeIndex !== null;
+              // Corregimos: Recharts usa undefined cuando no hay hover
+              const isAnyHovered = activeIndex !== undefined;
+
               return (
                 <div
                   key={index}
                   onMouseEnter={() => setActiveIndex(index)}
-                  onMouseLeave={() => setActiveIndex(null)}
+                  onMouseLeave={() => setActiveIndex(undefined)}
                   className={`
-                    relative overflow-hidden flex items-center justify-between px-4 py-2 rounded-2xl transition-all duration-300 cursor-pointer border-l-1 border-t
-                    ${
-                      isHovered
-                        ? "bg-gradient-to-b from-white to-transparent dark:from-[#333333] dark:to-transparent scale-105 shadow-md "
-                        : "border-transparent"
-                    }
-                    ${isAnyHovered && !isHovered ? "opacity-40 grayscale" : "opacity-100"}
-                  `}
+                      relative overflow-hidden flex items-center justify-between px-4 py-2 rounded-2xl transition-all duration-300 cursor-pointer border-l-1 border-t
+                      ${
+                        isHovered
+                          ? "bg-gradient-to-b from-white to-transparent dark:from-[#333333] dark:to-transparent scale-105 shadow-md "
+                          : "border-transparent"
+                      }
+                      ${isAnyHovered && !isHovered ? "opacity-40 grayscale" : "opacity-100"}
+                    `}
                   style={{
-                    // Usamos style para el color dinámico, así nunca falla
                     borderLeftColor: isHovered ? item.color : "transparent",
                     borderTopColor: isHovered
                       ? "rgba(255,255,255,0.3)"
@@ -206,7 +175,9 @@ export function PropertyCharts({id}:userProps) {
                   }}
                 >
                   <div
-                    className={`absolute left-0 w-24 inset-y-0 transition-opacity duration-500 pointer-events-none ${isHovered ? "opacity-20" : "opacity-0"}`}
+                    className={`absolute left-0 w-24 inset-y-0 transition-opacity duration-500 pointer-events-none ${
+                      isHovered ? "opacity-20" : "opacity-0"
+                    }`}
                     style={{
                       background: `linear-gradient(to right, ${item.color}, transparent)`,
                     }}
@@ -219,13 +190,14 @@ export function PropertyCharts({id}:userProps) {
                           isAnyHovered && !isHovered ? "#cbd5e1" : item.color,
                       }}
                     />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    {/* ANTES DECÍA item.label, AHORA item.name */}
+                    <span className="text-sm font-medium">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {item.value}
                     </span>
-                    <PercentageBadge percentage={Math.round(item.percentage)}/>
+                    <PercentageBadge percentage={Math.round(item.percentage)} />
                   </div>
                 </div>
               );
@@ -233,6 +205,30 @@ export function PropertyCharts({id}:userProps) {
           </div>
         </div>
       </div>
+       {typeData.map((item, index) => (
+        <div
+          key={`bg-grad-${index}`}
+          className="absolute inset-0 pointer-events-none transition-opacity duration-700 ease-in-out"
+          style={{
+            background: `radial-gradient(circle at top right, ${item.color}15, transparent 40%), 
+                         radial-gradient(circle at bottom left, ${item.color}10, transparent 40%)`,
+            opacity: activeIndex === index ? 1 : 0,
+            zIndex: 0,
+          }}
+        />
+      ))}
+      {typeData.map((item, index) => (
+        <div
+          key={`line-base-${index}`}
+          className="absolute bottom-0 left-0 right-0 h-[4px] transition-all duration-500 ease-in-out origin-center z-20"
+          style={{
+            backgroundColor: item.color,
+            boxShadow: `0 -4px 20px ${item.color}80`,
+            opacity: activeIndex === index ? 1 : 0,
+            transform: activeIndex === index ? "scaleX(1)" : "scaleX(0)",
+          }}
+        />
+      ))}
     </Card>
   );
 }
