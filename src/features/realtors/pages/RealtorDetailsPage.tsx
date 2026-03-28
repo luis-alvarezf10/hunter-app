@@ -13,7 +13,8 @@ import { HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import RealtorInfoCard from "../components/cards/RealtorInfoCard";
 import GeneralStatCards from "../components/cards/GeneralStatCards";
 import BillingStatCards from "../components/cards/BillingsStatCards";
-import DatesStats from "../components/cards/DatesStats";
+import DatesStats from "../components/graphics/DatesStats";
+import SalesComissionChart from "../components/graphics/SalesComissionChart";
 
 interface Props {
   realtorId: string;
@@ -159,8 +160,18 @@ export default function RealtorDetailsPage({ realtorId }: Props) {
       <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
       <BillingStatCards realtorId={realtor.stakeholder.id} />
       <div className="border-t border-gray-300 dark:border-white/10 pt-2"/>
-      <TitleView title="Gráficas" subtitle={`Visualiza datos detallados relacionados a ${realtor.stakeholder.nickname ? realtor.stakeholder.nickname : realtor.stakeholder.name}`}/>
-      <DatesStats realtorId={realtor.stakeholder.id} />
+      <TitleView title={`Gráficas de ${new Date().getFullYear()}`} subtitle={`Visualiza datos detallados relacionados a ${realtor.stakeholder.nickname ? realtor.stakeholder.nickname : realtor.stakeholder.name}`}/>
+      
+      
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <DatesStats realtorId={realtor.stakeholder.id} />
+        </div>
+
+        <div>
+          <SalesComissionChart realtorId={realtor.stakeholder.id} />
+        </div>
+      </div>
     </div>
   );
   
